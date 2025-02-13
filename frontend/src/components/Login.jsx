@@ -110,12 +110,12 @@ const Login = () => {
         </h2>
 
         {/* User Type Selection - Buttons */}
-        <div className="mb-4 flex justify-center gap-2">
+        <div className="mb-4 flex justify-center ">
           {["education", "healthcare", "admin"].map((type) => (
             <motion.button
               key={type}
               onClick={() => setUsertype(type)}
-              className={`px-4 py-2 text-xs font-semibold rounded-md transition ${
+              className={`px-4 py-2 text-xs font-semibold  transition ${
                 usertype === type
                   ? type === "education"
                     ? "bg-[#E76F51] text-white"

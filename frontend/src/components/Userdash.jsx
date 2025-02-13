@@ -16,7 +16,7 @@ const Userdash = () => {
 
   return (
     <div className="min-h-screen  bg-[#d5f3f7] flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-blue-600 mb-6">
+      <h1 className="text-3xl font-bold text-[] mb-6">
         Welcome to Edu2Medu 🎓
       </h1>
 
