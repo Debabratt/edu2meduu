@@ -71,13 +71,16 @@ const Login = () => {
         if (data.success) {
           localStorage.setItem("user", JSON.stringify(data.user));
           navigate(
-            usertype === "education" || usertype === "healthcare"
+            usertype === "education"
               ? "/user-dashboard"
+              : usertype === "healthcare"
+              ? "/medu-dashboard"  // Updated path for healthcare users
               : "/admin-dashboard"
           );
         } else {
           setError(data.message);
         }
+        
       }
     } catch (err) {
       setError(err.response?.data?.message || "Server error");

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const Userdash = () => {
+const Medudash = () => {
   const [schoolName, setSchoolName] = useState("ABC Public School");
   const [address, setAddress] = useState("123, Main Street, City");
   const [email, setEmail] = useState("abcschool@gmail.com");
@@ -16,7 +16,7 @@ const Userdash = () => {
 
   return (
     <div className="min-h-screen  bg-[#d5f3f7] flex flex-col items-center p-6">
-      <h1 className="text-3xl font-bold text-[#E76F51] mb-6">
+      <h1 className="text-3xl font-bold text-[#17A2B8] mb-6">
         Welcome to Edu2Medu 🎓
       </h1>
 
@@ -56,7 +56,7 @@ const Userdash = () => {
             type="text"
             value={schoolName}
             onChange={(e) => setSchoolName(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#17A2B8]"
           />
 
           <label className="block text-gray-700 font-medium">Address</label>
@@ -64,7 +64,7 @@ const Userdash = () => {
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#17A2B8]"
           />
 
           <label className="block text-gray-700 font-medium">Email</label>
@@ -72,7 +72,7 @@ const Userdash = () => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#17A2B8]"
           />
 
           <label className="block text-gray-700 font-medium">Phone</label>
@@ -80,12 +80,12 @@ const Userdash = () => {
             type="tel"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#E76F51]"
+            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#17A2B8]"
           />
         </div>
 
         {/* Save Button */}
-        <button className="w-full bg-[#E76F51] text-white mt-4 py-2 rounded-md hover:bg-[#E76F51]">
+        <button className="w-full bg-[#17A2B8] text-white mt-4 py-2 rounded-md hover:bg-[#17A2B8]">
           Save Changes
         </button>
       </div>
@@ -93,4 +93,4 @@ const Userdash = () => {
   );
 };
 
-export default Userdash;
+export default Medudash;

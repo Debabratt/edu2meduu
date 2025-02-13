@@ -28,6 +28,7 @@ import About from "./components/About";
 import Userdash from "./components/Userdash";
 import EmRegister from "./components/EmRegister";
 import AdminDashboard from "./components/AdminDashboard";
+import Medudash from "./components/Medudash";
 
 // Layout component that includes Header
 const MainLayout = ({ children }) => (
@@ -86,6 +87,7 @@ function App() {
 
         {/* User Dashboard Route without Header */}
         <Route path="/user-dashboard" element={<Userdash />} />
+        <Route path="/medu-dashboard" element={<Medudash />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         {/* School and Boarding Routes with Header */}
         <Route path="/board-school" element={<MainLayout><BoardingSchool /></MainLayout>} />
