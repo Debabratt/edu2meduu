@@ -53,10 +53,10 @@ exports.registerUser = async (req, res) => {
 // Login User Controller
 exports.loginUser = async (req, res) => {
   try {
-    const { email, password, usertype } = req.body; // Add usertype from the request body
+    const { email, password } = req.body; // Add usertype from the request body
 
     // Find user by email
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email});
     if (!user) {
       return res.status(400).json({ success: false, message: 'User not found' });
     }
@@ -75,3 +75,32 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
+
+exports.adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find admin by email
+    const admin = await User.findOne({ email, role: "admin", usertype: "admin"});
+    if (!admin) {
+      return res.status(400).json({ success: false, message: "Admin not found" });
+    }
+
+    // Directly compare passwords (Note: NOT recommended for production)
+    if (password !== admin.password) {
+      return res.status(400).json({ success: false, message: "Invalid credentials" });
+    }
+
+    // If login is successful, return the admin data
+    res.json({ success: true, message: "Admin login successful", admin });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+

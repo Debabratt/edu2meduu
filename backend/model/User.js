@@ -36,15 +36,14 @@ const UserSchema = new mongoose.Schema({
       'Hospital',
       'Private Clinic',
       'Medical Stores',
-      
-     
     ],
     required: function () {
       return this.userType === 'education' || this.userType === 'healthcare';
-    }, 
+    },
   },
   role: {
     type: String,
+    enum: ['admin', 'user'],  // Explicitly define 'admin' and 'user'
     default: 'user',
   },
 });

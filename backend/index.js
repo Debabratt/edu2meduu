@@ -27,7 +27,7 @@ app.use(express.json());
 // Routes
 const UserRouter = require('./routes/UserRouter');
 app.use('/user', UserRouter);
-
+app.use('/admin', UserRouter);
 app.get('/', (req, res) => {
   res.send('Backend is working! 🚀');
 });
