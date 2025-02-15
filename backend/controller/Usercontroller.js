@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/User'); // Correct model import
-
+const Admin=require('../model/Admin')
 // Register User Controller
 exports.registerUser = async (req, res) => {
   try {
@@ -53,10 +53,10 @@ exports.registerUser = async (req, res) => {
 // Login User Controller
 exports.loginUser = async (req, res) => {
   try {
-    const { email, password } = req.body; // Add usertype from the request body
-
+    const { email, password,userType } = req.body; // Add usertype from the request body
+    console.log(email,password,userType)
     // Find user by email
-    const user = await User.findOne({ email});
+    const user = await User.findOne({ email,userType});
     if (!user) {
       return res.status(400).json({ success: false, message: 'User not found' });
     }
@@ -80,23 +80,26 @@ exports.loginUser = async (req, res) => {
 
 exports.adminLogin = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, userType } = req.body;
+    console.log(email, password, userType);
 
-    // Find admin by email
-    const admin = await User.findOne({ email, role: "admin", usertype: "admin"});
-    if (!admin) {
-      return res.status(400).json({ success: false, message: "Admin not found" });
+    // Find admin by email and userType
+    const admin = await Admin.findOne({ email, userType });
+    if (!admin || admin.password !== password) {
+      return res.status(400).json({ success: false, message: "Invalid email or password" });
     }
 
-    // Directly compare passwords (Note: NOT recommended for production)
-    if (password !== admin.password) {
-      return res.status(400).json({ success: false, message: "Invalid credentials" });
-    }
+    // If login is successful, return only necessary admin data (excluding password)
+    const { password: _, ...adminData } = admin.toObject(); // Exclude password
 
-    // If login is successful, return the admin data
-    res.json({ success: true, message: "Admin login successful", admin });
+    res.json({ 
+      success: true, 
+      message: "Admin login successful", 
+      admin: adminData 
+    });
+
   } catch (error) {
-    console.error(error);
+    console.error("Login Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };

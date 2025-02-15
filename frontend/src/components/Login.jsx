@@ -6,7 +6,7 @@ import axios from "axios";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [usertype, setUsertype] = useState("education");
+  const [userType, setUsertype] = useState("education");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -17,9 +17,9 @@ const Login = () => {
 
   const handleForgotPasswordNavigate = () => {
     navigate(
-      usertype === "education"
+      userType === "education"
         ? "/forgot-password"
-        : usertype === "healthcare"
+        : userType === "healthcare"
         ? "/forgot-password-medical"
         : "/admin-forgot-password"
     );
@@ -30,6 +30,7 @@ const Login = () => {
       const response = await axios.post("http://localhost:8001/admin/adminlogin", {
         email,
         password,
+        userType
       });
 
       console.log("Admin Login Response:", response.data);
@@ -60,20 +61,21 @@ const Login = () => {
 
     try {
       // For admin login, call the admin login handler
-      if (usertype === "admin") {
+      if (userType === "admin") {
         await handleAdminLogin(); // This handles admin login separately
       } else {
         const { data } = await axios.post("http://localhost:8001/user/login", {
           email,
           password,
+          userType
         });
 
         if (data.success) {
           localStorage.setItem("user", JSON.stringify(data.user));
           navigate(
-            usertype === "education"
+            userType === "education"
               ? "/user-dashboard"
-              : usertype === "healthcare"
+              : userType === "healthcare"
               ? "/medu-dashboard"  // Updated path for healthcare users
               : "/admin-dashboard"
           );
@@ -102,9 +104,9 @@ const Login = () => {
       >
         <h2
           className={`text-xl font-serif mb-4 text-center ${
-            usertype === "education"
+            userType === "education"
               ? "text-[#E76F51]"
-              : usertype === "healthcare"
+              : userType === "healthcare"
               ? "text-[#17A2B8]"
               : "text-gray-700"
           }`}
@@ -119,7 +121,7 @@ const Login = () => {
               key={type}
               onClick={() => setUsertype(type)}
               className={`px-4 py-2 text-xs font-semibold  transition ${
-                usertype === type
+                userType === type
                   ? type === "education"
                     ? "bg-[#E76F51] text-white"
                     : type === "healthcare"
@@ -177,9 +179,9 @@ const Login = () => {
           <motion.button
             type="submit"
             className={`w-full mt-6 mx-auto px-20 py-3 text-white text-xs font-serif rounded-md ${
-              usertype === "education"
+              userType === "education"
                 ? "bg-[#E76F51] hover:bg-[#9f6b5e]"
-                : usertype === "healthcare"
+                : userType === "healthcare"
                 ? "bg-[#17A2B8] hover:bg-[#70aeb8]"
                 : "bg-gray-700 hover:bg-gray-900"
             }`}
@@ -196,9 +198,9 @@ const Login = () => {
             <motion.button
               onClick={handleForgotPasswordNavigate}
               className={`${
-                usertype === "education"
+                userType === "education"
                   ? "text-[#E76F51]"
-                  : usertype === "healthcare"
+                  : userType === "healthcare"
                   ? "text-[#17A2B8]"
                   : "text-gray-700"
               } font-medium hover:underline`}
@@ -210,7 +212,7 @@ const Login = () => {
           </p>
         </div>
 
-        {usertype !== "admin" && (
+        {userType !== "admin" && (
           <div className="mt-3 text-center">
             <p className="text-xs font-medium text-gray-600">
               Don't have an account?{" "}
