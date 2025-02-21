@@ -112,7 +112,7 @@ const AdminDashboard = () => {
       { name: "Block School & College", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
-      { name: "Settings", icon: <Settings /> },
+ 
     ],
     Healthcare: [
       { name: "Dashboard", icon: <Home /> },
@@ -120,7 +120,7 @@ const AdminDashboard = () => {
       { name: "Block Medical & Clinics", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
-      { name: "Settings", icon: <Settings /> },
+      
     ],
   };
 
@@ -303,8 +303,7 @@ const AdminDashboard = () => {
           )}
         </div>
         );
-      case "Settings":
-        return <p>Adjust settings for {selectedSection} administration.</p>;
+     
       default:
         return <p>Select an option from the sidebar.</p>;
     }
