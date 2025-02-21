@@ -6,7 +6,7 @@ import {
   Ban,
   Newspaper,
   User,
-  Settings,
+  
   LogOut,
   Menu,
   X,
@@ -55,24 +55,30 @@ const AdminDashboard = () => {
     }
   };
 
-  const onBlockUser = async (userId) => {
+  const onBlockUser = async (userId, currentStatus) => {
     try {
-      const endpoint = selectedSection === "Education" 
-        ? "http://localhost:8001/admin/blockEducationUser"
-        : "http://localhost:8001/admin/blockHealthcareUser";
-        
+      const isBlocked = currentStatus === "block";
+  
+      // Select API endpoint based on action
+      const endpoint = selectedSection === "Education"
+        ? isBlocked
+          ? "http://localhost:8001/admin/unblockEducationUser"
+          : "http://localhost:8001/admin/blockEducationUser"
+        : isBlocked
+          ? "http://localhost:8001/admin/unblockHealthcareUser"
+          : "http://localhost:8001/admin/blockHealthcareUser";
+  
       await axios.post(endpoint, { userId });
-      
-      // Refresh the user list after blocking
-      if (selectedSection === "Education") {
-        fetchEduUsers();
-      } else {
-        fetchMedUsers();
-      }
+  
+      // Refresh the user list
+      selectedSection === "Education" ? fetchEduUsers() : fetchMedUsers();
     } catch (error) {
-      console.error("Error blocking user:", error);
+      console.error("❌ Error toggling user block status:", error);
+      alert("Failed to update user status.");
     }
   };
+  
+  
 
   const handleSchoolSelection = (schoolId) => {
     setSelectedSchools(prev => {
@@ -84,17 +90,7 @@ const AdminDashboard = () => {
     });
   };
 
-  const handleBlockSelectedSchools = async () => {
-    try {
-      await axios.post("http://localhost:8001/admin/blockMultipleSchools", {
-        schoolIds: selectedSchools
-      });
-      setSelectedSchools([]);
-      fetchEduUsers();
-    } catch (error) {
-      console.error("Error blocking schools:", error);
-    }
-  };
+  
 
   // Load appropriate users when section changes
   useEffect(() => {
@@ -132,7 +128,7 @@ const AdminDashboard = () => {
         </span>
         {selectedSchools.length > 0 && (
           <button
-            onClick={handleBlockSelectedSchools}
+           
             className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
           >
             Block Selected ({selectedSchools.length})
@@ -145,7 +141,7 @@ const AdminDashboard = () => {
             <th className="py-3 px-4 border text-left">Select</th>
             <th className="py-3 px-4 border text-left">Name</th>
             <th className="py-3 px-4 border text-left">Type</th>
-            <th className="py-3 px-4 border text-left">Location</th>
+            <th className="py-3 px-4 border text-left">Category</th>
             <th className="py-3 px-4 border text-center">Action</th>
           </tr>
         </thead>
@@ -161,15 +157,20 @@ const AdminDashboard = () => {
                 />
               </td>
               <td className="py-3 px-4 border">{school.name}</td>
-              <td className="py-3 px-4 border">{school.type}</td>
-              <td className="py-3 px-4 border">{school.location}</td>
+              <td className="py-3 px-4 border">{school.userType}</td>
+              <td className="py-3 px-4 border">{school.category}</td>
               <td className="py-3 px-4 border text-center">
-                <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => onBlockUser(school._id)}
-                >
-                  Block
-                </button>
+              <button
+  className={`px-4 py-2 rounded-lg ${
+    school.status === "block"
+      ? "bg-green-500 hover:bg-green-600 text-white"
+      : "bg-red-500 hover:bg-red-600 text-white"
+  }`}
+  onClick={() => onBlockUser(school._id, school.status)}
+>
+  {school.status === "block" ? "Unblock" : "Block"}
+</button>
+
               </td>
             </tr>
           ))}

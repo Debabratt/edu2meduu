@@ -60,30 +60,106 @@ exports.adminLogin = async (req, res) => {
   };
 
 
-  exports.blockInstitution = async (req, res) => {
+  exports.blockEducationUser= async (req, res) => {
+    const { userId } = req.body;
+  
     try {
-      const { id } = req.params; // ID of the institution
-      const { status } = req.body; // Block status (true or false)
+      const users = await User.findById(userId);
   
-      // Find and update the institution's blocked status
-      const institution = await User.findByIdAndUpdate(
-        id,
-        { isBlocked: status },
-        { new: true }
-      );
-  
-      if (!institution) {
-        return res.status(404).json({ success: false, message: "Institution not found" });
+      if (!users) {
+        return res.status(404).json({ message: 'User not found' });
       }
   
-      res.status(200).json({
-        success: true,
-        message: `Institution ${status ? "blocked" : "unblocked"} successfully. Blocked institutions cannot add categories.`,
-        institution,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ success: false, message: "Server error" });
+      if (users.status === 'block') {
+        return res.status(400).json({ message: 'User is already block' });
+      }
+  
+      users.status = 'block';
+      await users.save();
+  
+      return res.status(200).json({ message: 'User block successfully!' });
+    } catch (error) {
+      console.error('Error activating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+
+
+  exports.blockHealthcareUser= async (req, res) => {
+    const { userId } = req.body;
+  
+    try {
+      const users = await User.findById(userId);
+  
+      if (!users) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      if (users.status === 'block') {
+        return res.status(400).json({ message: 'User is already block' });
+      }
+  
+      users.status = 'block';
+      await users.save();
+  
+      return res.status(200).json({ message: 'User block successfully!' });
+    } catch (error) {
+      console.error('Error activating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+
+
+
+  exports.unblockEducationUser= async (req, res) => {
+    const { userId } = req.body;
+  
+    try {
+      const users = await User.findById(userId);
+  
+      if (!users) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      if (users.status === 'active') {
+        return res.status(400).json({ message: 'User is already active' });
+      }
+  
+      users.status = 'active';
+      await users.save();
+  
+      return res.status(200).json({ message: 'User active successfully!' });
+    } catch (error) {
+      console.error('Error activating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+  };
+  
+
+
+  exports.unblockHealthcareUser= async (req, res) => {
+    const { userId } = req.body;
+  
+    try {
+      const users = await User.findById(userId);
+  
+      if (!users) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+  
+      if (users.status === 'active') {
+        return res.status(400).json({ message: 'User is already active' });
+      }
+  
+      users.status = 'active';
+      await users.save();
+  
+      return res.status(200).json({ message: 'User block successfully!' });
+    } catch (error) {
+      console.error('Error activating user:', error);
+      return res.status(500).json({ message: 'Internal server error' });
     }
   };
   
