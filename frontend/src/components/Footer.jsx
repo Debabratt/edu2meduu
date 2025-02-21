@@ -28,7 +28,7 @@ const Footer = () => {
             <h3 className="text-xl font-semibold mb-4">Registration</h3>
             <ul>
               <li><Link to={"/register"} className="text-sm text-gray-400 hover:text-white">Register School</Link></li>
-              <li><Link to={"/registermedical"} className="text-sm text-gray-400 hover:text-white">Register Hospitals</Link></li>
+              <li><Link to={"/register"} className="text-sm text-gray-400 hover:text-white">Register Hospitals</Link></li>
             </ul>
           </div>
           <div>

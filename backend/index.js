@@ -25,9 +25,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Routes
+// Routes
 const UserRouter = require('./routes/UserRouter');
+const AdminRouter = require("./routes/AdminRouter");
+
 app.use('/user', UserRouter);
-app.use('/admin', UserRouter);
+app.use('/admin', AdminRouter);
 app.get('/', (req, res) => {
   res.send('Backend is working! 🚀');
 });
