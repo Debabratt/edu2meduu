@@ -59,6 +59,36 @@ exports.adminLogin = async (req, res) => {
     }
   };
 
+
+  exports.blockInstitution = async (req, res) => {
+    try {
+      const { id } = req.params; // ID of the institution
+      const { status } = req.body; // Block status (true or false)
+  
+      // Find and update the institution's blocked status
+      const institution = await User.findByIdAndUpdate(
+        id,
+        { isBlocked: status },
+        { new: true }
+      );
+  
+      if (!institution) {
+        return res.status(404).json({ success: false, message: "Institution not found" });
+      }
+  
+      res.status(200).json({
+        success: true,
+        message: `Institution ${status ? "blocked" : "unblocked"} successfully. Blocked institutions cannot add categories.`,
+        institution,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ success: false, message: "Server error" });
+    }
+  };
+  
+
+
   
   
   

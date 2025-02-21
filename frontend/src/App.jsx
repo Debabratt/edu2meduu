@@ -10,17 +10,21 @@ import Statistics from "./components/Statistics";
 import BoardingSchool from "./components/BoardingSchool";
 import DaySchool from "./components/DaySchool";
 import PreSchool from "./components/PreSchool";
+
 import Login from "./components/Login";
+
 import HMarque from "./components/HMarque";
 import HCategory from "./components/HCategory";
 import HStatistics from "./components/HStatistics";
 import HContact from "./components/HContact";
-import MedicalC from "./components/MedicalC";
+
 import MedicalCl from "./components/MedicalCl";
 import DaySchoolM from "./components/DaySchoolM";
 import News from "./components/News";
+
 import Jobs from "./components/Jobs";
 import About from "./components/About";
+
 import Userdash from "./components/Userdash";
 import EmRegister from "./components/EmRegister";
 import AdminDashboard from "./components/AdminDashboard";
@@ -70,28 +74,27 @@ function App() {
               <Home />
               <HMarque />
               <HCategory />
-              <MedicalC />
+              <MedicalCl />
               <HContact />
               <HStatistics />
             </MainLayout>
           }
         />
 
-        {/* Register and Login Routes without Header */}
-        <Route path="/register" element={<NoHeaderLayout><EmRegister /></NoHeaderLayout>} />
-        <Route path="/login" element={<NoHeaderLayout><Login /></NoHeaderLayout>} />
+        {/* Register and Login Routes with Footer only */}
+        <Route path="/register" element={<MainLayout><EmRegister /></MainLayout>} />
+        <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
 
-        {/* Dashboard Routes without Header */}
-        <Route path="/user-dashboard" element={<NoHeaderLayout><Userdash /></NoHeaderLayout>} />
-        <Route path="/medu-dashboard" element={<NoHeaderLayout><Medudash /></NoHeaderLayout>} />
-        <Route path="/admin-dashboard" element={<NoHeaderLayout><AdminDashboard /></NoHeaderLayout>} />
-
+        {/* User Dashboard Route without Header */}
+        <Route path="/user-dashboard" element={<Userdash />} />
+        <Route path="/medu-dashboard" element={<Medudash />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
         {/* School and Boarding Routes with Header */}
-        <Route path="/boarding-school" element={<MainLayout><BoardingSchool /></MainLayout>} />
+        <Route path="/board-school" element={<MainLayout><BoardingSchool /></MainLayout>} />
         <Route path="/day-school" element={<MainLayout><DaySchool /></MainLayout>} />
         <Route path="/pre-schools" element={<MainLayout><PreSchool /></MainLayout>} />
 
-        {/* Hospitals Route with Header */}
+        {/* Hospitals Route with Footer only */}
         <Route path="/hospitals" element={<MainLayout><MedicalCl /></MainLayout>} />
 
         {/* Other Routes */}

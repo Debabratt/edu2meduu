@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios"; // ✅ Import Axios
+import axios from "axios";
 import {
   Home,
   Plus,
@@ -17,9 +17,9 @@ const AdminDashboard = () => {
   const [greeting, setGreeting] = useState("");
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [users, setUsers] = useState([]); // ✅ Store user data
+  const [users, setUsers] = useState([]);
+  const [selectedSchools, setSelectedSchools] = useState([]);
 
-  // 🌍 Set greeting based on time
   useEffect(() => {
     const indiaTime = new Date().toLocaleTimeString("en-US", {
       timeZone: "Asia/Kolkata",
@@ -33,38 +33,85 @@ const AdminDashboard = () => {
     );
   }, []);
 
-  // 🌍 Fetch Education users from API
   const fetchEduUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8001/admin/getEducationUsers");
+      const response = await axios.get(
+        "http://localhost:8001/admin/getEducationUsers"
+      );
       setUsers(response.data.users);
     } catch (error) {
       console.error("Error fetching Education users:", error);
     }
   };
 
-  // 🌍 Fetch Healthcare users from API
   const fetchMedUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:8001/admin/getHealthcareUsers");
+      const response = await axios.get(
+        "http://localhost:8001/admin/getHealthcareUsers"
+      );
       setUsers(response.data.users);
     } catch (error) {
       console.error("Error fetching Healthcare users:", error);
     }
   };
 
-  // Sidebar Options for Education & Healthcare
+  const onBlockUser = async (userId) => {
+    try {
+      const endpoint = selectedSection === "Education" 
+        ? "http://localhost:8001/admin/blockEducationUser"
+        : "http://localhost:8001/admin/blockHealthcareUser";
+        
+      await axios.post(endpoint, { userId });
+      
+      // Refresh the user list after blocking
+      if (selectedSection === "Education") {
+        fetchEduUsers();
+      } else {
+        fetchMedUsers();
+      }
+    } catch (error) {
+      console.error("Error blocking user:", error);
+    }
+  };
+
+  const handleSchoolSelection = (schoolId) => {
+    setSelectedSchools(prev => {
+      if (prev.includes(schoolId)) {
+        return prev.filter(id => id !== schoolId);
+      } else {
+        return [...prev, schoolId];
+      }
+    });
+  };
+
+  const handleBlockSelectedSchools = async () => {
+    try {
+      await axios.post("http://localhost:8001/admin/blockMultipleSchools", {
+        schoolIds: selectedSchools
+      });
+      setSelectedSchools([]);
+      fetchEduUsers();
+    } catch (error) {
+      console.error("Error blocking schools:", error);
+    }
+  };
+
+  // Load appropriate users when section changes
+  useEffect(() => {
+    if (selectedSection === "Education") {
+      fetchEduUsers();
+    } else if (selectedSection === "Healthcare") {
+      fetchMedUsers();
+    }
+  }, [selectedSection]);
+
   const sidebarOptions = {
     Education: [
       { name: "Dashboard", icon: <Home /> },
       { name: "Add Categories", icon: <Plus /> },
       { name: "Block School & College", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
-      {
-        name: "User Details",
-        icon: <User />,
-        action: fetchEduUsers, // ✅ Fetch users when clicked
-      },
+      { name: "User Details", icon: <User /> },
       { name: "Settings", icon: <Settings /> },
     ],
     Healthcare: [
@@ -72,24 +119,151 @@ const AdminDashboard = () => {
       { name: "Add Categories", icon: <Plus /> },
       { name: "Block Medical & Clinics", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
-      {
-        name: "User Details",
-        icon: <User />,
-        action: fetchMedUsers, // ✅ Fetch users when clicked
-      },
+      { name: "User Details", icon: <User /> },
       { name: "Settings", icon: <Settings /> },
     ],
   };
+
+  const renderEducationTable = () => (
+    <div className="overflow-x-auto">
+      <div className="flex justify-between mb-4">
+        <span className="bg-blue-500 text-white px-4 py-2 rounded-full">
+          Total Schools: {users.length}
+        </span>
+        {selectedSchools.length > 0 && (
+          <button
+            onClick={handleBlockSelectedSchools}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+          >
+            Block Selected ({selectedSchools.length})
+          </button>
+        )}
+      </div>
+      <table className="w-full bg-white border border-gray-300 shadow-md rounded-lg">
+        <thead>
+          <tr className="bg-gray-200 text-gray-700">
+            <th className="py-3 px-4 border text-left">Select</th>
+            <th className="py-3 px-4 border text-left">Name</th>
+            <th className="py-3 px-4 border text-left">Type</th>
+            <th className="py-3 px-4 border text-left">Location</th>
+            <th className="py-3 px-4 border text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((school) => (
+            <tr key={school._id} className="border-b hover:bg-gray-100">
+              <td className="py-3 px-4 border">
+                <input
+                  type="checkbox"
+                  checked={selectedSchools.includes(school._id)}
+                  onChange={() => handleSchoolSelection(school._id)}
+                  className="h-4 w-4 text-blue-600"
+                />
+              </td>
+              <td className="py-3 px-4 border">{school.name}</td>
+              <td className="py-3 px-4 border">{school.type}</td>
+              <td className="py-3 px-4 border">{school.location}</td>
+              <td className="py-3 px-4 border text-center">
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  onClick={() => onBlockUser(school._id)}
+                >
+                  Block
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+
+  const renderUserTable = () => (
+    <div className="overflow-x-auto">
+      <div className="flex justify-end mb-4">
+        <span className="bg-blue-500 text-white px-4 py-2 rounded-full">
+          Total Active Users: {users.length}
+        </span>
+      </div>
+      <table className="w-full bg-white border border-gray-300 shadow-md rounded-lg">
+      <thead>
+          <tr className="bg-gray-200 text-gray-700">
+            <th className="py-3 px-4 border text-left">Select</th>
+            <th className="py-3 px-4 border text-left">Name</th>
+            <th className="py-3 px-4 border text-left">Type</th>
+            <th className="py-3 px-4 border text-left">Location</th>
+            <th className="py-3 px-4 border text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {users.map((users) => (
+            <tr key={users._id} className="border-b hover:bg-gray-100">
+              <td className="py-3 px-4 border">
+                <input
+                  type="checkbox"
+                  checked={selectedSchools.includes(users._id)}
+                  onChange={() => handleSchoolSelection(users._id)}
+                  className="h-4 w-4 text-blue-600"
+                />
+              </td>
+              <td className="py-3 px-4 border">{users.name}</td>
+              <td className="py-2 px-4 border">{users.userType}</td>
+              <td className="py-3 px-4 border">{users.location}</td>
+              <td className="py-3 px-4 border text-center">
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+                  onClick={() => onBlockUser(users._id)}
+                >
+                  Block
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
 
   const renderMainContent = () => {
     switch (activeItem) {
       case "Dashboard":
         return <p>Here is an overview of the {selectedSection} Dashboard.</p>;
       case "Add Categories":
-        return <p>Add new categories for {selectedSection} here.</p>;
+        return (
+          <div className="p-6 bg-white rounded-lg shadow-md">
+            Add categories for {selectedSection}
+          </div>
+        );
       case "Block School & College":
+        return (
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
+              Block Education Institutions
+            </h3>
+            {users.length > 0 ? (
+              renderEducationTable()
+            ) : (
+              <p className="text-gray-600">
+                No educational institutions found.
+              </p>
+            )}
+          </div>
+        );
       case "Block Medical & Clinics":
-        return <p>Manage blocked institutions under {selectedSection}.</p>;
+        return (
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h3 className="text-xl font-semibold mb-4 text-gray-800">
+              Block Healthcare Institutions
+            </h3>
+            {users.length > 0 ? (
+              renderUserTable()
+            ) : (
+              <p className="text-gray-600">
+                No healthcare institutions found.
+              </p>
+            )}
+          </div>
+        );
       case "Add News":
         return <p>Publish new updates related to {selectedSection}.</p>;
       case "User Details":
@@ -128,7 +302,6 @@ const AdminDashboard = () => {
             <p>No users found for {selectedSection}.</p>
           )}
         </div>
-        
         );
       case "Settings":
         return <p>Adjust settings for {selectedSection} administration.</p>;
@@ -144,11 +317,14 @@ const AdminDashboard = () => {
           <aside
             className={`w-full md:w-72 bg-gray-900 text-white p-6 shadow-lg fixed md:relative transition-transform ${
               isMenuOpen ? "translate-x-0" : "-translate-x-full"
-            } md:translate-x-0`}
+            } md:translate-x-0 z-50`}
           >
             <div className="flex justify-between items-center md:hidden">
               <h1 className="text-2xl font-bold">{selectedSection} Panel</h1>
-              <button onClick={() => setIsMenuOpen(false)} className="text-white">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="text-white"
+              >
                 <X size={28} />
               </button>
             </div>
@@ -165,7 +341,6 @@ const AdminDashboard = () => {
                       onClick={() => {
                         setActiveItem(item.name);
                         setIsMenuOpen(false);
-                        if (item.action) item.action(); // ✅ Call function if exists
                       }}
                     >
                       {item.icon}
@@ -183,37 +358,39 @@ const AdminDashboard = () => {
               Logout
             </button>
           </aside>
-          <div className="flex-1 p-6 md:p-10 bg-white shadow-md rounded-lg">
-            <button
-              className="md:hidden text-gray-800"
-              onClick={() => setIsMenuOpen(true)}
-            >
-              <Menu size={28} />
-            </button>
-            <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
-              {activeItem}
-            </h2>
-            <p className="mt-2 text-gray-600">
-              Welcome to {selectedSection} - {activeItem}.
+          <div className="flex-1 p-6 md:p-10">
+            <div className="flex justify-between items-center mb-6">
+              <button
+                className="md:hidden text-gray-800"
+                onClick={() => setIsMenuOpen(true)}
+              >
+                <Menu size={28} />
+              </button>
+              <h2 className="text-2xl md:text-3xl font-semibold text-gray-800">
+                {activeItem}
+              </h2>
+            </div>
+            <p className="text-gray-600 text-center items-center justify-center mb-6">
+              Welcome to {selectedSection} - {activeItem}
             </p>
-            <div className="mt-6 bg-gray-50 p-4 md:p-6 rounded-lg shadow-sm border">
+            <div className="bg-gray-50 p-6 rounded-lg shadow-lg border">
               {renderMainContent()}
             </div>
           </div>
         </div>
       ) : (
         <div
-          className="min-h-screen w-full flex flex-col items-center justify-center text-center bg-cover bg-center px-4"
-          style={{ backgroundImage: 'url("/admin1.jpg")' }}
-        >
-          <div className="bg-opacity-70 mb-20 p-6 md:p-10 rounded-lg">
+        className="min-h-screen w-full flex flex-col items-center justify-center text-center bg-cover bg-center px-4"
+        style={{ backgroundImage: 'url("/admin1.jpg")' }}
+      >
+             <div className="bg-opacity-70 mb-20 p-6 md:p-10 rounded-lg">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-[#E76F51] to-[#17A2B8] text-transparent bg-clip-text">
               Welcome, Admin
             </h1>
             <p className="text-xl md:text-2xl mt-5 text-gray-600">
               {greeting}, Admin!
             </p>
-            <div className="mt-10 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
+            <div className="mt-10 lg:px-30 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
               <button
                 className="px-6 py-3 bg-[#E76F51] text-white rounded-lg"
                 onClick={() => setSelectedSection("Education")}

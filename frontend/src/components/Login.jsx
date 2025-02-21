@@ -16,6 +16,9 @@ const Login = () => {
   };
 
   const handleForgotPasswordNavigate = () => {
+    setEmail("");
+    setPassword("");
+  
     navigate(
       userType === "education"
         ? "/forgot-password"

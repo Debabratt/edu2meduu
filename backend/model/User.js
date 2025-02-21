@@ -46,6 +46,12 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'user'],  // Explicitly define 'admin' and 'user'
     default: 'user',
   },
+  status:{
+    require:true,
+    type:String,
+    enum: ['block', 'active','unblock'],
+    default:'active'
+},
 });
 
 const User = mongoose.model('User', UserSchema);
