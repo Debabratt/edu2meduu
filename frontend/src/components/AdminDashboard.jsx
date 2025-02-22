@@ -25,31 +25,37 @@ const AdminDashboard = () => {
     image: null,
   });
 
-  const [formDataa, setFormDataa] = useState({
+  const [newsFormData, setNewsFormData] = useState({
     title: "",
     content: "",
     image: "",
     category: "",
-    createdBy: "admin_id_here", // Replace with actual admin ID from context
+    createdBy: "admin_id_here",
   });
 
-  const handleChangee = (e) => {
-    setFormData({ ...formDataa, [e.target.name]: e.target.value });
+  const handleNewsChange = (e) => {
+    setNewsFormData({ ...newsFormData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmitt = async (e) => {
+  const handleNewsSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:8001/admin/addNews", formDataa);
+      await axios.post("http://localhost:8001/admin/addNews", newsFormData);
       alert("News added successfully");
-      setFormData({ title: "", content: "", image: "", category: "", createdBy: "admin_id_here" });
-      if (onSuccess) onSuccess();
+      setNewsFormData({
+        title: "",
+        content: "",
+        image: "",
+        category: "",
+        createdBy: "admin_id_here",
+      });
     } catch (error) {
       alert("Error posting news");
     }
   };
+
   const handleChange = (e) => {
-    setFormDataa({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e) => {
@@ -129,8 +135,6 @@ const AdminDashboard = () => {
   const onBlockUser = async (userId, currentStatus) => {
     try {
       const isBlocked = currentStatus === "block";
-
-      // Select API endpoint based on action
       const endpoint =
         selectedSection === "Education"
           ? isBlocked
@@ -141,8 +145,6 @@ const AdminDashboard = () => {
           : "http://localhost:8001/admin/blockHealthcareUser";
 
       await axios.post(endpoint, { userId });
-
-      // Refresh the user list
       selectedSection === "Education" ? fetchEduUsers() : fetchMedUsers();
     } catch (error) {
       console.error("❌ Error toggling user block status:", error);
@@ -160,7 +162,6 @@ const AdminDashboard = () => {
     });
   };
 
-  // Load appropriate users when section changes
   useEffect(() => {
     if (selectedSection === "Education") {
       fetchEduUsers();
@@ -299,7 +300,7 @@ const AdminDashboard = () => {
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium">Name</label>
+                <label className="block text-sm font-medium">Category Name</label>
                 <input
                   type="text"
                   name="name"
@@ -311,7 +312,7 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Address</label>
+                <label className="block text-sm font-medium">Category Title</label>
                 <input
                   type="text"
                   name="address"
@@ -323,15 +324,31 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Category</label>
-                <input
-                  type="text"
+                <label className="block text-sm font-medium">Category Type</label>
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
                   className="w-full p-2 border rounded-md"
                   required
-                />
+                >
+                  <option value="">Select Category Type</option>
+                  {selectedSection === "Education" ? (
+                    <>
+                      <option value="school">School</option>
+                      <option value="college">College</option>
+                      <option value="university">University</option>
+                      <option value="institute">Institute</option>
+                    </>
+                  ) : (
+                    <>
+                      <option value="hospital">Hospital</option>
+                      <option value="clinic">Clinic</option>
+                      <option value="pharmacy">Pharmacy</option>
+                      <option value="laboratory">Laboratory</option>
+                    </>
+                  )}
+                </select>
               </div>
 
               <div>
@@ -385,38 +402,38 @@ const AdminDashboard = () => {
       case "Add News":
         return (
           <form
-            onSubmit={handleSubmitt}
+            onSubmit={handleNewsSubmit}
             className="p-4 bg-white shadow-md rounded-lg space-y-4"
           >
             <input
               name="title"
               placeholder="News Title"
-              value={formData.title}
-              onChange={handleChange}
+              value={newsFormData.title}
+              onChange={handleNewsChange}
               required
               className="w-full p-2 border border-gray-300 rounded-md"
             />
             <textarea
               name="content"
               placeholder="News Content"
-              value={formData.content}
-              onChange={handleChange}
+              value={newsFormData.content}
+              onChange={handleNewsChange}
               required
               className="w-full p-2 border border-gray-300 rounded-md"
             />
             <input
               name="image"
               placeholder="Image URL (optional)"
-              value={formData.image}
-              onChange={handleChange}
+              value={newsFormData.image}
+              onChange={handleNewsChange}
               className="w-full p-2 border border-gray-300 rounded-md"
             />
             <input
-            type="text"
+              type="text"
               name="category"
               placeholder="Category"
-              value={formData.category}
-              onChange={handleChange}
+              value={newsFormData.category}
+              onChange={handleNewsChange}
               required
               className="w-full p-2 border border-gray-300 rounded-md"
             />
@@ -476,7 +493,7 @@ const AdminDashboard = () => {
       {selectedSection ? (
         <div className="flex flex-col md:flex-row min-h-screen w-full">
           <aside
-            className={`w-full md:w-72 bg-gray-900 text-white p-6 shadow-lg fixed md:relative transition-transform ${
+            className={`w-full md:w-72 bg-gray-900 text-white p-6 shadow-lg fixed md:sticky top-0 h-screen transition-transform ${
               isMenuOpen ? "translate-x-0" : "-translate-x-full"
             } md:translate-x-0 z-50`}
           >
@@ -519,7 +536,7 @@ const AdminDashboard = () => {
               Logout
             </button>
           </aside>
-          <div className="flex-1 p-6 md:p-10">
+          <div className="flex-1 p-6 md:p-10 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             <div className="flex justify-between items-center mb-6">
               <button
                 className="md:hidden text-gray-800"
