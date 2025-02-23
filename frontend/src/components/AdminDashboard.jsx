@@ -20,6 +20,9 @@ const AdminDashboard = () => {
   const [selectedSchools, setSelectedSchools] = useState([]);
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState("");
+  const [newsimage, setImg] = useState(null);
+  const [imgName, setImgName] = useState("");
+
   const [formData, setFormData] = useState({
     name: "",
     ctitle: "",
@@ -29,30 +32,107 @@ const AdminDashboard = () => {
   const [newsFormData, setNewsFormData] = useState({
     title: "",
     content: "",
-    image: "",
-    category: "",
+    newsimage: "",
   });
 
   const handleNewsChange = (e) => {
     setNewsFormData({ ...newsFormData, [e.target.name]: e.target.value });
   };
-
-  const handleNewsSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.post("http://localhost:8001/admin/addNews", newsFormData);
-      alert("News added successfully");
-      setNewsFormData({
-        title: "",
-        content: "",
-        image: "",
-        category: "",
-      });
-    } catch (error) {
-      alert("Error posting news");
+  const handleNewsFileChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setImg(file);
+      setImgName(file.name);
     }
   };
 
+  const handleNewsSubmit = async (e) => {
+    e.preventDefault();
+
+    const trimedTitle = newsFormData.title?.trim();
+    const trimedContent = newsFormData.content?.trim();
+
+    if (!trimedContent || !trimedTitle || !newsimage) {
+      alert("All fields including image are required");
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!allowedTypes.includes(newsimage.type)) {
+      alert("Please select a valid image file (JPEG, PNG, or GIF)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (newsimage.size > maxSize) {
+      alert("File size should be less than 5MB");
+      return;
+    }
+
+    const formDataToSends = new FormData();
+
+    formDataToSends.append("title", trimedTitle);
+    formDataToSends.append("content", trimedContent);
+    formDataToSends.append("newsimage", newsimage);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8001/admin/addNews",
+        formDataToSends,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          // Add timeout and retry logic
+          timeout: 30000, // 30 seconds timeout
+          maxRetries: 3,
+          retryDelay: 1000,
+        }
+      );
+
+      if (response.data.success) {
+        alert(response.data.message);
+        // Reset form
+        setNewsFormData({
+         
+          title: "",
+          content:""
+        });
+        setImgName("");
+        setImg(null);
+
+        // Reset file input
+        const fileInputimg = document.querySelector('input[type="file"]');
+        if (fileInputimg) {
+          fileInputimg.value = "";
+        }
+      } else {
+        throw new Error(response.data.message || "Failed to add category");
+      }
+    } catch (error) {
+      console.error("Error details:", error.response?.data || error.message);
+
+      let errorMessage = "Error adding category. ";
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again.";
+      }
+
+      alert(errorMessage);
+    }
+  };
+
+
+
+
+
+
+  //Addcategory
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -78,7 +158,7 @@ const AdminDashboard = () => {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif','image/webp'];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(image.type)) {
       alert("Please select a valid image file (JPEG, PNG, or GIF)");
       return;
@@ -122,7 +202,7 @@ const AdminDashboard = () => {
         });
         setFileName("");
         setImage(null);
-        
+
         // Reset file input
         const fileInput = document.querySelector('input[type="file"]');
         if (fileInput) {
@@ -133,7 +213,7 @@ const AdminDashboard = () => {
       }
     } catch (error) {
       console.error("Error details:", error.response?.data || error.message);
-      
+
       let errorMessage = "Error adding category. ";
       if (error.response?.data?.message) {
         errorMessage += error.response.data.message;
@@ -142,7 +222,7 @@ const AdminDashboard = () => {
       } else {
         errorMessage += "Please try again.";
       }
-      
+
       alert(errorMessage);
     }
   };
@@ -348,9 +428,15 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-semibold mb-4">
               Add Categories for {selectedSection}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
+              encType="multipart/form-data"
+            >
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category Name</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category Name
+                </label>
                 <input
                   type="text"
                   name="name"
@@ -363,7 +449,9 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category Title</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category Title
+                </label>
                 <input
                   type="text"
                   name="ctitle"
@@ -376,7 +464,9 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Category Type</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Category Type
+                </label>
                 <select
                   name="categoryType"
                   value={formData.categoryType}
@@ -404,7 +494,9 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">Image</label>
+                <label className="block text-sm font-medium text-gray-700">
+                  Image
+                </label>
                 <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
                   <div className="space-y-1 text-center">
                     <svg
@@ -433,13 +525,15 @@ const AdminDashboard = () => {
                           type="file"
                           className="sr-only"
                           onChange={handleFileChange}
-                          accept="image/*" 
+                          accept="image/*"
                           required
                         />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF ,WEBP up to 5MB</p>
+                    <p className="text-xs text-gray-500">
+                      PNG, JPG, GIF ,WEBP up to 5MB
+                    </p>
                     {fileName && (
                       <p className="mt-2 text-sm text-gray-600">
                         Selected file: {fileName}
@@ -467,7 +561,9 @@ const AdminDashboard = () => {
             {users.length > 0 ? (
               renderEducationTable()
             ) : (
-              <p className="text-gray-600">No educational institutions found.</p>
+              <p className="text-gray-600">
+                No educational institutions found.
+              </p>
             )}
           </div>
         );
@@ -504,24 +600,58 @@ const AdminDashboard = () => {
               value={newsFormData.content}
               onChange={handleNewsChange}
               required
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-2 border lg:p-10 border-gray-300 rounded-md"
             />
-            <input
-              name="image"
-              placeholder="Image URL (optional)"
-              value={newsFormData.image}
-              onChange={handleNewsChange}
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
-            <input
-              type="text"
-              name="category"
-              placeholder="Category"
-              value={newsFormData.category}
-              onChange={handleNewsChange}
-              required
-              className="w-full p-2 border border-gray-300 rounded-md"
-            />
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Image
+              </label>
+              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="space-y-1 text-center">
+                  <svg
+                    className="mx-auto h-12 w-12 text-gray-400"
+                    stroke="currentColor"
+                    fill="none"
+                    viewBox="0 0 48 48"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                  <div className="flex text-sm text-gray-600">
+                    <label
+                      htmlFor="file-upload"
+                      className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                    >
+                      <span>Upload a file</span>
+                      <input
+                        id="file-upload"
+                        name="image"
+                        type="file"
+                        className="sr-only"
+                        onChange={handleNewsFileChange}
+                        accept="image/*"
+                        required
+                      />
+                    </label>
+                    <p className="pl-1">or drag and drop</p>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    PNG, JPG, GIF ,WEBP up to 5MB
+                  </p>
+                  {imgName && (
+                    <p className="mt-2 text-sm text-gray-600">
+                      Selected file: {imgName}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <button
               type="submit"
               className="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition"

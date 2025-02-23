@@ -249,13 +249,13 @@ exports.addCategory = (req, res) => {
 // Create News
 exports.createNews = async (req, res) => {
   try {
-    const { title, content, image, category, createdBy } = req.body;
+    const { title, content, newsimage } = req.body;
 
-    if (!title || !content || !category || !createdBy) {
+    if (!title || !content  || !newsimage) {
       return res.status(400).json({ message: "All required fields must be provided." });
     }
 
-    const news = new News({ title, content, image, category, createdBy });
+    const news = new News({ title, content, newsimage });
     await news.save();
     res.status(201).json({ message: "News posted successfully", news });
   } catch (error) {

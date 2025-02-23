@@ -24,5 +24,5 @@ AdminRouter.post('/unblockHealthcareUser', unblockHealthcareUser);
 AdminRouter.post('/addNews', createNews);
 
 AdminRouter.post('/addCategory',addCategory );
-AdminRouter.post('/addNews',createNews );
+
 module.exports = AdminRouter;
