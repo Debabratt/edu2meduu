@@ -29,7 +29,7 @@ function DaySchoolCarousel() {
   useEffect(() => {
     axios.get('http://localhost:8001/user/getallcategories')
       .then(response => {
-        const day = response.data.filter(cat => cat.categoryType === '');
+        const day = response.data.filter(cat => cat.categoryType === 'Day School');
         const play = response.data.filter(cat => cat.categoryType === 'Play School');
         const boarding = response.data.filter(cat => cat.categoryType === 'Boarding School');
         setDaySchools(day);
