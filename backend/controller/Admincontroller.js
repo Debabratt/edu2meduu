@@ -182,7 +182,18 @@ exports.adminLogin = async (req, res) => {
     },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (allowedTypes.includes(file.mimetype)) {
+          cb(null, true);
+      } else {
+          cb(new Error("Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed."), false);
+      }
+  }
+});
+
 
 exports.addCategory = (req, res) => {
     upload.single("image")(req, res, async (err) => {
@@ -195,7 +206,7 @@ exports.addCategory = (req, res) => {
         }
 
         const { name, ctitle, categoryType } = req.body;
-        const image = req.file ? req.file.filename : null;
+        const image = req.file ? `uploads/${req.file.filename}` : null;  
 
         if (!name || !ctitle || !categoryType || !image) {
             return res.status(400).json({ 

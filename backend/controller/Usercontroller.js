@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/User'); // Correct model import
-const Admin=require('../model/Admin')
+const Category = require("../model/Category");
+
+
 // Register User Controller
 exports.registerUser = async (req, res) => {
   try {
@@ -77,5 +79,12 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-
+exports.getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching categories", error });
+  }
+};
 

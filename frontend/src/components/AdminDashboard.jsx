@@ -78,7 +78,7 @@ const AdminDashboard = () => {
     }
 
     // Validate file type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif','image/webp'];
     if (!allowedTypes.includes(image.type)) {
       alert("Please select a valid image file (JPEG, PNG, or GIF)");
       return;
@@ -433,13 +433,13 @@ const AdminDashboard = () => {
                           type="file"
                           className="sr-only"
                           onChange={handleFileChange}
-                          accept="image/*"
+                          accept="image/*" 
                           required
                         />
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF ,WEBP up to 5MB</p>
                     {fileName && (
                       <p className="mt-2 text-sm text-gray-600">
                         Selected file: {fileName}
