@@ -4,6 +4,9 @@ const Admin=require('../model/Admin');
 const User = require('../model/User');
 const multer = require('multer');
 const News = require("../model/News");
+const fs = require('fs');
+const Category=require('../model/Category')
+const path=require("path")
 exports.adminLogin = async (req, res) => {
     try {
       const { email, password, userType } = req.body;
@@ -170,25 +173,60 @@ exports.adminLogin = async (req, res) => {
 
   const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "uploads/"); // Save files in "uploads" directory
+        // Create uploads directory if it doesn't exist
+        
+        cb(null, "uploads/");
     },
     filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // Unique filename
+        cb(null, Date.now() + path.extname(file.originalname));
     },
-  });
-  
+});
 
-  exports.addCategory = (req, res) => {
-    const { name, address, category,image } = req.body;
-    
-  
-    if (!name || !address || !category|| !image) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-  
-    
-  };
+const upload = multer({ storage: storage });
 
+exports.addCategory = (req, res) => {
+    upload.single("image")(req, res, async (err) => {
+        if (err) {
+            console.error("File upload error:", err);
+            return res.status(500).json({ 
+                success: false, 
+                message: "File upload failed" 
+            });
+        }
+
+        const { name, ctitle, categoryType } = req.body;
+        const image = req.file ? req.file.filename : null;
+
+        if (!name || !ctitle || !categoryType || !image) {
+            return res.status(400).json({ 
+                success: false, 
+                message: "All fields are required" 
+            });
+        }
+
+        try {
+            const newCategory = new Category({
+                name,
+                ctitle,
+                categoryType,
+                image,
+            });
+
+            await newCategory.save();
+            res.status(201).json({ 
+                success: true, 
+                message: "Category added successfully", 
+                category: newCategory 
+            });
+        } catch (error) {
+            console.error("Database error:", error);
+            res.status(500).json({ 
+                success: false, 
+                message: "Failed to add category" 
+            });
+        }
+    });
+};
 
 
   

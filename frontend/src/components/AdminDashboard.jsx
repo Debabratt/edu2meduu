@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Home,
@@ -18,11 +18,12 @@ const AdminDashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedSchools, setSelectedSchools] = useState([]);
+  const [image, setImage] = useState(null);
+  const [fileName, setFileName] = useState("");
   const [formData, setFormData] = useState({
     name: "",
-    address: "",
-    category: "",
-    image: null,
+    ctitle: "",
+    categoryType: "",
   });
 
   const [newsFormData, setNewsFormData] = useState({
@@ -30,7 +31,6 @@ const AdminDashboard = () => {
     content: "",
     image: "",
     category: "",
-    createdBy: "admin_id_here",
   });
 
   const handleNewsChange = (e) => {
@@ -47,7 +47,6 @@ const AdminDashboard = () => {
         content: "",
         image: "",
         category: "",
-        createdBy: "admin_id_here",
       });
     } catch (error) {
       alert("Error posting news");
@@ -58,42 +57,93 @@ const AdminDashboard = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleFileChange = (e) => {
-    setFormData({ ...formData, image: e.target.files[0] });
+  const handleFileChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
+      setImage(file);
+      setFileName(file.name);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.address || !formData.category) {
-      alert("All fields except image are required!");
+    const trimmedName = formData.name?.trim();
+    const trimmedTitle = formData.ctitle?.trim();
+    const trimmedType = formData.categoryType?.trim();
+
+    if (!trimmedName || !trimmedTitle || !trimmedType || !image) {
+      alert("All fields including image are required");
+      return;
+    }
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!allowedTypes.includes(image.type)) {
+      alert("Please select a valid image file (JPEG, PNG, or GIF)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (image.size > maxSize) {
+      alert("File size should be less than 5MB");
       return;
     }
 
     const formDataToSend = new FormData();
-    formDataToSend.append("name", formData.name.trim());
-    formDataToSend.append("address", formData.address.trim());
-    formDataToSend.append("category", formData.category.trim());
-    if (formData.image) {
-      formDataToSend.append("image", formData.image);
-    }
+    formDataToSend.append("name", trimmedName);
+    formDataToSend.append("ctitle", trimmedTitle);
+    formDataToSend.append("categoryType", trimmedType);
+    formDataToSend.append("image", image);
 
     try {
       const response = await axios.post(
         "http://localhost:8001/admin/addCategory",
         formDataToSend,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          // Add timeout and retry logic
+          timeout: 30000, // 30 seconds timeout
+          maxRetries: 3,
+          retryDelay: 1000,
         }
       );
 
-      if (response.status === 201) {
-        alert("Category added successfully!");
-        setFormData({ name: "", address: "", category: "", image: null });
+      if (response.data.success) {
+        alert(response.data.message);
+        // Reset form
+        setFormData({
+          name: "",
+          ctitle: "",
+          categoryType: "",
+        });
+        setFileName("");
+        setImage(null);
+        
+        // Reset file input
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+          fileInput.value = "";
+        }
+      } else {
+        throw new Error(response.data.message || "Failed to add category");
       }
     } catch (error) {
-      console.error("Error adding category:", error);
-      alert(error.response?.data?.error || "Failed to add category.");
+      console.error("Error details:", error.response?.data || error.message);
+      
+      let errorMessage = "Error adding category. ";
+      if (error.response?.data?.message) {
+        errorMessage += error.response.data.message;
+      } else if (error.message) {
+        errorMessage += error.message;
+      } else {
+        errorMessage += "Please try again.";
+      }
+      
+      alert(errorMessage);
     }
   };
 
@@ -147,7 +197,7 @@ const AdminDashboard = () => {
       await axios.post(endpoint, { userId });
       selectedSection === "Education" ? fetchEduUsers() : fetchMedUsers();
     } catch (error) {
-      console.error("❌ Error toggling user block status:", error);
+      console.error("Error toggling user block status:", error);
       alert("Failed to update user status.");
     }
   };
@@ -260,23 +310,23 @@ const AdminDashboard = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((users) => (
-            <tr key={users._id} className="border-b hover:bg-gray-100">
+          {users.map((user) => (
+            <tr key={user._id} className="border-b hover:bg-gray-100">
               <td className="py-3 px-4 border">
                 <input
                   type="checkbox"
-                  checked={selectedSchools.includes(users._id)}
-                  onChange={() => handleSchoolSelection(users._id)}
+                  checked={selectedSchools.includes(user._id)}
+                  onChange={() => handleSchoolSelection(user._id)}
                   className="h-4 w-4 text-blue-600"
                 />
               </td>
-              <td className="py-3 px-4 border">{users.name}</td>
-              <td className="py-2 px-4 border">{users.userType}</td>
-              <td className="py-3 px-4 border">{users.location}</td>
+              <td className="py-3 px-4 border">{user.name}</td>
+              <td className="py-2 px-4 border">{user.userType}</td>
+              <td className="py-3 px-4 border">{user.location}</td>
               <td className="py-3 px-4 border text-center">
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => onBlockUser(users._id)}
+                  onClick={() => onBlockUser(user._id)}
                 >
                   Block
                 </button>
@@ -298,79 +348,116 @@ const AdminDashboard = () => {
             <h2 className="text-xl font-semibold mb-4">
               Add Categories for {selectedSection}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
               <div>
-                <label className="block text-sm font-medium">Category Name</label>
+                <label className="block text-sm font-medium text-gray-700">Category Name</label>
                 <input
                   type="text"
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter category name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Category Title</label>
+                <label className="block text-sm font-medium text-gray-700">Category Title</label>
                 <input
                   type="text"
-                  name="address"
-                  value={formData.address}
+                  name="ctitle"
+                  value={formData.ctitle}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter category title"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Category Type</label>
+                <label className="block text-sm font-medium text-gray-700">Category Type</label>
                 <select
-                  name="category"
-                  value={formData.category}
+                  name="categoryType"
+                  value={formData.categoryType}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded-md"
+                  className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
                   required
                 >
                   <option value="">Select Category Type</option>
                   {selectedSection === "Education" ? (
                     <>
-                      <option value="school">School</option>
-                      <option value="college">College</option>
-                      <option value="university">University</option>
-                      <option value="institute">Institute</option>
+                      <option value="Day School">Day School</option>
+                      <option value="Boarding School">Boarding School</option>
+                      <option value="Play School">Play School</option>
+                      <option value="Private Tutor">Private Tutor</option>
+                      <option value="Coaching Centre">Coaching Centre</option>
                     </>
                   ) : (
                     <>
-                      <option value="hospital">Hospital</option>
-                      <option value="clinic">Clinic</option>
-                      <option value="pharmacy">Pharmacy</option>
-                      <option value="laboratory">Laboratory</option>
+                      <option value="Hospital">Hospital</option>
+                      <option value="Private Clinic">Private Clinic</option>
+                      <option value="Medical Stores">Medical Stores</option>
                     </>
                   )}
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium">Image</label>
-                <input
-                  type="file"
-                  name="image"
-                  onChange={handleFileChange}
-                  className="w-full p-2 border rounded-md"
-                />
+                <label className="block text-sm font-medium text-gray-700">Image</label>
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                  <div className="space-y-1 text-center">
+                    <svg
+                      className="mx-auto h-12 w-12 text-gray-400"
+                      stroke="currentColor"
+                      fill="none"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                        strokeWidth={2}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <div className="flex text-sm text-gray-600">
+                      <label
+                        htmlFor="file-upload"
+                        className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500"
+                      >
+                        <span>Upload a file</span>
+                        <input
+                          id="file-upload"
+                          name="image"
+                          type="file"
+                          className="sr-only"
+                          onChange={handleFileChange}
+                          accept="image/*"
+                          required
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 5MB</p>
+                    {fileName && (
+                      <p className="mt-2 text-sm text-gray-600">
+                        Selected file: {fileName}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+                className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Add Category
               </button>
             </form>
           </div>
         );
-
       case "Block School & College":
         return (
           <div className="bg-white p-6 rounded-lg shadow-md">
@@ -380,9 +467,7 @@ const AdminDashboard = () => {
             {users.length > 0 ? (
               renderEducationTable()
             ) : (
-              <p className="text-gray-600">
-                No educational institutions found.
-              </p>
+              <p className="text-gray-600">No educational institutions found.</p>
             )}
           </div>
         );
@@ -482,7 +567,6 @@ const AdminDashboard = () => {
             )}
           </div>
         );
-
       default:
         return <p>Select an option from the sidebar.</p>;
     }
@@ -536,7 +620,10 @@ const AdminDashboard = () => {
               Logout
             </button>
           </aside>
-          <div className="flex-1 p-6 md:p-10 overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div
+            className="flex-1 p-6 md:p-10 overflow-y-auto"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             <div className="flex justify-between items-center mb-6">
               <button
                 className="md:hidden text-gray-800"
