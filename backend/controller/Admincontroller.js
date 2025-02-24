@@ -301,17 +301,39 @@ exports.createNews = (req, res) => {
 
 
 
-
-
-// Get All News
 exports.getAllNews = async (req, res) => {
   try {
-    const newsList = await News.find().populate("createdBy", "name email");
-    res.status(200).json(newsList);
+      const news = await News.find().sort({ createdAt: -1 });
+
+      if (!news.length) {
+          return res.status(404).json({
+              success: false,
+              message: "No news articles found"
+          });
+      }
+
+      // ✅ Base URL add karne ke liye
+      const baseUrl = `${req.protocol}://${req.get("host")}/`;
+      const updatedNews = news.map(item => ({
+          ...item._doc,
+          image: item.image ? `${baseUrl}${item.image}` : "/default-image.png"
+      }));
+
+      res.status(200).json({
+          success: true,
+          message: "News articles retrieved successfully",
+          news: updatedNews
+      });
   } catch (error) {
-    res.status(500).json({ message: "Error fetching news", error });
+      console.error("Database error:", error);
+      res.status(500).json({
+          success: false,
+          message: "Failed to retrieve news"
+      });
   }
 };
+
+
 
 // Get Single News
 exports.getNewsById = async (req, res) => {

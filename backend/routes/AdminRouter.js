@@ -10,6 +10,7 @@ const { unblockEducationUser} = require('../controller/Admincontroller');
 const { unblockHealthcareUser} = require('../controller/Admincontroller');
 const { addCategory} = require('../controller/Admincontroller');
 const { createNews} = require('../controller/Admincontroller');
+const { getAllNews } = require('../controller/Admincontroller');
 AdminRouter.post('/adminlogin',adminLogin);
 
 AdminRouter.get('/getHealthcareUsers', getHealthcareUsers);
@@ -25,4 +26,5 @@ AdminRouter.post('/addNews', createNews);
 
 AdminRouter.post('/addCategory',addCategory );
 
+AdminRouter.get('/getallNews',getAllNews );
 module.exports = AdminRouter;
