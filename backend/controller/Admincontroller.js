@@ -195,6 +195,8 @@ const upload = multer({
 });
 
 
+
+
 exports.addCategory = (req, res) => {
     upload.single("image")(req, res, async (err) => {
         if (err) {
@@ -249,19 +251,27 @@ exports.addCategory = (req, res) => {
 // Create News
 exports.createNews = async (req, res) => {
   try {
-    const { title, content, newsimage } = req.body;
+    const { title, content,morecontent, newsimage } = req.body;
 
-    if (!title || !content  || !newsimage) {
+    if (!title || !content  || !newsimage || !morecontent) {
       return res.status(400).json({ message: "All required fields must be provided." });
     }
 
-    const news = new News({ title, content, newsimage });
+    const news = new News({ title, content,morecontent, newsimage });
     await news.save();
     res.status(201).json({ message: "News posted successfully", news });
   } catch (error) {
     res.status(500).json({ message: "Error creating news", error });
   }
 };
+
+
+
+
+
+
+
+
 
 // Get All News
 exports.getAllNews = async (req, res) => {

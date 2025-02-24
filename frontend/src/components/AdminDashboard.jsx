@@ -20,8 +20,10 @@ const AdminDashboard = () => {
   const [selectedSchools, setSelectedSchools] = useState([]);
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState("");
-  const [newsimage, setImg] = useState(null);
-  const [imgName, setImgName] = useState("");
+  const [newsImage, setNewsImage] = useState(null);
+  const [newsFileName, setNewsFileName] = useState("");
+  
+
 
   const [formData, setFormData] = useState({
     name: "",
@@ -33,6 +35,7 @@ const AdminDashboard = () => {
     title: "",
     content: "",
     newsimage: "",
+    morecontent:""
   });
 
   const handleNewsChange = (e) => {
@@ -40,33 +43,45 @@ const AdminDashboard = () => {
   };
   const handleNewsFileChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0];
-      setImg(file);
-      setImgName(file.name);
+        const file = event.target.files[0];
+
+        setNewsImage(file); // Updates the separate state variable
+        setNewsFileName(file.name);
+
+        // Update newsFormData state to ensure form submission works
+        setNewsFormData((prevData) => ({
+            ...prevData,
+            newsimage: file, 
+        }));
     }
-  };
+};
+
 
   const handleNewsSubmit = async (e) => {
     e.preventDefault();
 
     const trimedTitle = newsFormData.title?.trim();
     const trimedContent = newsFormData.content?.trim();
+    const trimedMoreContent = newsFormData.morecontent?.trim();
 
-    if (!trimedContent || !trimedTitle || !newsimage) {
+
+    if (!trimedContent || !trimedTitle || !trimedMoreContent || !newsImage) {
       alert("All fields including image are required");
       return;
-    }
+  }
 
+  console.log("Submitting with:", { trimedTitle, trimedContent, trimedMoreContent, newsImage });
+  
     // Validate file type
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-    if (!allowedTypes.includes(newsimage.type)) {
+    if (!allowedTypes.includes(newsImage.type)) {
       alert("Please select a valid image file (JPEG, PNG, or GIF)");
       return;
     }
 
     // Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    if (newsimage.size > maxSize) {
+    if (newsImage.size > maxSize) {
       alert("File size should be less than 5MB");
       return;
     }
@@ -75,7 +90,8 @@ const AdminDashboard = () => {
 
     formDataToSends.append("title", trimedTitle);
     formDataToSends.append("content", trimedContent);
-    formDataToSends.append("newsimage", newsimage);
+    formDataToSends.append("morecontent", trimedMoreContent);
+    formDataToSends.append("newsimage", newsImage);
 
     try {
       const response = await axios.post(
@@ -98,10 +114,11 @@ const AdminDashboard = () => {
         setNewsFormData({
          
           title: "",
-          content:""
+          content:"",
+          morecontent:""
         });
-        setImgName("");
-        setImg(null);
+        setNewsFileName("");
+        setNewsImage(null);
 
         // Reset file input
         const fileInputimg = document.querySelector('input[type="file"]');
@@ -109,12 +126,12 @@ const AdminDashboard = () => {
           fileInputimg.value = "";
         }
       } else {
-        throw new Error(response.data.message || "Failed to add category");
+        throw new Error(response.data.message || "Failed to add News");
       }
     } catch (error) {
       console.error("Error details:", error.response?.data || error.message);
 
-      let errorMessage = "Error adding category. ";
+      let errorMessage = "Error adding news. ";
       if (error.response?.data?.message) {
         errorMessage += error.response.data.message;
       } else if (error.message) {
@@ -596,8 +613,16 @@ const AdminDashboard = () => {
             />
             <textarea
               name="content"
-              placeholder="News Content"
+              placeholder="Sub Content"
               value={newsFormData.content}
+              onChange={handleNewsChange}
+              required
+              className="w-full p-2 border lg:p-5 border-gray-300 rounded-md"
+            />
+            <textarea
+              name="morecontent"
+              placeholder="Main Content"
+              value={newsFormData.morecontent}
               onChange={handleNewsChange}
               required
               className="w-full p-2 border lg:p-10 border-gray-300 rounded-md"
@@ -643,9 +668,9 @@ const AdminDashboard = () => {
                   <p className="text-xs text-gray-500">
                     PNG, JPG, GIF ,WEBP up to 5MB
                   </p>
-                  {imgName && (
+                  {newsFileName && (
                     <p className="mt-2 text-sm text-gray-600">
-                      Selected file: {imgName}
+                      Selected file: {newsFileName}
                     </p>
                   )}
                 </div>
