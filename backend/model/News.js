@@ -4,8 +4,8 @@ const Newschema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    morecontent:{type:String,required:true},
-    newsimage: { type: String,required:true }, // Can be a URL or base64
+    moreContent:{type:String,required:true},
+    image: { type: String,required:true }, // Can be a URL or base64
   
     
   }

@@ -249,21 +249,51 @@ exports.addCategory = (req, res) => {
   
 
 // Create News
-exports.createNews = async (req, res) => {
-  try {
-    const { title, content,morecontent, newsimage } = req.body;
+exports.createNews = (req, res) => {
+  upload.single("image")(req, res, async (err) => {
+      if (err) {
+          console.error("File upload error:", err);
+          return res.status(500).json({
+              success: false,
+              message: "File upload failed"
+          });
+      }
 
-    if (!title || !content  || !newsimage || !morecontent) {
-      return res.status(400).json({ message: "All required fields must be provided." });
-    }
+      const { title, content, moreContent } = req.body;
+      const image = req.file ? `uploads/${req.file.filename}` : null;
 
-    const news = new News({ title, content,morecontent, newsimage });
-    await news.save();
-    res.status(201).json({ message: "News posted successfully", news });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating news", error });
-  }
+      // ✅ Correct the validation check
+      if (!title || !content || !moreContent || !image) {
+          return res.status(400).json({
+              success: false,
+              message: "All fields including the image are required"
+          });
+      }
+
+      try {
+          const news = new News({
+              title,
+              content,
+              moreContent,
+              image, // ✅ Save only the image path, not `req.body.newsImage`
+          });
+
+          await news.save();
+          res.status(201).json({
+              success: true,
+              message: "News added successfully",
+              news
+          });
+      } catch (error) {
+          console.error("Database error:", error);
+          res.status(500).json({
+              success: false,
+              message: "Failed to add news"
+          });
+      }
+  });
 };
+
 
 
 
