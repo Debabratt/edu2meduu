@@ -75,7 +75,7 @@ function App() {
               <HMarque />
               <HCategory />
               <MedicalCl />
-              <HContact />
+              <Contact />
               <HStatistics />
             </MainLayout>
           }
