@@ -59,7 +59,7 @@ function DaySchoolCarousel() {
             <div key={index} className="relative bg-white rounded-lg shadow-lg mx-2 md:mx-4 h-60">
               <div className="relative h-full">
               <img 
-  src={`http://localhost:8001/uploads/${school.image}`} 
+  src={`http://localhost:8001/${school.image}`} 
   alt={school.name} 
   className="w-full h-full object-cover rounded-t-xl"
 />

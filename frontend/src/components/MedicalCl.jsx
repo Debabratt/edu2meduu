@@ -30,12 +30,12 @@ function MedicalCl() {
   useEffect(() => {
     axios.get('http://localhost:8001/user/getallcategories')
       .then(response => {
-        const day = response.data.filter(cat => cat.categoryType === 'Hospital');
-        const play = response.data.filter(cat => cat.categoryType === 'Private Clinic');
-        const boarding = response.data.filter(cat => cat.categoryType === 'Medical Stores');
-        setDaySchools(day);
-        setPlaySchools(play);
-        setBoardingSchools(boarding);
+        const hospitals = response.data.filter(cat => cat.categoryType === 'Hospital');
+        const clinics = response.data.filter(cat => cat.categoryType === 'Private Clinic');
+        const medicine = response.data.filter(cat => cat.categoryType === 'Medical Stores');
+        setDaySchools(hospitals);
+        setPlaySchools(clinics);
+        setBoardingSchools(medicine);
       })
       .catch(error => console.error("Error fetching categories", error));
   }, []);
@@ -60,7 +60,7 @@ function MedicalCl() {
             <div key={index} className="relative bg-white rounded-lg shadow-lg mx-2 md:mx-4 h-60">
               <div className="relative h-full">
               <img 
-  src={`http://localhost:8001/uploads/${school.image}`} 
+  src={`http://localhost:8001/${school.image}`} 
   alt={school.name} 
   className="w-full h-full object-cover rounded-t-xl"
 />
