@@ -358,3 +358,14 @@ exports.deleteNews = async (req, res) => {
     res.status(500).json({ message: "Error deleting news", error });
   }
 };
+
+
+// Fetch all contact submissions (for admin)
+exports.getContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 });
+    res.status(200).json(contacts);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch contacts" });
+  }
+};

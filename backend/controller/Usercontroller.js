@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
-const User = require('../model/User'); // Correct model import
+const User = require('../model/User'); 
 const Category = require("../model/Category");
-
+const Contact =require('../model/Contact')
 
 // Register User Controller
 exports.registerUser = async (req, res) => {
@@ -85,6 +85,32 @@ exports.getAllCategories = async (req, res) => {
     res.status(200).json(categories);
   } catch (error) {
     res.status(500).json({ message: "Error fetching categories", error });
+  }
+};
+
+
+
+
+
+
+
+
+// Handle new contact form submission
+exports.requestCall = async (req, res) => {
+  try {
+    const { name, phone } = req.body;
+
+    if (!name || !phone ) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const newContact = new Contact({ name, phone});
+    await newContact.save();
+
+    res.status(201).json({ message: "Thank you for reaching out! Our team will get back to you soon." });
+
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
