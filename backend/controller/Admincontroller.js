@@ -6,6 +6,7 @@ const multer = require('multer');
 const News = require("../model/News");
 const fs = require('fs');
 const Category=require('../model/Category')
+const Contact=require('../model/Contact')
 const path=require("path")
 exports.adminLogin = async (req, res) => {
     try {

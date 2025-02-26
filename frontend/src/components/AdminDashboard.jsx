@@ -9,6 +9,7 @@ import {
   LogOut,
   Menu,
   X,
+  PhoneCall,
 } from "lucide-react";
 
 const AdminDashboard = () => {
@@ -36,7 +37,21 @@ const AdminDashboard = () => {
     newsImage: "",
     moreContent:""
   });
+  const [contacts, setContacts] = useState([]);
+  const [error, setError] = useState("");
 
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const response = await axios.get("http://localhost:8001/admin/getContacts");
+        setContacts(response.data);
+      } catch (err) {
+        setError("Failed to fetch contacts.");
+      }
+    };
+
+    fetchContacts();
+  }, []);
   const handleNewsChange = (e) => {
     setNewsFormData({ ...newsFormData, [e.target.name]: e.target.value });
   };
@@ -307,6 +322,7 @@ const handleNewsSubmit = async (e) => {
       { name: "Block School & College", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
+      { name: "User Inquiries", icon: <PhoneCall /> },
     ],
     Healthcare: [
       { name: "Dashboard", icon: <Home /> },
@@ -314,6 +330,7 @@ const handleNewsSubmit = async (e) => {
       { name: "Block Medical & Clinics", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
+      { name: "User Inquiries", icon: <PhoneCall /> },
     ],
   };
 
@@ -705,6 +722,60 @@ const handleNewsSubmit = async (e) => {
             )}
           </div>
         );
+        case "User Inquiries":
+        return (
+          <div>
+  {/* Inquiry Count */}
+  <div className="w-full max-w-4xl flex justify-end mb-4">
+    <span className="bg-[#E76F51] text-white px-6 py-2 rounded-full shadow-md">
+      Total Inquiries: {contacts.length}
+    </span>
+  </div>
+
+  {contacts.length > 0 ? (
+    <div className="w-full  max-w-full overflow-hidden rounded-lg shadow-lg bg-white">
+      <div className="overflow-x-auto sm:px-2 md:px-0">
+        <table className="w-full border-collapse text-left text-sm md:text-base">
+          <thead className="bg-[#E76F51] text-white">
+            <tr>
+              <th className="py-3 px-4">Name</th>
+              <th className="py-3 px-4">Phone</th>
+              <th className="py-3 px-4">Date</th>
+              <th className="py-3 px-4 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {contacts.map((contact, index) => (
+              <tr
+                key={contact._id}
+                className={`border-b transition hover:bg-gray-100 ${
+                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                }`}
+              >
+                <td className="py-3 px-4 text-xs md:text-base">{contact.name}</td>
+                <td className="py-3 px-4 text-xs md:text-base">{contact.phone}</td>
+                <td className="py-3 px-4 text-xs md:text-base">
+                  {new Date(contact.createdAt).toLocaleDateString()}
+                </td>
+                <td className="py-3 px-4 text-center">
+                  <a
+                    href={`tel:${contact.phone}`}
+                    className="text-green-600 hover:text-green-500"
+                  >
+                    <PhoneCall size={20} className="mx-auto cursor-pointer" />
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  ) : (
+    <p className="text-center text-gray-600 mt-6">No user inquiries found.</p>
+  )}
+</div>
+        );
       default:
         return <p>Select an option from the sidebar.</p>;
     }
@@ -751,7 +822,7 @@ const handleNewsSubmit = async (e) => {
               </ul>
             </nav>
             <button
-              className="w-full py-3 bg-[#c96d26] hover:bg-red-700 text-white font-semibold rounded-lg flex items-center justify-center gap-3 mt-6"
+              className="w-full py-3 bg-[#E76F51] hover:bg-red-700 text-white font-semibold rounded-lg flex items-center justify-center gap-3 mt-6"
               onClick={() => setSelectedSection(null)}
             >
               <LogOut />
@@ -759,7 +830,7 @@ const handleNewsSubmit = async (e) => {
             </button>
           </aside>
           <div
-            className="flex-1 p-6 md:p-10 overflow-y-auto"
+            className="flex-1  md:p-10 overflow-y-auto"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             <div className="flex justify-between items-center mb-6">
@@ -776,7 +847,7 @@ const handleNewsSubmit = async (e) => {
             <p className="text-gray-600 text-center items-center justify-center mb-6">
               Welcome to {selectedSection} - {activeItem}
             </p>
-            <div className="bg-gray-50 p-6 rounded-lg shadow-lg border">
+            <div className="bg-gray-50 ">
               {renderMainContent()}
             </div>
           </div>
