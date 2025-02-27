@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password,userType } = req.body; // Add usertype from the request body
-    console.log(email,password,userType)
+    
     // Find user by email
     const user = await User.findOne({ email,userType});
     if (!user) {

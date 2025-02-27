@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [emailOrPhone, setEmailOrPhone] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUsertype] = useState("education");
   const [error, setError] = useState(null);
@@ -16,9 +16,9 @@ const Login = () => {
   };
 
   const handleForgotPasswordNavigate = () => {
-    setEmail("");
+    setEmailOrPhone("");
     setPassword("");
-  
+
     navigate(
       userType === "education"
         ? "/forgot-password"
@@ -31,12 +31,10 @@ const Login = () => {
   const handleAdminLogin = async () => {
     try {
       const response = await axios.post("http://localhost:8001/admin/adminlogin", {
-        email,
+        emailOrPhone, // Allow both email and phone
         password,
         userType
       });
-
-      console.log("Admin Login Response:", response.data);
 
       if (response.data.success) {
         localStorage.setItem("admin", JSON.stringify(response.data.admin));
@@ -55,20 +53,13 @@ const Login = () => {
     setError(null);
     setLoading(true);
 
-    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-    if (!emailRegex.test(email)) {
-      setError("Invalid email format");
-      setLoading(false);
-      return;
-    }
-
     try {
       // For admin login, call the admin login handler
       if (userType === "admin") {
-        await handleAdminLogin(); // This handles admin login separately
+        await handleAdminLogin(); // Handles admin login separately
       } else {
         const { data } = await axios.post("http://localhost:8001/user/login", {
-          email,
+          emailOrPhone, // Accept both email and phone
           password,
           userType
         });
@@ -79,13 +70,12 @@ const Login = () => {
             userType === "education"
               ? "/user-dashboard"
               : userType === "healthcare"
-              ? "/medu-dashboard"  // Updated path for healthcare users
+              ? "/medu-dashboard"
               : "/admin-dashboard"
           );
         } else {
           setError(data.message);
         }
-        
       }
     } catch (err) {
       setError(err.response?.data?.message || "Server error");
@@ -123,7 +113,7 @@ const Login = () => {
             <motion.button
               key={type}
               onClick={() => setUsertype(type)}
-              className={`px-4 py-2 text-xs font-semibold  transition ${
+              className={`px-4 py-2 text-xs font-semibold transition ${
                 userType === type
                   ? type === "education"
                     ? "bg-[#E76F51] text-white"
@@ -145,17 +135,17 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <div className="mb-4 mt-2">
             <label
-              htmlFor="email"
+              htmlFor="emailOrPhone"
               className="block py-2 text-gray-700 text-xs font-bold"
             >
-              Email
+              Email or Phone
             </label>
             <input
-              type="email"
-              id="email"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="emailOrPhone"
+              placeholder="Enter your email or phone"
+              value={emailOrPhone}
+              onChange={(e) => setEmailOrPhone(e.target.value)}
               className="w-full px-4 py-2 border rounded-md text-xs focus:outline-none focus:ring-1 focus:ring-blue-400"
               required
             />

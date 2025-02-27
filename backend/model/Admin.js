@@ -17,6 +17,7 @@ const AdminSchema = new mongoose.Schema({
   phone: {
     required: true,
     type: String,
+    unique:true
   },
   userType: {
     required: true,

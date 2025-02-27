@@ -9,31 +9,33 @@ const Category=require('../model/Category')
 const Contact=require('../model/Contact')
 const path=require("path")
 exports.adminLogin = async (req, res) => {
-    try {
-      const { email, password, userType } = req.body;
-      
-  
-      // Find admin by email and userType
-      const admin = await Admin.findOne({ email, userType });
-      if (!admin || admin.password !== password) {
-        return res.status(400).json({ success: false, message: "Invalid email or password" });
-      }
-  
-      // If login is successful, return only necessary admin data (excluding password)
-      const { password: _, ...adminData } = admin.toObject(); // Exclude password
-  
-      res.json({ 
-        success: true, 
-        message: "Admin login successful", 
-        admin: adminData 
+  try {
+      const { emailOrPhone, password, userType } = req.body;
+
+      // Find admin by email or phone and userType
+      const admin = await Admin.findOne({ 
+          $or: [{ email: emailOrPhone }, { phone: emailOrPhone }], 
+          userType
       });
-  
-    } catch (error) {
+
+      if (!admin || admin.password !== password) {
+          return res.status(400).json({ success: false, message: "Invalid email/phone or password" });
+      }
+
+      // Exclude password before sending response
+      const { password: _, ...adminData } = admin.toObject();
+
+      res.json({ 
+          success: true, 
+          message: "Admin login successful", 
+          admin: adminData 
+      });
+  } catch (error) {
       console.error("Login Error:", error);
       res.status(500).json({ success: false, message: "Server error" });
-    }
-  };
-  
+  }
+};
+
   
 
 
