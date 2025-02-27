@@ -53,31 +53,76 @@ exports.registerUser = async (req, res) => {
   }
 };
 
+
+
+
 // Login User Controller
 exports.loginUser = async (req, res) => {
   try {
-    const { email, password,userType } = req.body; // Add usertype from the request body
-    
-    // Find user by email
-    const user = await User.findOne({ email,userType});
+    const { emailOrPhone, password, userType } = req.body; // Identifier can be email or phone
+
+    // Find user by email or phone number
+    const user = await User.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+      userType,
+    });
+
     if (!user) {
-      return res.status(400).json({ success: false, message: 'User not found' });
+      return res.status(400).json({ success: false, message: 'Invalid email/phone or password' });
     }
 
-    // Compare passwords
+    // Compare passwords using bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ success: false, message: 'Invalid credentials' });
+      return res.status(400).json({ success: false, message: 'Invalid email/phone or password' });
     }
 
-    
-    // If login is successful, return the user data
-    res.json({ success: true, message: 'Login successful', user });
+    // Exclude password before sending response
+    const { password: _, ...userData } = user.toObject();
+
+    res.json({ success: true, message: 'Login successful', user: userData });
   } catch (error) {
-    console.error(error);
+    console.error('Login Error:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
+
+
+
+
+exports.getUsers = async (req, res) => {
+  try {
+    // Fetch users where userType is either 'education' or 'healthcare'
+    const users = await User.find(
+      { userType: { $in: ["education", "healthcare"] } },
+      "-password"
+    );
+
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 exports.getAllCategories = async (req, res) => {
   try {
@@ -87,6 +132,11 @@ exports.getAllCategories = async (req, res) => {
     res.status(500).json({ message: "Error fetching categories", error });
   }
 };
+
+
+
+
+
 
 
 

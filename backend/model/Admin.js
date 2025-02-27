@@ -11,9 +11,13 @@ const AdminSchema = new mongoose.Schema({
     unique: true,
   },
   password: {
-    required: true,
     type: String,
+    required: [true, "Password is required"],
+    minlength: [6, "Password must be at least 6 characters"],
   },
+  resetPasswordToken: { type: String },
+  resetPasswordExpires: { type: Date },
+
   phone: {
     required: true,
     type: String,

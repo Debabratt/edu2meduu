@@ -10,4 +10,5 @@ UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
 UserRouter.get('/getallcategories',getAllCategories)
 UserRouter.post('/requestcall',requestCall)
+
 module.exports = UserRouter;

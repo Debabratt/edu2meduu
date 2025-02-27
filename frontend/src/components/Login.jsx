@@ -70,7 +70,7 @@ const Login = () => {
             userType === "education"
               ? "/user-dashboard"
               : userType === "healthcare"
-              ? "/medu-dashboard"
+              ? "/user-dashboard"
               : "/admin-dashboard"
           );
         } else {
