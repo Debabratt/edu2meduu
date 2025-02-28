@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -25,52 +25,49 @@ const UserSchema = new mongoose.Schema({
   userType: {
     required: true,
     type: String,
-    enum: ['admin', 'education', 'healthcare'],
+    enum: ["admin", "education", "healthcare"],
   },
   category: {
     type: String,
     enum: [
       // Education Categories
-      'Day School',
-      'Boarding School',
-      'Play School',
-      'Private Tutor',
-      'Coaching Centre',
+      "Day School",
+      "Boarding School",
+      "Play School",
+      "Private Tutor",
+      "Coaching Centre",
       // Healthcare Categories
-      'Hospital',
-      'Private Clinic',
-      'Medical Stores',
+      "Hospital",
+      "Private Clinic",
+      "Medical Stores",
     ],
     required: function () {
-      return this.userType === 'education' || this.userType === 'healthcare';
+      return this.userType === "education" || this.userType === "healthcare";
     },
   },
   role: {
     type: String,
-    enum: ['admin', 'user'],  // Explicitly define 'admin' and 'user'
-    default: 'user',
+    enum: ["admin", "user"], // Explicitly define 'admin' and 'user'
+    default: "user",
   },
   image: { type: String },
-  
-  description:{
-    type:String
+
+  description: {
+    type: String,
   },
-  status:{
-    require:true,
-    type:String,
-    enum: ['block', 'active','unblock'],
-    default:'active'
-},
-address:{
- 
-  type:String
-},
-additionalInfo:{
-  type:String,
-
-}
-
+  status: {
+    require: true,
+    type: String,
+    enum: ["block", "active", "unblock"],
+    default: "active",
+  },
+  address: {
+    type: String,
+  },
+  additionalInfo: {
+    type: String,
+  },
 });
 
-const User = mongoose.model('User', UserSchema);
+const User = mongoose.model("User", UserSchema);
 module.exports = User;

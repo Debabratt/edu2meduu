@@ -1,43 +1,163 @@
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { FaArrowLeft, FaMapMarkerAlt, FaPhoneAlt, FaQuoteLeft, FaQuoteRight } from "react-icons/fa";
+import { motion } from "framer-motion";
 
 const MeduDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const user = location.state?.user; // ✅ Get user data from navigation state
+  const [user, setUser] = useState(location.state?.user || null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      const savedUser = sessionStorage.getItem("selectedUser");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } else {
+      sessionStorage.setItem("selectedUser", JSON.stringify(user));
+    }
+
+    const timer = setTimeout(() => setIsLoaded(true), 100);
+    return () => clearTimeout(timer);
+  }, [user]);
 
   if (!user) {
-    return <p className="text-center text-red-600">User details not found.</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-rose-100 to-teal-100 px-4">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-white p-6 sm:p-8 rounded-xl shadow-xl text-center"
+        >
+          <p className="text-red-600 text-lg font-semibold">User details not found.</p>
+          <button
+            className="mt-4 flex items-center justify-center gap-2 px-6 py-2 bg-teal-500 text-white rounded-lg shadow-lg hover:bg-teal-600 transition duration-300"
+            onClick={() => navigate(-1)}
+          >
+            <FaArrowLeft /> Go Back
+          </button>
+        </motion.div>
+      </div>
+    );
   }
 
-  return (
-    <div className="bg-[#98cdc6] min-h-screen py-10 px-8">
-      <button
-        className="mb-4 px-4 py-2 bg-[#17A2B8] text-white rounded-md"
-        onClick={() => navigate(-1)}
-      >
-        Back
-      </button>
+  const cardVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+  };
 
-      <div className="bg-white shadow-md rounded-md p-6 max-w-lg mx-auto">
-        <img
-          src={user.image || "/default-image.jpg"}
-          alt={user.name}
-          className="w-full h-40 object-cover rounded-t-md"
-          onError={(e) => (e.target.src = "/default-image.jpg")}
-        />
-        <h2 className="text-2xl font-bold text-gray-800 mt-3">
-          {user.name || "No Name Available"}
-        </h2>
-        <p className="text-gray-600 text-sm mt-1">
-          {user.ctitle || "No Description Available"}
-        </p>
-        <p className="text-gray-600 text-sm mt-1">
-          <strong>Address:</strong> {user.address || "No Address Available"}
-        </p>
-        <p className="text-gray-600 text-sm mt-1">
-          <strong>Contact:</strong> {user.contact || "No Contact Information"}
-        </p>
+  return (
+    <div className="mt-20 sm:mt-24 md:mt-28 lg:mt-30 xl:mt-32">
+
+    <div className="bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      
+      {/* Back to List Button (Only for Large Screens) */}
+      <motion.button
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        className="hidden lg:flex fixed mt-20 sm:mt-24 md:mt-28 lg:mt-30 xl:mt-32 top-4 left-4 z-50 items-center gap-2 px-4 py-2 bg-[#17A2B8] text-gray-200 rounded-full shadow-md hover:shadow-lg transition duration-300"
+        onClick={() => navigate("/healthcare")}
+      >
+        <FaArrowLeft />
+        <span>Back to List</span>
+      </motion.button>
+
+      <div className="max-w-4xl mx-auto">
+        <motion.div
+          variants={cardVariants}
+          initial="hidden"
+          animate={isLoaded ? "visible" : "hidden"}
+          className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100"
+        >
+          <div className="relative">
+            <div className="relative w-full h-52 sm:h-72 md:h-96 overflow-hidden">
+              <motion.img
+                variants={{
+                  hidden: { scale: 1.2, opacity: 0 },
+                  visible: { scale: 1, opacity: 1, transition: { duration: 0.7, ease: "easeOut" } },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                src={user.image || "/placeholder.svg?height=400&width=800"}
+                alt={user.name}
+                className="w-full h-full object-cover"
+                onError={(e) => (e.target.src = "/placeholder.svg?height=400&width=800")}
+              />
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="absolute left-1/2 bottom-0 transform -translate-x-1/2 translate-y-1/2 bg-white px-6 py-4 rounded-xl shadow-lg border w-5/6 max-w-md text-center"
+            >
+              <h2 className="text-xl sm:text-3xl font-bold text-teal-700">{user.name}</h2>
+              <p className="text-gray-600 text-sm sm:text-lg">{user.ctitle}</p>
+            </motion.div>
+          </div>
+
+          <div className="p-6 pt-20 sm:p-10">
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, x: -20 },
+                visible: { opacity: 1, x: 0, transition: { delay: 0.3, duration: 0.5 } },
+              }}
+              initial="hidden"
+              animate={isLoaded ? "visible" : "hidden"}
+              className="mb-8 bg-gradient-to-r from-teal-50 to-cyan-50 p-6 rounded-2xl relative"
+            >
+              <FaQuoteLeft className="absolute top-4 left-4 text-teal-200 text-xl" />
+              <div className="ml-6 mr-6">
+                <h3 className="text-xl font-semibold text-teal-700 mb-2">About</h3>
+                <p className="text-gray-700 leading-relaxed">{user.additionalInfo || "No additional information available."}</p>
+              </div>
+              <FaQuoteRight className="absolute bottom-4 right-4 text-teal-200 text-xl" />
+            </motion.div>
+
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, x: -20 },
+                visible: { opacity: 1, x: 0, transition: { delay: 0.4, duration: 0.5 } },
+              }}
+              initial="hidden"
+              animate={isLoaded ? "visible" : "hidden"}
+              className="space-y-4"
+            >
+              <div className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300">
+                <div className="bg-teal-400 p-3 rounded-full shadow-md">
+                  <FaMapMarkerAlt className="text-white text-xl" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-lg">Location</h3>
+                  <p className="text-gray-700">{user.address || "Not provided"}</p>
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { delay: 0.5, duration: 0.5 } },
+              }}
+              initial="hidden"
+              animate={isLoaded ? "visible" : "hidden"}
+              className="mt-8"
+            >
+              <button
+                className="w-full py-4 bg-teal-500 text-white font-medium rounded-xl shadow-lg hover:bg-teal-600 transition duration-300 transform hover:-translate-y-1 hover:shadow-xl"
+                onClick={() => user.phone && window.open(`tel:${user.phone}`, "_self")}
+              >
+                {user.phone ? `Call ${user.name.split(" ")[0]}` : "No Contact Available"}
+              </button>
+            </motion.div>
+          </div>
+        </motion.div>
       </div>
+    </div>
     </div>
   );
 };
