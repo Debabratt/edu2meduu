@@ -40,7 +40,7 @@ function MedicalCl() {
   }, []);
 
   const renderCarousel = (title, users) => (
-    <div key={title} className="bg-gray-50 py-12">
+    <div key={title} className="bg-gray-50  py-12">
       <header className="mb-6 px-6 md:px-16">
         <h1 className="text-3xl font-extrabold text-gray-900 border-l-4 border-blue-500 pl-4">{title}</h1>
       </header>
@@ -62,10 +62,10 @@ function MedicalCl() {
               <div
                 key={user._id}
                 className="relative bg-white rounded-xl shadow-lg transform transition duration-300 hover:scale-105 cursor-pointer overflow-hidden"
-                onClick={() => navigate(`/category/${user.category}`)}
+                onClick={() => navigate(`/medicalcategory/${user.category}`)}
               >
                 <img
-                  src={user.image ? `http://localhost:8001/${user.image}` : '/default-image.jpg'}
+                  src={user.image }
                   alt={user.name}
                   className="w-full h-64 object-cover rounded-t-xl"
                 />

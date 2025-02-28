@@ -2,24 +2,23 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const CatePage = () => {
+const Medicategory = () => {
   const { categoryName } = useParams();
   const navigate = useNavigate();
-  const [schools, setSchools] = useState([]);
+  const [users, setUsers] = useState([]);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setError(null);
 
     axios
-      .get("http://localhost:8001/user/getAllUsers")
+      .get("http://localhost:8001/user/getHealthcareUsers")
       .then((response) => {
         if (response.data && Array.isArray(response.data.users)) {
-          const filteredSchools = response.data.users.filter(
-            (school) => school.category === categoryName
+          const filteredUsers = response.data.users.filter(
+            (user) => user.category === categoryName
           );
-
-          setSchools(filteredSchools);
+          setUsers(filteredUsers);
         } else {
           setError("Invalid data format received from the server.");
         }
@@ -45,30 +44,30 @@ const CatePage = () => {
       {error && <p className="text-center text-red-600">{error}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {schools.length > 0 ? (
-          schools.map((school, index) => (
+        {users.length > 0 ? (
+          users.map((user, index) => (
             <div
               key={index}
               className="bg-white shadow-md rounded-md p-4 hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
-              onClick={() => navigate("/edu-details", { state: { school } })} // ✅ Navigate with user data
+              onClick={() => navigate("/medu-details", { state: { user } })} // ✅ Pass user data
             >
               <img
-                src={school.image || "/default-image.jpg"}
-                alt={school.name}
+                src={user.image || "/default-image.jpg"}
+                alt={user.name}
                 className="w-full h-40 object-cover rounded-t-md"
                 onError={(e) => (e.target.src = "/default-image.jpg")}
               />
               <h2 className="text-lg font-bold text-gray-800 mt-3">
-                {school.name || "No Name Available"}
+                {user.name || "No Name Available"}
               </h2>
               <p className="text-gray-600 text-sm mt-1">
-                {school.ctitle || "No Description Available"}
+                {user.ctitle || "No Description Available"}
               </p>
             </div>
           ))
         ) : (
           <p className="text-center text-gray-600">
-            No schools found in this category.
+            No users found in this category.
           </p>
         )}
       </div>
@@ -76,4 +75,4 @@ const CatePage = () => {
   );
 };
 
-export default CatePage;
+export default Medicategory;

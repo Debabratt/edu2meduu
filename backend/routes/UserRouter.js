@@ -6,6 +6,8 @@ const {getAllCategories} = require('../controller/Usercontroller');
 const {requestCall} = require('../controller/Usercontroller');
 const {getAllUsers } = require('../controller/Usercontroller');
 const {getHealthcareUsers } = require('../controller/Usercontroller');
+const {updateProfile } = require('../controller/Usercontroller');
+
 
 UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
@@ -13,4 +15,6 @@ UserRouter.get('/getallcategories',getAllCategories)
 UserRouter.post('/requestcall',requestCall)
 UserRouter.get('/getAllUsers',getAllUsers )
 UserRouter.get('/getHealthcareUsers',getHealthcareUsers )
+UserRouter.patch('/updateProfile',updateProfile)
+
 module.exports = UserRouter;

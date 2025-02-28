@@ -7,7 +7,7 @@ import Header from "./components/Header";
 import Home from "./components/Home";
 import Marque from "./components/Marque";
 import Statistics from "./components/Statistics";
-import BoardingSchool from "./components/BoardingSchool";
+import BoardingSchool from "./components/EducationList";
 import DaySchool from "./components/DaySchool";
 import PreSchool from "./components/PreSchool";
 
@@ -32,6 +32,9 @@ import Medudash from "./components/Medudash";
 import ForgotPassword from "./components/ForgotPassword";
 
 import CatePage from "./components/CatePage";
+import Medicategory from "./components/Medicategory.jsx";
+import EduDetail from "./components/MeduDetail.jsx";
+import MeduDetail from "./components/MeduDetail.jsx";
 
 // Layout component that includes Header
 const MainLayout = ({ children }) => (
@@ -101,7 +104,11 @@ function App() {
         {/* Hospitals Route with Footer only */}
         <Route path="/hospitals" element={<MainLayout><MedicalCl /></MainLayout>} />
         <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
+        <Route path="/medicalcategory/:categoryName" element={<MainLayout><Medicategory /></MainLayout>} />
+        <Route path="/medu-details" element={<MainLayout><MeduDetail /></MainLayout>} />
+        <Route path="/edu-details" element={<MainLayout><EduDetail /></MainLayout>} />
         {/* Other Routes */}
+
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><HContact /></MainLayout>} />

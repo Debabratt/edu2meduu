@@ -61,6 +61,15 @@ const UserSchema = new mongoose.Schema({
     enum: ['block', 'active','unblock'],
     default:'active'
 },
+address:{
+ 
+  type:String
+},
+additionalInfo:{
+  type:String,
+
+}
+
 });
 
 const User = mongoose.model('User', UserSchema);

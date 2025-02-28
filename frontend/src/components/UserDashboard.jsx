@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import {
   Home,
   User,
@@ -26,6 +27,71 @@ export default function UserDashboard() {
   const navigate = useNavigate();
   const sidebarRef = useRef(null); // Reference for sidebar
   const menuButtonRef = useRef(null); // Reference for the hamburger menu button
+  const [formData, setFormData] = useState({
+    name: user?.name || "",
+    address: user?.address || "",
+    phone: user?.phone || "",
+    email: user?.email || "",
+    description: user?.description || "",
+    additionalInfo: user?.additionalInfo || "",
+  });
+
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  // Handle input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // Handle file selection
+  const handleFileChange = (e) => {
+    setProfilePicture(e.target.files[0]);
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+  
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("userId", user._id); // Send user ID manually
+      Object.keys(formData).forEach((key) => {
+        if (formData[key]) formDataToSend.append(key, formData[key]);
+      });
+  
+      if (profilePicture) {
+        formDataToSend.append("image", profilePicture);
+      }
+  
+      const response = await axios.patch("http://localhost:8001/user/updateProfile", formDataToSend, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+  
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+
+
+
+
+
+
+
+
+
+
+  
+
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -35,6 +101,12 @@ export default function UserDashboard() {
       navigate("/"); // Navigate to login if user data doesn't exist
     }
   }, [navigate]);
+
+
+
+
+
+
 
   useEffect(() => {
     // Handle outside click to close sidebar
@@ -106,110 +178,119 @@ export default function UserDashboard() {
       case "updateProfile":
         return (
           <div className="mt-8 bg-white p-8 rounded-xl shadow-md">
-  <h2 className="text-2xl font-semibold mb-6 text-gray-800">Update {user.userType} Profile</h2>
-  
-  <p className="text-gray-600 mb-6">
-    Make sure to keep your profile up-to-date to get the best experience. You can update your name, address, contact information, and more.
-  </p>
-
-  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-    {/* Name Input */}
-    <div className="flex items-center space-x-3">
-      <Edit3 className="w-6 h-6 text-blue-500" />
-      <div className="w-full">
-        <input
-          type="text"
-          placeholder="Change Name"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
-    </div>
+          <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+            Update {user.userType} Profile
+          </h2>
+          <p className="text-gray-600 mb-6">
+            Keep your profile up-to-date for the best experience.
+          </p>
     
-    {/* Address Input */}
-    <div className="flex items-center space-x-3">
-      <Home className="w-6 h-6 text-green-500" />
-      <div className="w-full">
-        <input
-          type="text"
-          placeholder="Change Address"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-        />
-      </div>
-    </div>
+          <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Name Input */}
+            <div className="flex items-center space-x-3">
+              <Edit3 className="w-6 h-6 text-blue-500" />
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Change Name"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
     
-    {/* Phone Input */}
-    <div className="flex items-center space-x-3">
-      <Phone className="w-6 h-6 text-yellow-500" />
-      <div className="w-full">
-        <input
-          type="tel"
-          placeholder="Change Phone Number"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-yellow-500"
-        />
-      </div>
-    </div>
+            {/* Address Input */}
+            <div className="flex items-center space-x-3">
+              <Home className="w-6 h-6 text-green-500" />
+              <input
+                type="text"
+                name="address"
+                value={formData.address}
+                onChange={handleChange}
+                placeholder="Change Address"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-green-500"
+              />
+            </div>
     
-    {/* Email Input */}
-    <div className="flex items-center space-x-3">
-      <Mail className="w-6 h-6 text-purple-500" />
-      <div className="w-full">
-        <input
-          type="email"
-          placeholder="Change Email Address"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
-        />
-      </div>
-    </div>
-
-    {/* Profile Picture Upload */}
-    <div className="flex items-center space-x-3">
-      <Camera className="w-6 h-6 text-orange-500" />
-      <div className="w-full">
-        <input
-          type="file"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none"
-        />
-      </div>
-    </div>
-
-    {/* Description Textarea */}
-    <div className="flex items-center space-x-3">
-      <Edit3 className="w-6 h-6 text-red-500" />
-      <div className="w-full">
-        <textarea
-          placeholder="Update Description"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-red-500"
-        ></textarea>
-      </div>
-    </div>
-  </div>
-
-  {/* Submit Button */}
-  <div className="mt-6 text-center">
-    <button
-      className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      Save Changes
-    </button>
-  </div>
-
-  {/* Additional Info Section */}
-  <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">Additional Information</h3>
-    <p className="text-gray-600">
-      You can add any additional details to your profile, such as a bio, website links, or social media handles. This will help personalize your profile and provide more context to your audience.
-    </p>
-    <div className="flex items-center space-x-3 mt-4">
-      <Edit3 className="w-6 h-6 text-indigo-500" />
-      <div className="w-full">
-        <textarea
-          placeholder="Add Bio or Additional Details"
-          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        ></textarea>
-      </div>
-    </div>
-  </div>
-</div>
+            {/* Phone Input */}
+            <div className="flex items-center space-x-3">
+              <Phone className="w-6 h-6 text-yellow-500" />
+              <input
+                type="tel"
+                name="phone"
+                value={formData.phone}
+                onChange={handleChange}
+                placeholder="Change Phone Number"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-yellow-500"
+              />
+            </div>
+    
+            {/* Email Input */}
+            <div className="flex items-center space-x-3">
+              <Mail className="w-6 h-6 text-purple-500" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Change Email Address"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+    
+            {/* Profile Picture Upload */}
+            <div className="flex items-center space-x-3">
+              <Camera className="w-6 h-6 text-orange-500" />
+              <input
+                type="file"
+                onChange={handleFileChange}
+                className="p-3 border border-gray-300 rounded-md w-full"
+              />
+            </div>
+    
+            {/* Description Textarea */}
+            <div className="flex items-center space-x-3">
+              <Edit3 className="w-6 h-6 text-red-500" />
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                placeholder="Update Description"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
+              ></textarea>
+            </div>
+    
+            {/* Additional Info */}
+            <div className="flex items-center space-x-3 sm:col-span-2">
+              <Edit3 className="w-6 h-6 text-indigo-500" />
+              <textarea
+                name="additionalInfo"
+                value={formData.additionalInfo}
+                onChange={handleChange}
+                placeholder="Add Bio or Additional Details"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-indigo-500"
+              ></textarea>
+            </div>
+    
+            {/* Submit Button */}
+            <div className="mt-6 text-center sm:col-span-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+              >
+                {loading ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </form>
+    
+          {/* Status Message */}
+          {message && (
+            <div className="mt-4 text-center text-gray-700 bg-gray-100 p-3 rounded-md">
+              {message}
+            </div>
+          )}
+        </div>
 
         );
       case "status":

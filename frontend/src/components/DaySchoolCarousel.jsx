@@ -68,13 +68,16 @@ function DaySchoolCarousel() {
               >
                 <div className="relative h-full">
                   <img
-                    src={user.image ? `http://localhost:8001/${user.image}` : '/default-image.jpg'}
+                    src={user.image }
                     alt={user.name}
                     className="w-full h-full object-cover rounded-t-xl"
                   />
                   <div className="absolute bottom-0 left-0 w-full p-4 bg-gray-700 bg-opacity-100 rounded-b-xl">
                     <h2 className="text-lg font-semibold text-gray-200">
                       {user.name || 'No Name Found'}
+                    </h2>
+                    <h2 className="text-lg font-semibold text-gray-200">
+                      {user.address || 'No Name Found'}
                     </h2>
                   </div>
                 </div>

@@ -2,7 +2,9 @@ const bcrypt = require("bcrypt");
 const User = require("../model/User");
 const Category = require("../model/Category");
 const Contact = require("../model/Contact");
-
+const fs = require('fs');
+const multer = require('multer');
+const path=require("path")
 // Register User Controller
 exports.registerUser = async (req, res) => {
   try {
@@ -109,28 +111,50 @@ exports.loginUser = async (req, res) => {
 
 exports.getEducationUsers = async (req, res) => {
   try {
-    const educationUsers = await User.find({ userType: "education" }); // Sirf education category ke users fetch karein
-    res.status(200).json(educationUsers);
+    const educationUsers = await User.find({ userType: "education" });
+
+    if (!educationUsers.length) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No education users found" });
+    }
+
+    // ✅ Base URL for images
+    const baseUrl = `${req.protocol}://${req.get("host")}/`;
+
+    // ✅ Update image URLs for each user
+    const updatedUsers = educationUsers.map(user => ({
+      ...user._doc,
+      image: user.image ? `${baseUrl}${user.image}` : "/default-image.png"
+    }));
+
+    res.status(200).json({ success: true, users: updatedUsers });
   } catch (error) {
     console.error("Error fetching education users:", error);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
 
+
 exports.getHealthcareUsers = async (req, res) => {
   try {
-    const healthcareUsers = await User.find({ userType: "healthcare" });
+    // ✅ Fetch users where userType is 'education'
+    const users = await User.find({ userType: "healthcare" });
 
-    if (!healthcareUsers.length) {
-      return res
-        .status(404)
-        .json({ success: false, message: "No healthcare users found" });
-    }
+    // ✅ Base URL setup dynamically
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
 
-    res.status(200).json({ success: true, users: healthcareUsers });
-  } catch (error) {
-    console.error("Error fetching healthcare users:", error);
-    res.status(500).json({ success: false, message: "Internal Server Error" });
+    // ✅ Corrected mapping of user data to include full image URL
+    const updatedUsers = users.map((item) => ({
+      ...item._doc,
+      image: item.image ? `${baseUrl}${item.image}` : "/default-image.png",
+    }));
+
+    // ✅ Send the updated users list
+    res.status(200).json({ success: true, users: updatedUsers });
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -145,15 +169,26 @@ exports.getAllCategories = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    // ✅ Correct MongoDB query to fetch only users where userType is 'education'
-    const users = await User.find({ userType: "education" }); // Fixed syntax
+    // ✅ Fetch users where userType is 'education'
+    const users = await User.find({ userType: "education" });
 
-    res.status(200).json({ success: true, users });
+    // ✅ Base URL setup dynamically
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
+    // ✅ Corrected mapping of user data to include full image URL
+    const updatedUsers = users.map((item) => ({
+      ...item._doc,
+      image: item.image ? `${baseUrl}${item.image}` : "/default-image.png",
+    }));
+
+    // ✅ Send the updated users list
+    res.status(200).json({ success: true, users: updatedUsers });
   } catch (err) {
     console.error("Error fetching users:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
 
 // Handle new contact form submission
 exports.requestCall = async (req, res) => {
@@ -177,3 +212,86 @@ exports.requestCall = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+
+
+//update profile
+
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Create uploads directory if it doesn't exist
+        
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp","image/avif"];
+      if (allowedTypes.includes(file.mimetype)) {
+          cb(null, true);
+      } else {
+          cb(new Error("Invalid file type. Only JPEG, PNG, GIF,AVIF, and WebP are allowed."), false);
+      }
+  }
+});
+
+
+
+
+
+
+exports.updateProfile = async (req, res) => {
+  upload.single("image")(req, res, async (err) => {
+    if (err) {
+      console.error("File upload error:", err);
+      return res.status(500).json({ success: false, message: "File upload failed" });
+    }
+
+    try {
+     
+
+      const userId = req.body.userId; // Get user ID from request body
+
+      if (!userId) {
+        return res.status(400).json({ success: false, message: "User ID is required" });
+      }
+
+      const updateFields = { ...req.body };
+
+      if (req.file) {
+        updateFields.image = `/uploads/${req.file.filename}`;
+      }
+
+      // Remove empty fields
+      Object.keys(updateFields).forEach((key) => {
+        if (!updateFields[key]) {
+          delete updateFields[key];
+        }
+      });
+
+      console.log("Fields to update:", updateFields);
+
+      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { 
+        new: true, 
+        runValidators: true 
+      });
+
+      if (!updatedUser) {
+        return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      res.json({ success: true, message: "Profile updated successfully", user: updatedUser });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  });
+};
+
