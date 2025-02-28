@@ -33,8 +33,9 @@ import ForgotPassword from "./components/ForgotPassword";
 
 import CatePage from "./components/CatePage";
 import Medicategory from "./components/Medicategory.jsx";
-import EduDetail from "./components/MeduDetail.jsx";
+
 import MeduDetail from "./components/MeduDetail.jsx";
+import SchoolDetail from "./components/SchoolDetail.jsx";
 
 // Layout component that includes Header
 const MainLayout = ({ children }) => (
@@ -106,7 +107,7 @@ function App() {
         <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
         <Route path="/medicalcategory/:categoryName" element={<MainLayout><Medicategory /></MainLayout>} />
         <Route path="/medu-details" element={<MainLayout><MeduDetail /></MainLayout>} />
-        <Route path="/edu-details" element={<MainLayout><EduDetail /></MainLayout>} />
+        <Route path="/school/:schoolId"  element={<MainLayout><SchoolDetail /></MainLayout>} />
         {/* Other Routes */}
 
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />

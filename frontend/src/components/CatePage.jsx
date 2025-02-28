@@ -10,7 +10,6 @@ const CatePage = () => {
 
   useEffect(() => {
     setError(null);
-
     axios
       .get("http://localhost:8001/user/getAllUsers")
       .then((response) => {
@@ -18,13 +17,14 @@ const CatePage = () => {
           const filteredSchools = response.data.users.filter(
             (school) => school.category === categoryName
           );
-
           setSchools(filteredSchools);
         } else {
+          console.error("Unexpected response format", response.data);
           setError("Invalid data format received from the server.");
         }
       })
       .catch((error) => {
+        console.error("Error fetching schools", error);
         setError("Failed to load data. Please try again later.");
       });
   }, [categoryName]);
@@ -50,7 +50,7 @@ const CatePage = () => {
             <div
               key={index}
               className="bg-white shadow-md rounded-md p-4 hover:shadow-lg transition-transform transform hover:scale-105 cursor-pointer"
-              onClick={() => navigate("/edu-details", { state: { school } })} // ✅ Navigate with user data
+              onClick={() => navigate(`/school/${school.id}`, { state: { school } })} // ✅ FIXED: Correct navigation
             >
               <img
                 src={school.image || "/default-image.jpg"}
@@ -67,9 +67,7 @@ const CatePage = () => {
             </div>
           ))
         ) : (
-          <p className="text-center text-gray-600">
-            No schools found in this category.
-          </p>
+          <p className="text-center text-gray-600">No schools found in this category.</p>
         )}
       </div>
     </div>
