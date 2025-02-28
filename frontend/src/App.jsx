@@ -107,7 +107,7 @@ function App() {
         <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
         <Route path="/medicalcategory/:categoryName" element={<MainLayout><Medicategory /></MainLayout>} />
         <Route path="/medu-details" element={<MainLayout><MeduDetail /></MainLayout>} />
-        <Route path="/school/:schoolId"  element={<MainLayout><SchoolDetail /></MainLayout>} />
+        <Route path="/schools"  element={<MainLayout><SchoolDetail /></MainLayout>} />
         {/* Other Routes */}
 
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
