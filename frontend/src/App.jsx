@@ -31,6 +31,8 @@ import AdminDashboard from "./components/AdminDashboard";
 import Medudash from "./components/Medudash";
 import ForgotPassword from "./components/ForgotPassword";
 
+import CatePage from "./components/CatePage";
+
 // Layout component that includes Header
 const MainLayout = ({ children }) => (
   <>
@@ -98,7 +100,7 @@ function App() {
 
         {/* Hospitals Route with Footer only */}
         <Route path="/hospitals" element={<MainLayout><MedicalCl /></MainLayout>} />
-
+        <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
         {/* Other Routes */}
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />

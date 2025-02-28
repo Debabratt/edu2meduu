@@ -50,6 +50,11 @@ const UserSchema = new mongoose.Schema({
     enum: ['admin', 'user'],  // Explicitly define 'admin' and 'user'
     default: 'user',
   },
+  image: { type: String },
+  
+  description:{
+    type:String
+  },
   status:{
     require:true,
     type:String,

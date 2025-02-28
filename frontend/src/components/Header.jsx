@@ -35,7 +35,7 @@ export default function Header() {
       <div className="flex w-full relative bg-[#000]">
         {/* Left Section - White Background */}
         <div className="bg-white w-[60%] flex items-center lg:px-20 px-10 py-3">
-          <img src="logo4.jpg" alt="Logo" className="h-12 w-auto" />
+          <img src="logo3.jpg" alt="Logo" className="h-12 w-auto" />
         </div>
 
         {/* Right Section - Blue Background */}

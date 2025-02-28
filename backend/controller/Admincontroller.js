@@ -210,10 +210,10 @@ exports.addCategory = (req, res) => {
             });
         }
 
-        const { name, ctitle, categoryType } = req.body;
+        const { name, ctitle, categoryType,userType } = req.body;
         const image = req.file ? `uploads/${req.file.filename}` : null;  
 
-        if (!name || !ctitle || !categoryType || !image) {
+        if (!name || !ctitle || !categoryType || !image ||!userType) {
             return res.status(400).json({ 
                 success: false, 
                 message: "All fields are required" 
@@ -226,6 +226,7 @@ exports.addCategory = (req, res) => {
                 ctitle,
                 categoryType,
                 image,
+                userType
             });
 
             await newCategory.save();

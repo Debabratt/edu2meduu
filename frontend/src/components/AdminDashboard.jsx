@@ -29,6 +29,7 @@ const AdminDashboard = () => {
     name: "",
     ctitle: "",
     categoryType: "",
+    userType:""
   });
 
   const [newsFormData, setNewsFormData] = useState({
@@ -166,8 +167,8 @@ const handleNewsSubmit = async (e) => {
     const trimmedName = formData.name?.trim();
     const trimmedTitle = formData.ctitle?.trim();
     const trimmedType = formData.categoryType?.trim();
-
-    if (!trimmedName || !trimmedTitle || !trimmedType || !image) {
+    const trimmedUserType = formData.userType?.trim();
+    if (!trimmedName || !trimmedTitle || !trimmedType ||!trimmedUserType || !image) {
       alert("All fields including image are required");
       return;
     }
@@ -191,7 +192,7 @@ const handleNewsSubmit = async (e) => {
     formDataToSend.append("ctitle", trimmedTitle);
     formDataToSend.append("categoryType", trimmedType);
     formDataToSend.append("image", image);
-
+    formDataToSend.append("userType", trimmedUserType);
     try {
       const response = await axios.post(
         "http://localhost:8001/admin/addCategory",
@@ -214,6 +215,7 @@ const handleNewsSubmit = async (e) => {
           name: "",
           ctitle: "",
           categoryType: "",
+          userType:""
         });
         setFileName("");
         setImage(null);
@@ -509,7 +511,31 @@ const handleNewsSubmit = async (e) => {
                   )}
                 </select>
               </div>
-
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  User Type
+                </label>
+                <select
+                  name="userType"
+                  value={formData.userType}
+                  onChange={handleChange}
+                  className="w-full p-2 border rounded-md focus:ring-blue-500 focus:border-blue-500"
+                  required
+                >
+                  <option value="">Select User Type</option>
+                  {selectedSection === "Education" ? (
+                    <>
+                      <option value="education">Education</option>
+                     
+                    </>
+                  ) : (
+                    <>
+                      <option value="healthcare">HealthCare</option>
+                  
+                    </>
+                  )}
+                </select>
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">
                   Image

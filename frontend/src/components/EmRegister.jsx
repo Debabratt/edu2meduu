@@ -45,14 +45,14 @@ const EmRegister = () => {
       }
     } catch (error) {
       console.error('Error:', error.response ? error.response.data : error.message);
-      setMessage('Something went wrong. Try again later.');
+      setMessage('Emial already exits,try another email');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="relative lg:mt-33 mt-25 min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/login.jpg)' }}>
+    <div className="relative lg:mt-23 mt-25 min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/login.jpg)' }}>
       <motion.div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-opacity-50 p-8 rounded-lg shadow-xl z-10 w-full max-w-md"
         initial={{ opacity: 0, y: -50 }}
