@@ -60,53 +60,157 @@ export default function UserDashboard() {
       case "dashboard":
         return (
           <div className="p-6 text-gray-800">
-            <div className="flex items-center space-x-3 mb-6">
-              <User className="w-8 h-8 text-gray-500" />
-              <h1 className="text-2xl font-semibold">{user.userType} Dashboard</h1>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
-                <Info className="w-8 h-8 text-blue-500" />
-                <p className="text-lg font-semibold">View Your Status</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
-                <MessageCircle className="w-8 h-8 text-green-500" />
-                <p className="text-lg font-semibold">Contact Support</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
-                <Settings className="w-8 h-8 text-yellow-500" />
-                <p className="text-lg font-semibold">Update Your Profile</p>
-              </div>
-              <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
-                <User className="w-8 h-8 text-purple-500" />
-                <p className="text-lg font-semibold">Manage Account</p>
-              </div>
-            </div>
-          </div>
+  <div className="flex items-center space-x-3 mb-6">
+    <User className="w-8 h-8 text-gray-500" />
+    <h1 className="text-2xl font-semibold">{user.userType} Dashboard</h1>
+  </div>
+  <p className="mb-6 text-gray-600 text-lg">Welcome to your dashboard! Here you can manage your account, update your profile, check your status, and contact support whenever needed. Explore the options below to get started.</p>
+  
+  <div className="grid  grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+    <div className="bg-gradient-to-r from-[#e1a698] to-[#17A2B8] p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
+      <Info className="w-15  h-15 text-blue-500" />
+      <div>
+        <p className="text-lg font-semibold">View Your Status</p>
+        <p className="text-sm text-gray-500">Check your current status, track your progress, and stay informed about recent updates. Keep an eye on your performance and achievements.</p>
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-r from-[#e1a698] to-[#17A2B8] p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
+      <MessageCircle className="w-15 h-15 text-green-500" />
+      <div>
+        <p className="text-lg font-semibold">Contact Support</p>
+        <p className="text-sm text-gray-500">Need assistance? Our support team is here to help. Reach out to us with any questions or issues, and we’ll make sure you’re taken care of.</p>
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-r from-[#f9c0b2] to-[#b7eff7] p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
+      <Settings className="w-15 h-15 text-yellow-500" />
+      <div>
+        <p className="text-lg font-semibold">Update Your Profile</p>
+        <p className="text-sm text-gray-500">Personalize your experience by updating your profile. Change your preferences, update your details, and make sure your information is up-to-date.</p>
+      </div>
+    </div>
+    
+    <div className="bg-gradient-to-r from-[#e1a698] to-[#cadfe2] p-6 rounded-xl shadow-md flex items-center space-x-3 cursor-pointer hover:bg-gray-100">
+      <User className="md:w-15 md:h-15 sm:h-15 sm:w-15 text-purple-500" />
+      <div>
+        <p className="text-lg font-semibold">Manage Account</p>
+        <p className="text-sm text-gray-500">Take control of your account. Manage your settings, review your subscriptions, and ensure everything is in order for a smooth experience.</p>
+      </div>
+    </div>
+    
+  </div>
+</div>
+
         );
       case "updateProfile":
         return (
-          <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Update {user.userType} Profile</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="flex items-center space-x-3">
-                <Edit3 className="w-6 h-6 text-blue-500" />
-                <input type="text" placeholder="Change Name" className="p-2 border border-gray-300 rounded-md w-full" />
-              </div>
-              <div className="flex items-center space-x-3">
-                <Home className="w-6 h-6 text-green-500" />
-                <input type="text" placeholder="Change Address" className="p-2 border border-gray-300 rounded-md w-full" />
-              </div>
-              <div className="flex items-center space-x-3">
-                <Camera className="w-6 h-6 text-yellow-500" />
-                <input type="file" className="p-2 border border-gray-300 rounded-md w-full" />
-              </div>
-              <div className="flex items-center space-x-3">
-                <Edit3 className="w-6 h-6 text-red-500" />
-                <textarea placeholder="Update Description" className="p-2 border border-gray-300 rounded-md w-full"></textarea>
-              </div>
-            </div>
-          </div>
+          <div className="mt-8 bg-white p-8 rounded-xl shadow-md">
+  <h2 className="text-2xl font-semibold mb-6 text-gray-800">Update {user.userType} Profile</h2>
+  
+  <p className="text-gray-600 mb-6">
+    Make sure to keep your profile up-to-date to get the best experience. You can update your name, address, contact information, and more.
+  </p>
+
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    {/* Name Input */}
+    <div className="flex items-center space-x-3">
+      <Edit3 className="w-6 h-6 text-blue-500" />
+      <div className="w-full">
+        <input
+          type="text"
+          placeholder="Change Name"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+    
+    {/* Address Input */}
+    <div className="flex items-center space-x-3">
+      <Home className="w-6 h-6 text-green-500" />
+      <div className="w-full">
+        <input
+          type="text"
+          placeholder="Change Address"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+      </div>
+    </div>
+    
+    {/* Phone Input */}
+    <div className="flex items-center space-x-3">
+      <Phone className="w-6 h-6 text-yellow-500" />
+      <div className="w-full">
+        <input
+          type="tel"
+          placeholder="Change Phone Number"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-yellow-500"
+        />
+      </div>
+    </div>
+    
+    {/* Email Input */}
+    <div className="flex items-center space-x-3">
+      <Mail className="w-6 h-6 text-purple-500" />
+      <div className="w-full">
+        <input
+          type="email"
+          placeholder="Change Email Address"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-purple-500"
+        />
+      </div>
+    </div>
+
+    {/* Profile Picture Upload */}
+    <div className="flex items-center space-x-3">
+      <Camera className="w-6 h-6 text-orange-500" />
+      <div className="w-full">
+        <input
+          type="file"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none"
+        />
+      </div>
+    </div>
+
+    {/* Description Textarea */}
+    <div className="flex items-center space-x-3">
+      <Edit3 className="w-6 h-6 text-red-500" />
+      <div className="w-full">
+        <textarea
+          placeholder="Update Description"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-red-500"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+
+  {/* Submit Button */}
+  <div className="mt-6 text-center">
+    <button
+      className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      Save Changes
+    </button>
+  </div>
+
+  {/* Additional Info Section */}
+  <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-md">
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">Additional Information</h3>
+    <p className="text-gray-600">
+      You can add any additional details to your profile, such as a bio, website links, or social media handles. This will help personalize your profile and provide more context to your audience.
+    </p>
+    <div className="flex items-center space-x-3 mt-4">
+      <Edit3 className="w-6 h-6 text-indigo-500" />
+      <div className="w-full">
+        <textarea
+          placeholder="Add Bio or Additional Details"
+          className="p-3 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        ></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
         );
       case "status":
         return (
@@ -242,7 +346,7 @@ export default function UserDashboard() {
       {/* Sidebar */}
       <div
         ref={sidebarRef}
-        className={`w-full md:w-64 bg-gray-900 text-white p-6 flex flex-col justify-between transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-50`}
+        className={`w-full md:w-64 bg-[#245876] p-6 flex flex-col justify-between transition-all duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0 fixed md:relative z-50`}
       >
         <div>
           <h2 className="text-xl font-semibold mb-6 text-center">
@@ -250,25 +354,25 @@ export default function UserDashboard() {
           </h2>
           <ul className="space-y-2">
             <li
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-700 ${activeTab === "dashboard" ? "bg-gray-800" : ""}`}
+              className={`flex items-center p-3 rounded-lg text-white hover:text-gray-900 cursor-pointer transition duration-300 hover:bg-gray-200 ${activeTab === "dashboard" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("dashboard"); setIsSidebarOpen(false); }}
             >
               <Home className="w-5 h-5 mr-3" /> Dashboard
             </li>
             <li
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-700 ${activeTab === "updateProfile" ? "bg-gray-800" : ""}`}
+              className={`flex items-center p-3 rounded-lg text-white hover:text-gray-900 cursor-pointer transition duration-300 hover:bg-gray-300 ${activeTab === "updateProfile" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("updateProfile"); setIsSidebarOpen(false); }}
             >
               <User className="w-5 h-5 mr-3" /> Update Profile
             </li>
             <li
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-700 ${activeTab === "status" ? "bg-gray-800" : ""}`}
+              className={`flex items-center p-3 rounded-lg  text-white hover:text-gray-900  cursor-pointer transition duration-300 hover:bg-gray-300 ${activeTab === "status" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("status"); setIsSidebarOpen(false); }}
             >
               <Activity className="w-5 h-5 mr-3" /> Status
             </li>
             <li
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition duration-300 hover:bg-gray-700 ${activeTab === "support" ? "bg-gray-800" : ""}`}
+              className={`flex items-center p-3 rounded-lg hover:text-gray-900  cursor-pointer text-white transition duration-300 hover:bg-gray-300 ${activeTab === "support" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("support"); setIsSidebarOpen(false); }}
             >
               <HelpCircle className="w-5 h-5 mr-3" /> Support
@@ -278,7 +382,7 @@ export default function UserDashboard() {
 
         {/* Logout Button */}
         <button
-          className="flex items-center justify-center w-full p-3 mt-4 bg-red-600 hover:bg-red-700 rounded-lg transition duration-300"
+          className="flex items-center justify-center w-full p-3 mt-4 bg-[#83807e] hover:bg-[#245876] rounded-lg transition duration-300"
           onClick={() => {
             localStorage.removeItem("user");
             navigate("/login");
