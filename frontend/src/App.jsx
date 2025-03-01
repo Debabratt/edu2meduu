@@ -22,17 +22,15 @@ import Jobs from "./components/Jobs";
 import About from "./components/About";
 import EmRegister from "./components/EmRegister";
 import AdminDashboard from "./components/AdminDashboard";
-
 import ForgotPassword from "./components/ForgotPassword";
 import CatePage from "./components/CatePage";
 import Medicategory from "./components/Medicategory.jsx";
 import MeduDetail from "./components/MeduDetail.jsx";
 import SchoolDetail from "./components/SchoolDetail.jsx";
-
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import UserDashboard from "./components/UserDashboard";
 
-// Layout component that includes Header
+// Layout component that includes Header and Footer
 const MainLayout = ({ children }) => (
   <>
     <Header />
@@ -45,6 +43,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/* Home Route */}
         <Route
           path="/"
           element={
@@ -58,6 +57,8 @@ function App() {
             </MainLayout>
           }
         />
+
+        {/* Healthcare Route */}
         <Route
           path="/healthcare"
           element={
@@ -71,29 +72,172 @@ function App() {
             </MainLayout>
           }
         />
-        <Route path="/register" element={<MainLayout><EmRegister /></MainLayout>} />
-        <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
 
+        {/* Register Route */}
+        <Route
+          path="/register"
+          element={
+            <MainLayout>
+              <EmRegister />
+            </MainLayout>
+          }
+        />
 
-        <Route path="/user-dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+        {/* Login Route */}
+        <Route
+          path="/login"
+          element={
+            <MainLayout>
+              <Login />
+            </MainLayout>
+          }
+        />
 
-{/* Protect Admin Dashboard */}
-<Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+        {/* Protected Routes */}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute requiredUserType="admin">
+             
+                <AdminDashboard />
+             
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/user-dashboard"
+          element={
+            <ProtectedRoute requiredUserType="user">
+              <MainLayout>
+                <UserDashboard />
+              </MainLayout>
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/board-school" element={<MainLayout><BoardingSchool /></MainLayout>} />
-        <Route path="/day-school" element={<MainLayout><DaySchool /></MainLayout>} />
-        <Route path="/pre-schools" element={<MainLayout><PreSchool /></MainLayout>} />
-        <Route path="/hospitals" element={<MainLayout><MedicalCl /></MainLayout>} />
-        <Route path="/forgot-password" element={<MainLayout><ForgotPassword></ForgotPassword></MainLayout>} />
-        <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
-        <Route path="/medicalcategory/:categoryName" element={<MainLayout><Medicategory /></MainLayout>} />
-        <Route path="/medu-details" element={<MainLayout><MeduDetail /></MainLayout>} />
-        <Route path="/schools"  element={<MainLayout><SchoolDetail /></MainLayout>} />
-        <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
-        <Route path="/about" element={<MainLayout><About /></MainLayout>} />
-        <Route path="/contact" element={<MainLayout><HContact /></MainLayout>} />
-        <Route path="/school" element={<MainLayout><DaySchoolM /></MainLayout>} />
-        <Route path="/news" element={<MainLayout><News /></MainLayout>} />
+        {/* Education Routes */}
+        <Route
+          path="/board-school"
+          element={
+            <MainLayout>
+              <BoardingSchool />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/day-school"
+          element={
+            <MainLayout>
+              <DaySchool />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/pre-schools"
+          element={
+            <MainLayout>
+              <PreSchool />
+            </MainLayout>
+          }
+        />
+
+        {/* Healthcare Routes */}
+        <Route
+          path="/hospitals"
+          element={
+            <MainLayout>
+              <MedicalCl />
+            </MainLayout>
+          }
+        />
+
+        {/* Forgot Password Route */}
+        <Route
+          path="/forgot-password"
+          element={
+            <MainLayout>
+              <ForgotPassword />
+            </MainLayout>
+          }
+        />
+
+        {/* Category Routes */}
+        <Route
+          path="/category/:categoryName"
+          element={
+            <MainLayout>
+              <CatePage />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/medicalcategory/:categoryName"
+          element={
+            <MainLayout>
+              <Medicategory />
+            </MainLayout>
+          }
+        />
+
+        {/* Detail Routes */}
+        <Route
+          path="/medu-details"
+          element={
+            <MainLayout>
+              <MeduDetail />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/schools"
+          element={
+            <MainLayout>
+              <SchoolDetail />
+            </MainLayout>
+          }
+        />
+
+        {/* Other Routes */}
+        <Route
+          path="/jobs"
+          element={
+            <MainLayout>
+              <Jobs />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <MainLayout>
+              <About />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/contact"
+          element={
+            <MainLayout>
+              <HContact />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/school"
+          element={
+            <MainLayout>
+              <DaySchoolM />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/news"
+          element={
+            <MainLayout>
+              <News />
+            </MainLayout>
+          }
+        />
       </Routes>
     </Router>
   );

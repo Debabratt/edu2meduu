@@ -9,6 +9,7 @@ const {getHealthcareUsers } = require('../controller/Usercontroller');
 const {updateProfile } = require('../controller/Usercontroller');
 
 
+
 UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
 UserRouter.get('/getallcategories',getAllCategories)

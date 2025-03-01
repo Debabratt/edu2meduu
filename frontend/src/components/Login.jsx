@@ -18,37 +18,38 @@ const Login = () => {
   const handleForgotPasswordNavigate = () => {
     setEmailOrPhone("");
     setPassword("");
-    navigate(
-      userType === "education"
-        ? "/forgot-password"
-        : userType === "healthcare"
-        ? "/forgot-password"
-        : "/forgot-password"
-    );
+    navigate("/forgot-password");
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+  
     try {
       const endpoint =
         userType === "admin"
           ? "http://localhost:8001/admin/adminlogin"
           : "http://localhost:8001/user/login";
-
+  
       const { data } = await axios.post(
         endpoint,
         { emailOrPhone, password, userType },
-        { withCredentials: true } // ✅ Ensure session is stored
+        { withCredentials: true }
       );
-
+  
       if (data.success) {
+        // Clear any existing user/admin data from sessionStorage
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("admin");
+  
+        // Store the appropriate user/admin data based on userType
         const storageKey = userType === "admin" ? "admin" : "user";
-        localStorage.setItem(storageKey, JSON.stringify(data[storageKey]));
+        sessionStorage.setItem(storageKey, JSON.stringify(data[storageKey]));
         sessionStorage.setItem("isAuthenticated", "true");
-
+        sessionStorage.setItem("userType", userType); // Store the userType
+  
+        // Redirect based on userType
         const redirectPath = userType === "admin" ? "/admin-dashboard" : "/user-dashboard";
         navigate(redirectPath);
       } else {
