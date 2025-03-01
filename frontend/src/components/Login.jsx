@@ -18,34 +18,13 @@ const Login = () => {
   const handleForgotPasswordNavigate = () => {
     setEmailOrPhone("");
     setPassword("");
-
     navigate(
       userType === "education"
         ? "/forgot-password"
         : userType === "healthcare"
-        ? "/forgot-password-medical"
-        : "/admin-forgot-password"
+        ? "/forgot-password"
+        : "/forgot-password"
     );
-  };
-
-  const handleAdminLogin = async () => {
-    try {
-      const response = await axios.post("http://localhost:8001/admin/adminlogin", {
-        emailOrPhone, // Allow both email and phone
-        password,
-        userType
-      });
-
-      if (response.data.success) {
-        localStorage.setItem("admin", JSON.stringify(response.data.admin));
-        navigate("/admin-dashboard");
-      } else {
-        setError(response.data.message);
-      }
-    } catch (error) {
-      console.error("Admin Login Error:", error.response ? error.response.data : error.message);
-      setError(error.response?.data?.message || "Server error");
-    }
   };
 
   const handleLogin = async (e) => {
@@ -54,28 +33,26 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // For admin login, call the admin login handler
-      if (userType === "admin") {
-        await handleAdminLogin(); // Handles admin login separately
-      } else {
-        const { data } = await axios.post("http://localhost:8001/user/login", {
-          emailOrPhone, // Accept both email and phone
-          password,
-          userType
-        });
+      const endpoint =
+        userType === "admin"
+          ? "http://localhost:8001/admin/adminlogin"
+          : "http://localhost:8001/user/login";
 
-        if (data.success) {
-          localStorage.setItem("user", JSON.stringify(data.user));
-          navigate(
-            userType === "education"
-              ? "/user-dashboard"
-              : userType === "healthcare"
-              ? "/user-dashboard"
-              : "/admin-dashboard"
-          );
-        } else {
-          setError(data.message);
-        }
+      const { data } = await axios.post(
+        endpoint,
+        { emailOrPhone, password, userType },
+        { withCredentials: true } // ✅ Ensure session is stored
+      );
+
+      if (data.success) {
+        const storageKey = userType === "admin" ? "admin" : "user";
+        localStorage.setItem(storageKey, JSON.stringify(data[storageKey]));
+        sessionStorage.setItem("isAuthenticated", "true");
+
+        const redirectPath = userType === "admin" ? "/admin-dashboard" : "/user-dashboard";
+        navigate(redirectPath);
+      } else {
+        setError(data.message);
       }
     } catch (err) {
       setError(err.response?.data?.message || "Server error");
@@ -107,8 +84,8 @@ const Login = () => {
           Login
         </h2>
 
-        {/* User Type Selection - Buttons */}
-        <div className="mb-4 flex justify-center ">
+        {/* User Type Selection */}
+        <div className="mb-4 flex justify-center">
           {["education", "healthcare", "admin"].map((type) => (
             <motion.button
               key={type}
@@ -134,15 +111,11 @@ const Login = () => {
 
         <form onSubmit={handleLogin}>
           <div className="mb-4 mt-2">
-            <label
-              htmlFor="emailOrPhone"
-              className="block py-2 text-gray-700 text-xs font-bold"
-            >
+            <label className="block py-2 text-gray-700 text-xs font-bold">
               Email or Phone
             </label>
             <input
               type="text"
-              id="emailOrPhone"
               placeholder="Enter your email or phone"
               value={emailOrPhone}
               onChange={(e) => setEmailOrPhone(e.target.value)}
@@ -152,15 +125,11 @@ const Login = () => {
           </div>
 
           <div className="mb-4 mt-2">
-            <label
-              htmlFor="password"
-              className="block py-2 text-gray-700 text-xs font-bold"
-            >
+            <label className="block py-2 text-gray-700 text-xs font-bold">
               Password
             </label>
             <input
               type="password"
-              id="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

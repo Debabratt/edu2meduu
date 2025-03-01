@@ -18,6 +18,7 @@ import {
   Phone,
   Menu,
   X,
+  BookOpen,
 } from "lucide-react";
 
 export default function UserDashboard() {
@@ -52,34 +53,34 @@ export default function UserDashboard() {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage("");
-  
-    try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("userId", user._id); // Send user ID manually
-      Object.keys(formData).forEach((key) => {
-        if (formData[key]) formDataToSend.append(key, formData[key]);
-      });
-  
-      if (profilePicture) {
-        formDataToSend.append("image", profilePicture);
-      }
-  
-      const response = await axios.patch("http://localhost:8001/user/updateProfile", formDataToSend, {
-        headers: { "Content-Type": "multipart/form-data" },
-        withCredentials: true,
-      });
-  
-      setMessage(response.data.message);
-    } catch (error) {
-      setMessage(error.response?.data?.message || "Something went wrong");
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setLoading(true);
+  setMessage("");
+
+  try {
+    const formDataToSend = new FormData();
+    formDataToSend.append("userId", user._id); // Send user ID manually
+    Object.keys(formData).forEach((key) => {
+      if (formData[key]) formDataToSend.append(key, formData[key]);
+    });
+
+    if (profilePicture) {
+      formDataToSend.append("image", profilePicture);
     }
-  };
-  
+
+    const response = await axios.patch("http://localhost:8001/user/updateProfile", formDataToSend, {
+      headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true,
+    });
+
+    setMessage(response.data.message);
+  } catch (error) {
+    setMessage(error.response?.data?.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
 
@@ -184,7 +185,7 @@ export default function UserDashboard() {
           <p className="text-gray-600 mb-6">
             Keep your profile up-to-date for the best experience.
           </p>
-    
+        
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Name Input */}
             <div className="flex items-center space-x-3">
@@ -198,7 +199,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500"
               />
             </div>
-    
+        
             {/* Address Input */}
             <div className="flex items-center space-x-3">
               <Home className="w-6 h-6 text-green-500" />
@@ -211,7 +212,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-green-500"
               />
             </div>
-    
+        
             {/* Phone Input */}
             <div className="flex items-center space-x-3">
               <Phone className="w-6 h-6 text-yellow-500" />
@@ -224,7 +225,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-yellow-500"
               />
             </div>
-    
+        
             {/* Email Input */}
             <div className="flex items-center space-x-3">
               <Mail className="w-6 h-6 text-purple-500" />
@@ -237,7 +238,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-purple-500"
               />
             </div>
-    
+        
             {/* Profile Picture Upload */}
             <div className="flex items-center space-x-3">
               <Camera className="w-6 h-6 text-orange-500" />
@@ -247,7 +248,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full"
               />
             </div>
-    
+        
             {/* Description Textarea */}
             <div className="flex items-center space-x-3">
               <Edit3 className="w-6 h-6 text-red-500" />
@@ -259,7 +260,7 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
               ></textarea>
             </div>
-    
+        
             {/* Additional Info */}
             <div className="flex items-center space-x-3 sm:col-span-2">
               <Edit3 className="w-6 h-6 text-indigo-500" />
@@ -271,7 +272,38 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-indigo-500"
               ></textarea>
             </div>
-    
+        
+            {/* Our Specialist Section */}
+            <div className="sm:col-span-2 mt-8 p-6 bg-gray-100 rounded-lg shadow-inner">
+              <h3 className="text-xl font-semibold text-gray-800 mb-4">Our Specialist</h3>
+              
+              {/* Teacher Name Input */}
+              <div className="flex items-center space-x-3 mb-4">
+                <User className="w-6 h-6 text-teal-500" />
+                <input
+                  type="text"
+                  name="teacherName"
+                  value={formData.teacherName}
+                  onChange={handleChange}
+                  placeholder="Enter Teacher Name"
+                  className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+        
+              {/* Qualification Input */}
+              <div className="flex items-center space-x-3">
+                <BookOpen className="w-6 h-6 text-orange-500" />
+                <input
+                  type="text"
+                  name="qualification"
+                  value={formData.qualification}
+                  onChange={handleChange}
+                  placeholder="Enter Qualification"
+                  className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
+                />
+              </div>
+            </div>
+        
             {/* Submit Button */}
             <div className="mt-6 text-center sm:col-span-2">
               <button
@@ -283,7 +315,7 @@ export default function UserDashboard() {
               </button>
             </div>
           </form>
-    
+        
           {/* Status Message */}
           {message && (
             <div className="mt-4 text-center text-gray-700 bg-gray-100 p-3 rounded-md">
@@ -291,6 +323,7 @@ export default function UserDashboard() {
             </div>
           )}
         </div>
+        
 
         );
       case "status":

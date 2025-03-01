@@ -10,31 +10,54 @@ const Contact=require('../model/Contact')
 const path=require("path")
 exports.adminLogin = async (req, res) => {
   try {
-      const { emailOrPhone, password, userType } = req.body;
+    const { emailOrPhone, password, userType } = req.body;
 
-      // Find admin by email or phone and userType
-      const admin = await Admin.findOne({ 
-          $or: [{ email: emailOrPhone }, { phone: emailOrPhone }], 
-          userType
-      });
+    // Find admin by email or phone and userType
+    const admin = await Admin.findOne({
+      $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
+      userType,
+    });
 
-      if (!admin || admin.password !== password) {
-          return res.status(400).json({ success: false, message: "Invalid email/phone or password" });
+    if (!admin) {
+      return res.status(400).json({ success: false, message: "Admin not found" });
+    }
+
+    // Direct password comparison (⚠️ Not Secure)
+    if (password !== admin.password) {
+      return res.status(400).json({ success: false, message: "Invalid password" });
+    }
+
+    // Store admin session
+    req.session.userType = "admin";
+    req.session.admin = {
+      id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      phone: admin.phone,
+      userType: admin.userType,
+    };
+
+    // Ensure session is saved before sending response
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session Save Error:", err);
+        return res.status(500).json({ success: false, message: "Session error" });
       }
-
-      // Exclude password before sending response
-      const { password: _, ...adminData } = admin.toObject();
-
-      res.json({ 
-          success: true, 
-          message: "Admin login successful", 
-          admin: adminData 
+      res.json({
+        success: true,
+        message: "Admin login successful",
+        admin: req.session.admin, // Return session data
       });
+    });
+
   } catch (error) {
-      console.error("Login Error:", error);
-      res.status(500).json({ success: false, message: "Server error" });
+    console.error("Login Error:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
+
 
   
 

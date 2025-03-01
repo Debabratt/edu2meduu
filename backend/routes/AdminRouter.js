@@ -12,6 +12,7 @@ const { addCategory} = require('../controller/Admincontroller');
 const { createNews} = require('../controller/Admincontroller');
 const { getAllNews } = require('../controller/Admincontroller');
 const {getContacts } = require('../controller/Admincontroller');
+
 AdminRouter.post('/adminlogin',adminLogin);
 
 AdminRouter.get('/getHealthcareUsers', getHealthcareUsers);

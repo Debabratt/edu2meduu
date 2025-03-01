@@ -1,120 +1,47 @@
-import mailjet from "node-mailjet";
-import User from "../models/User.js";
-import crypto from "crypto";
-import bcrypt from "bcryptjs";
+const User = require('../model/User');
+const crypto = require('crypto');
+const { sendEmail } = require('../utils/nodemailer');
 
-// Configure Mailjet with API keys
-const mailjetClient = mailjet.apiConnect(
-  process.env.MAILJET_API_KEY,
-  process.env.MAILJET_API_SECRET
-);
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
 
-// ⭐ FORGOT-PASSWORD-CONTROLLER
-export const ForgotPassword = async (req, res) => {
-  const { email } = req.body;
-  try {
-    const user = await User.findOne({ email });
-    console.log("User found:", user);
+        const user = await User.findOne({ email });
+        if (!user) return res.status(404).json({ message: 'User not found' });
 
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
+        const token = crypto.randomBytes(32).toString('hex');
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // Token valid for 15 minutes
+        await user.save();
+
+        const resetURL = `http://localhost:3000/reset-password/${token}`;
+        sendEmail(email, 'Password Reset Request', `Click the link to reset your password: ${resetURL}`);
+
+        return res.status(200).json({ message: 'Reset link sent to your email' });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
-
-    // Generate reset token and expiration time
-    user.resetPasswordToken = crypto.randomBytes(32).toString("hex");
-    user.resetPasswordExpires = Date.now() + 3600000; // 1 hour expiration
-    console.log("Generated reset token:", user.resetPasswordToken);
-    console.log("Token expires at:", new Date(user.resetPasswordExpires));
-
-    await user.save();
-
-    const resetLink = `http://localhost:5173/user/reset-password/${user.resetPasswordToken}`;
-    console.log("Sending email to:", user.email);
-    console.log("From email:", process.env.MAILJET_FROM_EMAIL);
-    console.log(`Password reset link: ${resetLink}`);
-
-    const request = mailjetClient.post("send", { version: "v3.1" }).request({
-      Messages: [
-        {
-          From: {
-            Email: process.env.MAILJET_FROM_EMAIL,
-            Name: "Edu2Medu",
-          },
-          To: [
-            {
-              Email: user.email,
-              Name: `${user.firstName} ${user.lastName}`,
-            },
-          ],
-          Subject: "Password Reset Request",
-          HTMLPart: `
-  <div style="background-color:#f4f4f4; padding:20px; font-family:Arial, sans-serif;">
-    <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border-radius:8px; box-shadow:0 4px 8px rgba(0,0,0,0.1); overflow:hidden;">
-      <div style="background-color:#1e3a8a; padding:20px; text-align:center;">
-        <h1 style="color:#ffffff; margin:0;">Kris Software Consultancy</h1>
-      </div>
-      <div style="padding:20px;">
-        <h2 style="color:#1e3a8a;">Hello ${user.firstName},</h2>
-        <p style="font-size:16px; color:#555555;">
-          You requested to reset your password. Please click the button below to reset your password.
-          This link will expire in 1 hour.
-        </p>
-        <div style="text-align:center; margin:30px 0;">
-          <a href="${resetLink}" style="background-color:#1e3a8a; color:#ffffff; padding:12px 24px; text-decoration:none; border-radius:4px; font-size:16px;">
-            Reset Password
-          </a>
-        </div>
-        <p style="font-size:14px; color:#888888; text-align:center;">
-          If you didn't request a password reset, please ignore this email.
-        </p>
-      </div>
-      <div style="background-color:#f4f4f4; padding:15px; text-align:center; font-size:12px; color:#aaaaaa;">
-        © 2025 Websy Online. All rights reserved.
-      </div>
-    </div>
-  </div>
-`,
-        },
-      ],
-    });
-
-    await request; // Await the request properly
-
-    res.status(200).json({ message: "Password reset email sent successfully" });
-  } catch (error) {
-    console.error("Error sending reset email:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 };
 
-// ⭐ RESET-PASSWORD-CONTROLLER
-export const ResetPassword = async (req, res) => {
-  const { newPassword } = req.body;
-  const { resetPasswordToken } = req.params;
+exports.resetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { newPassword } = req.body;
 
-  try {
-    const user = await User.findOne({
-      resetPasswordToken,
-      resetPasswordExpires: { $gt: Date.now() },
-    });
+        const user = await User.findOne({ 
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
 
-    if (!user) {
-      return res.status(400).json({ message: "Invalid or expired token" });
+        if (!user) return res.status(400).json({ message: 'Invalid or expired token' });
+
+        user.password = newPassword; // Hashing should be done before saving
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        return res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
     }
-
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpires = undefined;
-
-    await user.save();
-
-    res.status(200).json({
-      message:
-        "Password reset successful. You can now log in with your new password.",
-    });
-  } catch (error) {
-    console.error("Error resetting password:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
 };

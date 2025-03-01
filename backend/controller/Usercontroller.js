@@ -99,15 +99,27 @@ exports.loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid email/phone or password" });
     }
 
-    // Exclude password before sending response
-    const { password: _, ...userData } = user.toObject();
+    // Store user session
+    req.session.user = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      userType: user.userType,
+    };
 
-    res.json({ success: true, message: "Login successful", user: userData });
+    res.json({ 
+      success: true, 
+      message: "Login successful", 
+      user: req.session.user // Return session data
+    });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+
 
 exports.getEducationUsers = async (req, res) => {
   try {

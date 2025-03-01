@@ -1,13 +1,15 @@
-require('dotenv').config();
 const express = require('express');
+require('dotenv').config(); 
+const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require("path"); 
 const app = express();
+const port = process.env.APP_PORT || 8002;  // Ensure you have a default port
 
-// MongoDB connection (using hardcoded URI)
+// MongoDB connection (using URI from .env)
 mongoose
-  .connect('mongodb://localhost:27017/edu2medu2', {
+  .connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -17,7 +19,7 @@ mongoose
 // Middleware
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow CORS from localhost:5175
+    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow CORS from specific front-end ports
     credentials: true,
   })
 );
@@ -25,23 +27,38 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Session Middleware (use the SESSION_SECRET from .env file)
+app.use(session({
+  secret: process.env.SESSION_SECRET,  // Use the session secret from the .env file
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }  // Set to `true` if you're using HTTPS in production
+}));
 
-// Routes
 // Routes
 const UserRouter = require('./routes/UserRouter');
 const AdminRouter = require("./routes/AdminRouter");
+const AuthRouter = require('./routes/AuthRoutes');
 
 app.use('/user', UserRouter);
 app.use('/admin', AdminRouter);
+app.use('/auth', AuthRouter);
+
+
+// Home route for testing
 app.get('/', (req, res) => {
   res.send('Backend is working! 🚀');
 });
 
-// Set the server to listen on localhost:8002
-const PORT = 8001;
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// Catch-all handler for undefined routes
+app.all('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
-// Export for Vercel
+// Set the server to listen on port from environment variable
+app.listen(port, () => {
+  console.log(`Server is running on ${process.env.BASE_URL || `http://localhost:${port}`}`);
+});
+
+// Export for Vercel (optional for deployment)
 module.exports = app;

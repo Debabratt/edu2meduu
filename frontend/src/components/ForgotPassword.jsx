@@ -1,54 +1,102 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
+function ForgotPassword() {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [otp, setOtp] = useState('');
+    const [message, setMessage] = useState('');
+    const [isRegistered, setIsRegistered] = useState(false);
 
+    const handleRegister = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8001/auth/register', { username, email });
+            setMessage(response.data.message);
+            setIsRegistered(true);
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Registration failed');
+        }
+    };
 
-const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+    const handleVerify = async (event) => {
+        event.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8001/auth/verify', { email, otp_code: otp });
+            if (response.data.result[0].message === 'Email is verified') {
+                window.alert('Email verification successful');
+                setMessage('Email verification successful');
+            }
+        } catch (error) {
+            setMessage(error.response?.data?.message || 'Verification failed');
+        }
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post('http://localhost:8001/user/forgot-password', { email });
-      setMessage(response.data.message);
-      setError('');
-    } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
-      setMessage('');
-    }
-  };
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-slate-600 to-zinc-300 ">
-      <div className="bg-white p-8 rounded-md shadow-lg max-w-md w-full">
-        
-        <h2 className="text-2xl font-bold mt-10 mb-6 text-center text-blue-800">Forgot Password</h2>
-        {message && <p className="text-green-600 mb-4">{message}</p>}
-        {error && <p className="text-red-600 mb-4">{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label htmlFor="email" className="block text-gray-700 text-sm font-bold mt-2 mb-3">Email Address</label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <button type="submit" className="mt-3 w-full bg-blue-800 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-300">
-            Send Reset Link
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-};
+    return (
+        <div className='flex items-center justify-center min-h-screen bg-gray-100'>
+            <div className='bg-white shadow-lg rounded-lg p-8 w-96'>
+                {!isRegistered ? (
+                    <form onSubmit={handleRegister} className='space-y-4'>
+                        <h2 className='text-xl font-bold text-center text-gray-700'>Register</h2>
+                        <div>
+                            <label className='block text-gray-600'>Username:</label>
+                            <input 
+                                type='text' 
+                                value={username} 
+                                onChange={(e) => setUsername(e.target.value)} 
+                                required 
+                                className='w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            />
+                        </div>
+                        <div>
+                            <label className='block text-gray-600'>Email:</label>
+                            <input 
+                                type='email' 
+                                value={email} 
+                                onChange={(e) => setEmail(e.target.value)} 
+                                required 
+                                className='w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            />
+                        </div>
+                        <button 
+                            type='submit' 
+                            className='w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition duration-200'>
+                            Register
+                        </button>
+                    </form>
+                ) : (
+                    <form onSubmit={handleVerify} className='space-y-4'>
+                        <h2 className='text-xl font-bold text-center text-gray-700'>Verify Email</h2>
+                        <div>
+                            <label className='block text-gray-600'>Email:</label>
+                            <input 
+                                type='email' 
+                                value={email} 
+                                disabled 
+                                className='w-full p-2 border border-gray-300 rounded bg-gray-200 cursor-not-allowed'
+                            />
+                        </div>
+                        <div>
+                            <label className='block text-gray-600'>OTP:</label>
+                            <input 
+                                type='text' 
+                                value={otp} 
+                                onChange={(e) => setOtp(e.target.value)} 
+                                required 
+                                className='w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            />
+                        </div>
+                        <button 
+                            type='submit' 
+                            className='w-full bg-green-500 text-white py-2 rounded hover:bg-green-600 transition duration-200'>
+                            Verify Email
+                        </button>
+                    </form>
+                )}
+                {message && <p className='mt-4 text-center text-red-500'>{message}</p>}
+            </div>
+        </div>
+    );
+}
 
 export default ForgotPassword;

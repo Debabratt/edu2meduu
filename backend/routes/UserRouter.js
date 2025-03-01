@@ -17,4 +17,6 @@ UserRouter.get('/getAllUsers',getAllUsers )
 UserRouter.get('/getHealthcareUsers',getHealthcareUsers )
 UserRouter.patch('/updateProfile',updateProfile)
 
+
+
 module.exports = UserRouter;

@@ -10,32 +10,27 @@ import Statistics from "./components/Statistics";
 import BoardingSchool from "./components/EducationList";
 import DaySchool from "./components/DaySchool";
 import PreSchool from "./components/PreSchool";
-
 import Login from "./components/Login";
-
 import HMarque from "./components/HMarque";
 import HCategory from "./components/HCategory";
 import HStatistics from "./components/HStatistics";
 import HContact from "./components/HContact";
-
 import MedicalCl from "./components/MedicalCl";
 import DaySchoolM from "./components/DaySchoolM";
 import News from "./components/News";
-
 import Jobs from "./components/Jobs";
 import About from "./components/About";
-
-import Userdash from "./components/UserDashboard";
 import EmRegister from "./components/EmRegister";
 import AdminDashboard from "./components/AdminDashboard";
-import Medudash from "./components/Medudash";
-import ForgotPassword from "./components/ForgotPassword";
 
+import ForgotPassword from "./components/ForgotPassword";
 import CatePage from "./components/CatePage";
 import Medicategory from "./components/Medicategory.jsx";
-
 import MeduDetail from "./components/MeduDetail.jsx";
 import SchoolDetail from "./components/SchoolDetail.jsx";
+
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import UserDashboard from "./components/UserDashboard";
 
 // Layout component that includes Header
 const MainLayout = ({ children }) => (
@@ -46,19 +41,10 @@ const MainLayout = ({ children }) => (
   </>
 );
 
-// Layout component without Header for specific routes
-const NoHeaderLayout = ({ children }) => (
-  <>
-    {children}
-    <Footer />
-  </>
-);
-
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Home Route with Header */}
         <Route
           path="/"
           element={
@@ -72,8 +58,6 @@ function App() {
             </MainLayout>
           }
         />
-
-        {/* Healthcare Route with Header */}
         <Route
           path="/healthcare"
           element={
@@ -87,29 +71,24 @@ function App() {
             </MainLayout>
           }
         />
-
-        {/* Register and Login Routes with Footer only */}
         <Route path="/register" element={<MainLayout><EmRegister /></MainLayout>} />
         <Route path="/login" element={<MainLayout><Login /></MainLayout>} />
 
-        {/* User Dashboard Route without Header */}
-        <Route path="/user-dashboard" element={<Userdash />} />
-        <Route path="/medu-dashboard" element={<Medudash />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        {/* School and Boarding Routes with Header */}
+
+        <Route path="/user-dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+
+{/* Protect Admin Dashboard */}
+<Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+
         <Route path="/board-school" element={<MainLayout><BoardingSchool /></MainLayout>} />
         <Route path="/day-school" element={<MainLayout><DaySchool /></MainLayout>} />
         <Route path="/pre-schools" element={<MainLayout><PreSchool /></MainLayout>} />
-
-        {/* Hospitals Route with Footer only */}
         <Route path="/hospitals" element={<MainLayout><MedicalCl /></MainLayout>} />
+        <Route path="/forgot-password" element={<MainLayout><ForgotPassword></ForgotPassword></MainLayout>} />
         <Route path="/category/:categoryName" element={<MainLayout><CatePage /></MainLayout>} />
         <Route path="/medicalcategory/:categoryName" element={<MainLayout><Medicategory /></MainLayout>} />
         <Route path="/medu-details" element={<MainLayout><MeduDetail /></MainLayout>} />
         <Route path="/schools"  element={<MainLayout><SchoolDetail /></MainLayout>} />
-        {/* Other Routes */}
-
         <Route path="/jobs" element={<MainLayout><Jobs /></MainLayout>} />
         <Route path="/about" element={<MainLayout><About /></MainLayout>} />
         <Route path="/contact" element={<MainLayout><HContact /></MainLayout>} />
