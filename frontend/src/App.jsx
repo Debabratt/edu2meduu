@@ -29,6 +29,7 @@ import MeduDetail from "./components/MeduDetail.jsx";
 import SchoolDetail from "./components/SchoolDetail.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import UserDashboard from "./components/UserDashboard";
+import ResetPassword from "./components/ResetPassword.jsx";
 
 // Layout component that includes Header and Footer
 const MainLayout = ({ children }) => (
@@ -105,15 +106,15 @@ function App() {
           }
         />
         <Route
-          path="/user-dashboard"
-          element={
-            <ProtectedRoute requiredUserType="user">
-              <MainLayout>
-                <UserDashboard />
-              </MainLayout>
-            </ProtectedRoute>
-          }
-        />
+  path="/user-dashboard"
+  element={
+    <ProtectedRoute requiredUserType="user">
+     
+        <UserDashboard />
+     
+    </ProtectedRoute>
+  }
+/>
 
         {/* Education Routes */}
         <Route
@@ -153,13 +154,24 @@ function App() {
 
         {/* Forgot Password Route */}
         <Route
-          path="/forgot-password"
+          path="/forgotpassword/:id/:token"
           element={
             <MainLayout>
               <ForgotPassword />
             </MainLayout>
           }
         />
+
+         {/* Forgot Password Route */}
+         <Route
+          path="/reset-password"
+          element={
+            <MainLayout>
+              <ResetPassword />
+            </MainLayout>
+          }
+        />
+
 
         {/* Category Routes */}
         <Route

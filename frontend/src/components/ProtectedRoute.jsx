@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({ children, requiredUserType }) => {
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated");
+  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
   const userType = sessionStorage.getItem("userType");
   const user = JSON.parse(sessionStorage.getItem("user") || "null");
   const admin = JSON.parse(sessionStorage.getItem("admin") || "null");
@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children, requiredUserType }) => {
   if (requiredUserType === "admin") {
     if (userType === "admin" && admin) {
       console.log("Access granted: Admin user");
-      return children; // Only admin can access admin pages
+      return children;
     } else {
       console.log("Access denied: User is not an admin. Redirecting to /login");
       return <Navigate to="/login" />;
@@ -32,10 +32,8 @@ const ProtectedRoute = ({ children, requiredUserType }) => {
   // User-specific route (for both education and healthcare)
   if (requiredUserType === "user") {
     if ((userType === "education" || userType === "healthcare") && user) {
-
-      
-      // console.log("Access granted: Education/Healthcare user");
-      return children; // Both education and healthcare users can access user pages
+      console.log("Access granted: Education/Healthcare user");
+      return children;
     } else {
       console.log("Access denied: User is not authorized. Redirecting to /login");
       return <Navigate to="/login" />;

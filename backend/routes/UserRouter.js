@@ -7,7 +7,7 @@ const {requestCall} = require('../controller/Usercontroller');
 const {getAllUsers } = require('../controller/Usercontroller');
 const {getHealthcareUsers } = require('../controller/Usercontroller');
 const {updateProfile } = require('../controller/Usercontroller');
-
+const {sendPasswordLink } = require('../controller/Usercontroller');
 
 
 UserRouter.post('/register', registerUser);
@@ -17,7 +17,9 @@ UserRouter.post('/requestcall',requestCall)
 UserRouter.get('/getAllUsers',getAllUsers )
 UserRouter.get('/getHealthcareUsers',getHealthcareUsers )
 UserRouter.patch('/updateProfile',updateProfile)
+UserRouter.post('/reset-password',sendPasswordLink)
 
+// UserRouter.post('/forgotr-password',forgotPassword)
 
 
 module.exports = UserRouter;

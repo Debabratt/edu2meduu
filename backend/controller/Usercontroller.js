@@ -4,7 +4,33 @@ const Category = require("../model/Category");
 const Contact = require("../model/Contact");
 const fs = require('fs');
 const multer = require('multer');
-const path=require("path")
+const path=require("path");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
+const jwt = require("jsonwebtoken");
+
+const keysecret = process.env.SECRET_KEY;
+
+// Define the transporter directly in the controller
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL, // Your Gmail email address
+        pass: process.env.PASSWORD, // Your Gmail password or app-specific password
+    },
+});
+
+
+
+
+//Verify email connection
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("🚨 Nodemailer connection error:", error);
+    } else {
+        console.log("✅ Nodemailer is ready to send emails");
+    }
+});
 // Register User Controller
 exports.registerUser = async (req, res) => {
   try {
@@ -306,4 +332,74 @@ exports.updateProfile = async (req, res) => {
     }
   });
 };
+
+
+
+
+
+
+
+
+
+
+
+//FORGOT PASSWORDS
+ // Adjust the path as needed
+ // Adjust the path as needed
+ // For generating a random token
+
+ exports.sendPasswordLink = async (req, res) => {
+  const { email } = req.body;
+  console.log("🔍 Received email:", email);  // Log the email
+
+  if (!email) {
+      return res.status(400).json({ success: false, message: "Please enter your email" });
+  }
+
+  try {
+      const user = await User.findOne({ email });
+      if (!user) {
+          console.log("❌ User not found for email:", email);
+          return res.status(404).json({ success: false, message: "User not found" });
+      }
+
+      // Generate JWT token
+      const token = jwt.sign({ _id: user._id }, keysecret, { expiresIn: "10m" });
+      console.log("🔑 Generated token:", token);
+
+      // Update user with token
+      const updatedUser = await User.findByIdAndUpdate(
+          user._id,
+          { verifytoken: token },
+          { new: true }
+      );
+
+      if (!updatedUser) {
+          console.log("❌ Error updating token in DB");
+          return res.status(500).json({ success: false, message: "Error updating user token" });
+      }
+
+      // Email content
+      const resetLink = `http://localhost:5173/forgotpassword/${user._id}/${token}`;
+      console.log("📧 Reset link:", resetLink);
+
+      const mailOptions = {
+          from: process.env.EMAIL,
+          to: email,
+          subject: "Password Reset Request",
+          text: `Click the link below to reset your password:\n\n${resetLink}\n\nThis link is valid for 10 minutes.`,
+      };
+
+      // Send email
+      await transporter.sendMail(mailOptions);
+      console.log("✅ Email sent successfully to:", email);
+
+      res.status(200).json({ success: true, message: "Password reset link sent successfully" });
+  } catch (error) {
+      console.error("🚨 Error sending password reset email:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
 

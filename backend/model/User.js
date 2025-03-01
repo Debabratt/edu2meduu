@@ -1,13 +1,14 @@
+
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
   name: {
-    required: true,
     type: String,
+    required: true,
   },
   email: {
-    required: true,
     type: String,
+    required: true,
     unique: true,
   },
   password: {
@@ -15,16 +16,13 @@ const UserSchema = new mongoose.Schema({
     required: [true, "Password is required"],
     minlength: [6, "Password must be at least 6 characters"],
   },
-  resetPasswordToken: { type: String },
-  resetPasswordExpires: { type: Date },
-
   phone: {
-    required: true,
     type: String,
+    required: true,
   },
   userType: {
-    required: true,
     type: String,
+    required: true,
     enum: ["admin", "education", "healthcare"],
   },
   category: {
@@ -42,24 +40,25 @@ const UserSchema = new mongoose.Schema({
       "Medical Stores",
     ],
     required: function () {
-      return this.userType === "education" || this.userType === "healthcare";
+      return this.userType !== "admin"; // Category required if not admin
     },
   },
   role: {
     type: String,
-    enum: ["admin", "user"], // Explicitly define 'admin' and 'user'
+    enum: ["admin", "user"],
     default: "user",
   },
-  image: { type: String },
-
+  image: {
+    type: String,
+  },
   description: {
     type: String,
   },
   status: {
-    require: true,
     type: String,
     enum: ["block", "active", "unblock"],
     default: "active",
+    required: true,
   },
   address: {
     type: String,
@@ -67,19 +66,131 @@ const UserSchema = new mongoose.Schema({
   additionalInfo: {
     type: String,
   },
-  otp_code: {
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  verifytoken: {
     type: String,
-    required: false
-},
-otp_expiration: {
-    type: Date,
-    required: false
-},
-is_verified: {
-    type: Boolean,
-    default: false
-},
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// const mongoose = require("mongoose");
+
+
+// const UserSchema = new mongoose.Schema({
+//   name: {
+//     required: true,
+//     type: String,
+//   },
+//   email: {
+//     required: true,
+//     type: String,
+//     unique: true,
+//   },
+//   password: {
+//     type: String,
+//     required: [true, "Password is required"],
+//     minlength: [6, "Password must be at least 6 characters"],
+//   },
+  
+
+//   phone: {
+//     required: true,
+//     type: String,
+//   },
+//   userType: {
+//     required: true,
+//     type: String,
+//     enum: ["admin", "education", "healthcare"],
+//   },
+//   category: {
+//     type: String,
+//     enum: [
+//       // Education Categories
+//       "Day School",
+//       "Boarding School",
+//       "Play School",
+//       "Private Tutor",
+//       "Coaching Centre",
+//       // Healthcare Categories
+//       "Hospital",
+//       "Private Clinic",
+//       "Medical Stores",
+//     ],
+//     required: function () {
+//       return this.userType === "education" || this.userType === "healthcare";
+//     },
+//   },
+//   role: {
+//     type: String,
+//     enum: ["admin", "user"], // Explicitly define 'admin' and 'user'
+//     default: "user",
+//   },
+//   image: { type: String },
+
+//   description: {
+//     type: String,
+//   },
+//   status: {
+//     require: true,
+//     type: String,
+//     enum: ["block", "active", "unblock"],
+//     default: "active",
+//   },
+//   address: {
+//     type: String,
+//   },
+//   additionalInfo: {
+//     type: String,
+//   },
+//   tokens: [
+//     {
+//         token: {
+//             type: String,
+//             required: true,
+//         }
+//     }
+// ],
+// verifytoken:{
+//     type: String,
+// }
+  
+// });
+
+// const User = mongoose.model("User", UserSchema);
+// module.exports = User;

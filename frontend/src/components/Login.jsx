@@ -18,7 +18,7 @@ const Login = () => {
   const handleForgotPasswordNavigate = () => {
     setEmailOrPhone("");
     setPassword("");
-    navigate("/forgot-password");
+    navigate("/reset-password");
   };
 
   const handleLogin = async (e) => {
