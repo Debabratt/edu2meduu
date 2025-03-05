@@ -98,24 +98,27 @@ function App() {
         <Route
           path="/admin-dashboard"
           element={
-            <ProtectedRoute requiredUserType="admin">
-             
-                <AdminDashboard />
-             
+            <ProtectedRoute userType="admin">
+              <AdminDashboard />
             </ProtectedRoute>
           }
         />
         <Route
-  path="/user-dashboard"
-  element={
-    <ProtectedRoute requiredUserType="user">
-     
-        <UserDashboard />
-     
-    </ProtectedRoute>
-  }
-/>
-
+          path="/user-dashboard"
+          element={
+            <ProtectedRoute userType="education">
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/healthcare-dashboard"
+          element={
+            <ProtectedRoute userType="healthcare">
+              <UserDashboard />
+            </ProtectedRoute>
+          }
+        />
         {/* Education Routes */}
         <Route
           path="/board-school"
@@ -162,8 +165,8 @@ function App() {
           }
         />
 
-         {/* Forgot Password Route */}
-         <Route
+        {/* Forgot Password Route */}
+        <Route
           path="/reset-password"
           element={
             <MainLayout>
@@ -171,7 +174,6 @@ function App() {
             </MainLayout>
           }
         />
-
 
         {/* Category Routes */}
         <Route

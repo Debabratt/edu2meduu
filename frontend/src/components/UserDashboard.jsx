@@ -95,7 +95,7 @@ export default function UserDashboard() {
 
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData) {
       setUser(userData);
     } else {
@@ -498,7 +498,7 @@ export default function UserDashboard() {
         <button
           className="flex items-center justify-center w-full p-3 mt-4 bg-[#83807e] hover:bg-[#245876] rounded-lg transition duration-300"
           onClick={() => {
-            localStorage.removeItem("user");
+            sessionStorage.removeItem("user");
             navigate("/login");
           }}
         >

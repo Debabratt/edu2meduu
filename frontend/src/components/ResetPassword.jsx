@@ -30,11 +30,18 @@ const ResetPassword = () => {
 
             const data = await res.json();
 
-            if (res.ok) { // Check if the response is successful
+            if (res.ok) {
+                const newToken = data.token;  // Assuming the API returns a reset token
+            
+                sessionStorage.removeItem("resetToken"); 
+                sessionStorage.setItem("resetToken", newToken);  
+                window.location.reload();  // Force refresh
+            
                 setEmail("");
-                setMessage(true);
-                toast.success("Password reset link sent successfully!", { position: "top-center" });
-            } else {
+                setMessage("Password reset link sent successfully to your email.");
+                toast.success("Password reset link sent!", { position: "top-center" });
+            }
+             else {
                 toast.error(data.message || "Invalid User", { position: "top-center" });
             }
         } catch (error) {

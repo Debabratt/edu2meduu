@@ -1,48 +1,56 @@
-import { Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children, requiredUserType }) => {
-  const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
-  const userType = sessionStorage.getItem("userType");
-  const user = JSON.parse(sessionStorage.getItem("user") || "null");
-  const admin = JSON.parse(sessionStorage.getItem("admin") || "null");
+const ProtectedRoute = ({ children, userType }) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
-  console.log("ProtectedRoute Debug:");
-  console.log("isAuthenticated:", isAuthenticated);
-  console.log("userType:", userType);
-  console.log("user:", user);
-  console.log("admin:", admin);
-  console.log("requiredUserType:", requiredUserType);
+  useEffect(() => {
+    const checkAuth = () => {
+      const isAuthenticated = sessionStorage.getItem("isAuthenticated") === "true";
+      const storedUserType = sessionStorage.getItem("userType");
 
-  if (!isAuthenticated) {
-    console.log("Access denied: User not authenticated. Redirecting to /login");
-    return <Navigate to="/login" />;
+      let user = null;
+      let admin = null;
+
+      try {
+        user = JSON.parse(sessionStorage.getItem("user") || "null");
+        admin = JSON.parse(sessionStorage.getItem("admin") || "null");
+      } catch (error) {
+        console.error("Error parsing sessionStorage data:", error);
+      }
+
+      console.log("🔍 ProtectedRoute Debug:");
+      console.log("✅ isAuthenticated:", isAuthenticated);
+      console.log("✅ storedUserType:", storedUserType);
+      console.log("✅ user:", user);
+      console.log("✅ admin:", admin);
+
+      if (
+        !isAuthenticated ||
+        (userType === "admin" && !admin) ||
+        ((userType === "education" || userType === "healthcare") && !user) ||
+        userType !== storedUserType
+      ) {
+        console.warn("⛔ Unauthorized! Redirecting to login...");
+        navigate("/login", { replace: true });
+      } else {
+        console.log("✅ Access granted!");
+      }
+
+      setIsLoading(false);
+    };
+
+    // Small delay to ensure sessionStorage is fully set
+    const timeout = setTimeout(checkAuth, 200);
+    return () => clearTimeout(timeout);
+  }, [navigate, userType]);
+
+  if (isLoading) {
+    return <div className="text-center text-gray-500">Checking authentication...</div>;
   }
 
-  // Admin-specific route
-  if (requiredUserType === "admin") {
-    if (userType === "admin" && admin) {
-      console.log("Access granted: Admin user");
-      return children;
-    } else {
-      console.log("Access denied: User is not an admin. Redirecting to /login");
-      return <Navigate to="/login" />;
-    }
-  }
-
-  // User-specific route (for both education and healthcare)
-  if (requiredUserType === "user") {
-    if ((userType === "education" || userType === "healthcare") && user) {
-      console.log("Access granted: Education/Healthcare user");
-      return children;
-    } else {
-      console.log("Access denied: User is not authorized. Redirecting to /login");
-      return <Navigate to="/login" />;
-    }
-  }
-
-  // Default deny access
-  console.log("Access denied: Redirecting to /login");
-  return <Navigate to="/login" />;
+  return children;
 };
 
 export default ProtectedRoute;

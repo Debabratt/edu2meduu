@@ -8,8 +8,8 @@ const {getAllUsers } = require('../controller/Usercontroller');
 const {getHealthcareUsers } = require('../controller/Usercontroller');
 const {updateProfile } = require('../controller/Usercontroller');
 const {sendPasswordLink } = require('../controller/Usercontroller');
-
-
+const {forgotpassword} = require('../controller/Usercontroller');
+const {resetPassword} = require('../controller/Usercontroller');
 UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
 UserRouter.get('/getallcategories',getAllCategories)
@@ -19,7 +19,7 @@ UserRouter.get('/getHealthcareUsers',getHealthcareUsers )
 UserRouter.patch('/updateProfile',updateProfile)
 UserRouter.post('/reset-password',sendPasswordLink)
 
-// UserRouter.post('/forgotr-password',forgotPassword)
-
+UserRouter.get('/forgotpassword/:id/:token',forgotpassword)
+UserRouter.post('/updatepassword/:id/:token',resetPassword)
 
 module.exports = UserRouter;

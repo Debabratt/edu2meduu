@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@heroicons/react": "^1.0.6",
+    "@mui/material": "^6.4.6",
     "@radix-ui/react-dropdown-menu": "^2.1.5",
     "@react-spring/web": "^9.7.5",
     "@tailwindcss/vite": "^4.0.0",

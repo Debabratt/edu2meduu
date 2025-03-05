@@ -1,61 +1,137 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, NavLink } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const { id, token } = useParams();
+  const navigate = useNavigate();
+  const [isValidToken, setIsValidToken] = useState(false);
+  const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Log the id and token when the component mounts
+  useEffect(() => {
+    console.log("🆔 ID from URL:", id);
+    console.log("🔑 Token from URL:", token);
+  }, [id, token]);
 
+  // Validate the token and user ID
+  const validateToken = async () => {
     try {
-      const response = await axios.post('http://localhost:8001/user/forgot-password', { email });
-      setMessage(response.data.message);
-      setError('');
-    } catch (err) {
-      setError(err.response.data.error);
-      setMessage('');
+      const res = await fetch(`http://localhost:8001/user/forgotpassword/${id}/${token}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setIsValidToken(true); // Token is valid
+      } else {
+        toast.error("Invalid or expired token!", { position: "top-center" });
+        navigate("/"); // Redirect to home or login page
+      }
+    } catch (error) {
+      console.error("Error validating token:", error);
+      toast.error("An error occurred while validating the token.", { position: "top-center" });
+      navigate("/"); // Redirect to home or login page
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
+  // Handle password input change
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  // Handle password reset submission
+  const handlePasswordReset = async (e) => {
+    e.preventDefault();
+  
+    if (!password) {
+      return toast.error("Password is required!", { position: "top-center" });
+    }
+  
+    try {
+      const res = await fetch(`http://localhost:8001/user/updatepassword/${id}/${token}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword: password }),  // ✅ Ensure correct JSON format
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok) {
+        toast.success("Password reset successful!", { position: "top-center" });
+        navigate("/login");
+      } else {
+        toast.error(data.message || "Error resetting password", { position: "top-center" });
+      }
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      toast.error("Server error, try again!", { position: "top-center" });
+    }
+  };
+  
+  // Validate the token when the component mounts
+  useEffect(() => {
+    validateToken();
+  }, [id, token]);
+
+  // Show loading spinner while validating the token
+  if (loading) {
+    return (
+      <Box className="flex justify-center items-center min-h-screen">
+        Loading... &nbsp;
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  // Show the password reset form if the token is valid
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center"
+    <section className="min-h-screen flex items-center justify-center bg-cover bg-center"
       style={{ backgroundImage: "url(/login.jpg)" }}
     >
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Forgot Password</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-              Enter your email:
-            </label>
+      <div className="w-full max-w-md bg-white shadow-lg rounded-lg p-6">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-semibold text-gray-800">Enter Your New Password</h1>
+        </div>
+        <form onSubmit={handlePasswordReset}>
+          {message && <p className="text-green-600 font-bold text-center mb-4">{message}</p>}
+          <div className="mb-4">
+            <label htmlFor="password" className="block text-gray-700 font-medium">New Password</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="example@example.com"
+              type="password"
+              value={password}
+              onChange={handlePasswordChange}
+              name="password"
+              id="password"
+              placeholder="Enter your new password"
+              className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
           >
-            Send Reset Link
+            Submit
           </button>
         </form>
-        {message && (
-          <p className="mt-4 text-center text-green-600 text-sm">{message}</p>
-        )}
-        {error && (
-          <p className="mt-4 text-center text-red-600 text-sm">{error}</p>
-        )}
+        <p className="text-center mt-4">
+          <NavLink to="/" className="text-blue-500 hover:underline">Home</NavLink>
+        </p>
+        <ToastContainer />
       </div>
-    </div>
+    </section>
   );
 };
 

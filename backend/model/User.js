@@ -1,4 +1,3 @@
-
 const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema({
@@ -77,12 +76,13 @@ const UserSchema = new mongoose.Schema({
   verifytoken: {
     type: String,
   },
+  verifytokenExpires: {
+    type: Date,
+  },
 });
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
-
-
 
 
 
@@ -114,23 +114,23 @@ module.exports = User;
 
 // const UserSchema = new mongoose.Schema({
 //   name: {
-//     required: true,
+//     require: true,
 //     type: String,
 //   },
 //   email: {
-//     required: true,
+//     require: true,
 //     type: String,
 //     unique: true,
 //   },
 //   password: {
 //     type: String,
-//     required: [true, "Password is required"],
+//     require: [true, "Password is require"],
 //     minlength: [6, "Password must be at least 6 characters"],
 //   },
   
 
 //   phone: {
-//     required: true,
+//     require: true,
 //     type: String,
 //   },
 //   userType: {

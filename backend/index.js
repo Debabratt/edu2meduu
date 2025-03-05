@@ -57,7 +57,7 @@ app.all('*', (req, res) => {
 
 // Set the server to listen on port from environment variable
 app.listen(port, () => {
-  console.log(`Server is running on ${process.env.BASE_URL || `http://localhost:${port}`}`);
+  console.log(`Server is running on ${process.env.REACT_APP_BASEURI || `http://localhost:${port}`}`);
 });
 
 // Export for Vercel (optional for deployment)

@@ -11,6 +11,7 @@ import {
   X,
   PhoneCall,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AdminDashboard = () => {
   const [selectedSection, setSelectedSection] = useState(null);
@@ -40,7 +41,7 @@ const AdminDashboard = () => {
   });
   const [contacts, setContacts] = useState([]);
   const [error, setError] = useState("");
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchContacts = async () => {
       try {
@@ -849,7 +850,10 @@ const handleNewsSubmit = async (e) => {
             </nav>
             <button
               className="w-full py-3 bg-[#E76F51] hover:bg-red-700 text-white font-semibold rounded-lg flex items-center justify-center gap-3 mt-6"
-              onClick={() => setSelectedSection(null)}
+              onClick={() => {
+                sessionStorage.removeItem("admin");
+                navigate("/login");
+              }}
             >
               <LogOut />
               Logout
