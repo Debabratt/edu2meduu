@@ -1,5 +1,5 @@
 const express = require('express');
-require('dotenv').config(); 
+require('dotenv').config();
 const session = require('express-session');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -14,12 +14,13 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => console.log('MongoDB connected successfully'))
-  .catch((err) => console.error('MongoDB connection error:', err));
 
-// Middleware
+// Load allowed origins from .env and split into an array
+// const allowedOrigins = process.env.ALLOWED_ORIGINS.split(', ');
+
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'], // Allow CORS from specific front-end ports
+    origin:"http://localhost:5173", // Use the allowed origins from .env
     credentials: true,
   })
 );

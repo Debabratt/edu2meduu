@@ -2,16 +2,16 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { SearchIcon } from "@heroicons/react/outline";
 import { motion } from "framer-motion";
-import axios from "axios"; // Import axios
+import axios from "axios";
+
 const Home = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState("Education");
   const [selectedOption, setSelectedOption] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]); // State to store search results
-  const [loading, setLoading] = useState(false); // State to handle loading
-  const [error, setError] = useState(null); // State to handle errors
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (location.pathname.includes("/healthcare")) {
@@ -27,28 +27,28 @@ const Home = () => {
     navigate(category === "Education" ? "/" : "/healthcare");
   };
 
- 
-
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setError("Please enter a search term.");
       return;
     }
-  
+
     setLoading(true);
     setError(null);
-  
+
     try {
       const endpoint =
         selectedCategory === "Education"
           ? "http://localhost:8001/user/searchEducation"
           : "http://localhost:8001/user/searchHealthcare";
-  
+
       const response = await axios.get(endpoint, {
         params: { query: searchQuery },
       });
-  
-      setSearchResults(response.data);
+
+      navigate("/search-results", {
+        state: { searchResults: response.data, selectedCategory },
+      });
     } catch (error) {
       setError(
         error.response?.data?.message || "An error occurred while searching. Please try again."
@@ -57,7 +57,6 @@ const Home = () => {
       setLoading(false);
     }
   };
-  
 
   const educationOptions = [
     "Day School",
@@ -179,26 +178,6 @@ const Home = () => {
             {option}
           </span>
         ))}
-      </div>
-
-      {/* Search Results */}
-      <div className="relative z-10 mt-8 w-full max-w-4xl px-4">
-        {loading && <p className="text-center text-white">Loading...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-        {searchResults.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {searchResults.map((user) => (
-              <div
-                key={user._id}
-                className="bg-white p-4 rounded-lg shadow-lg"
-              >
-                <h3 className="text-lg font-bold">{user.name}</h3>
-                <p className="text-sm text-gray-600">{user.category}</p>
-                <p className="text-sm text-gray-600">{user.address}</p>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
     </div>
   );

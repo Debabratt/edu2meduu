@@ -46,19 +46,24 @@ exports.adminLogin = async (req, res) => {
   try {
     const { emailOrPhone, password, userType } = req.body;
 
+    // Log the request body for debugging
+    console.log("Request Body:", req.body);
+
     // Find admin by email or phone and userType
     const admin = await Admin.findOne({
       $or: [{ email: emailOrPhone }, { phone: emailOrPhone }],
       userType,
     });
 
+    // Log the admin found (or not found)
+    console.log("Admin Found:", admin);
+
     if (!admin) {
       return res.status(400).json({ success: false, message: "Admin not found" });
     }
 
-    // Compare password using bcrypt
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
-    if (!isPasswordValid) {
+    // Compare password directly (without bcrypt)
+    if (password !== admin.password) {
       return res.status(400).json({ success: false, message: "Invalid password" });
     }
 
@@ -104,7 +109,6 @@ exports.adminLogin = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 
   

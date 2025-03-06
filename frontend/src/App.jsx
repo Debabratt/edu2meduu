@@ -32,8 +32,8 @@ import UserDashboard from "./components/UserDashboard";
 import ResetPassword from "./components/ResetPassword.jsx";
 import AdminResetPassword from "./components/AdminResetPassword.jsx";
 import AdminForgotPassword from "./components/AdminForgotPassword.jsx";
-import EduResult from "./components/EduResult.jsx";
-import MeduResult from "./components/MeduResult.jsx";
+
+import SearchResult from "./components/SearchResult.jsx";
 
 // Layout component that includes Header and Footer
 const MainLayout = ({ children }) => (
@@ -212,7 +212,14 @@ function App() {
             </MainLayout>
           }
         />
-        
+        <Route
+          path="/search-results"
+          element={
+            <MainLayout>
+              <SearchResult />
+            </MainLayout>
+          }
+        />
 
         {/* Detail Routes */}
         <Route
