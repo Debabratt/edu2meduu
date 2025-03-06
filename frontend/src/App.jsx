@@ -30,6 +30,10 @@ import SchoolDetail from "./components/SchoolDetail.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import UserDashboard from "./components/UserDashboard";
 import ResetPassword from "./components/ResetPassword.jsx";
+import AdminResetPassword from "./components/AdminResetPassword.jsx";
+import AdminForgotPassword from "./components/AdminForgotPassword.jsx";
+import EduResult from "./components/EduResult.jsx";
+import MeduResult from "./components/MeduResult.jsx";
 
 // Layout component that includes Header and Footer
 const MainLayout = ({ children }) => (
@@ -164,6 +168,14 @@ function App() {
             </MainLayout>
           }
         />
+         <Route
+          path="/admin-forgotpassword/:id/:token"
+          element={
+            <MainLayout>
+              <AdminForgotPassword />
+            </MainLayout>
+          }
+        />
 
         {/* Forgot Password Route */}
         <Route
@@ -171,6 +183,14 @@ function App() {
           element={
             <MainLayout>
               <ResetPassword />
+            </MainLayout>
+          }
+        />
+        <Route
+          path="/admin-resetpassword"
+          element={
+            <MainLayout>
+              <AdminResetPassword/>
             </MainLayout>
           }
         />
@@ -192,6 +212,7 @@ function App() {
             </MainLayout>
           }
         />
+        
 
         {/* Detail Routes */}
         <Route

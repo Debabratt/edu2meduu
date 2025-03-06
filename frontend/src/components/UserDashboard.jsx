@@ -53,34 +53,44 @@ export default function UserDashboard() {
 
   // Handle form submission
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setMessage("");
-
-  try {
-    const formDataToSend = new FormData();
-    formDataToSend.append("userId", user._id); // Send user ID manually
-    Object.keys(formData).forEach((key) => {
-      if (formData[key]) formDataToSend.append(key, formData[key]);
-    });
-
-    if (profilePicture) {
-      formDataToSend.append("image", profilePicture);
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+  
+    // Check if user and user._id are defined
+    if (!user || !user._id) {
+      setMessage("User ID is missing. Please log in again.");
+      setLoading(false);
+      return;
     }
-
-    const response = await axios.patch("http://localhost:8001/user/updateProfile", formDataToSend, {
-      headers: { "Content-Type": "multipart/form-data" },
-      withCredentials: true,
-    });
-
-    setMessage(response.data.message);
-  } catch (error) {
-    setMessage(error.response?.data?.message || "Something went wrong");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("userId", user._id); // Use the logged-in user's ID
+      Object.keys(formData).forEach((key) => {
+        if (formData[key]) formDataToSend.append(key, formData[key]);
+      });
+  
+      if (profilePicture) {
+        formDataToSend.append("image", profilePicture);
+      }
+  
+      const response = await axios.patch(
+        "http://localhost:8001/user/updateProfile",
+        formDataToSend,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+          withCredentials: true,
+        }
+      );
+  
+      setMessage(response.data.message);
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
 

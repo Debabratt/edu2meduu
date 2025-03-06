@@ -18,34 +18,38 @@ const Login = () => {
   const handleForgotPasswordNavigate = () => {
     setEmailOrPhone("");
     setPassword("");
-    navigate("/reset-password");
+
+    // Redirect based on user type
+    if (userType === "admin") {
+      navigate("/admin-resetpassword");
+    } else {
+      navigate("/reset-password");
+    }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-
+  
     try {
       const endpoint =
         userType === "admin"
           ? "http://localhost:8001/admin/adminlogin"
           : "http://localhost:8001/user/login";
-
+  
       const { data } = await axios.post(
         endpoint,
         { emailOrPhone, password, userType },
         { withCredentials: true }
       );
-
+  
       if (data.success) {
-       
-
         const storageKey = userType === "admin" ? "admin" : "user";
         sessionStorage.setItem(storageKey, JSON.stringify(data[storageKey]));
         sessionStorage.setItem("isAuthenticated", "true");
         sessionStorage.setItem("userType", userType);
-
+  
         let redirectPath = "/";
         if (userType === "education") {
           redirectPath = "/user-dashboard";
@@ -54,7 +58,7 @@ const Login = () => {
         } else if (userType === "admin") {
           redirectPath = "/admin-dashboard";
         }
-
+  
         console.log("✅ Redirecting to:", redirectPath);
         console.log("✅ Session Storage Updated:", {
           user: sessionStorage.getItem("user"),
@@ -62,7 +66,7 @@ const Login = () => {
           isAuthenticated: sessionStorage.getItem("isAuthenticated"),
           userType: sessionStorage.getItem("userType"),
         });
-
+  
         // Using `window.location.href` for better reliability
         window.location.href = redirectPath;
       } else {
@@ -72,6 +76,9 @@ const Login = () => {
       setError(err.response?.data?.message || "Server error");
     } finally {
       setLoading(false);
+      // Clear the input fields
+      setEmailOrPhone("");
+      setPassword("");
     }
   };
 

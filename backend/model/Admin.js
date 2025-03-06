@@ -34,6 +34,20 @@ const AdminSchema = new mongoose.Schema({
     enum: ['admin', 'user'],  
     default: 'admin',
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
+  verifytoken: {
+    type: String,
+  },
+  verifytokenExpires: {
+    type: Date,
+  },
 });
 
 const Admin = mongoose.model('Admin', AdminSchema);

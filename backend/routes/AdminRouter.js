@@ -12,7 +12,9 @@ const { addCategory} = require('../controller/Admincontroller');
 const { createNews} = require('../controller/Admincontroller');
 const { getAllNews } = require('../controller/Admincontroller');
 const {getContacts } = require('../controller/Admincontroller');
-
+const {sendPasswordLink } = require('../controller/Admincontroller');
+const {adminforgotpassword} = require('../controller/Admincontroller');
+const {resetPassword} = require('../controller/Admincontroller');
 AdminRouter.post('/adminlogin',adminLogin);
 
 AdminRouter.get('/getHealthcareUsers', getHealthcareUsers);
@@ -30,4 +32,11 @@ AdminRouter.post('/addCategory',addCategory );
 
 AdminRouter.get('/getallNews',getAllNews );
 AdminRouter.get('/getContacts',getContacts)
+
+
+
+AdminRouter.post('/admin-resetpassword',sendPasswordLink)
+AdminRouter.get('/admin-forgotpassword/:id/:token',adminforgotpassword)
+AdminRouter.post('/admin-updatepassword/:id/:token',resetPassword)
+
 module.exports = AdminRouter;

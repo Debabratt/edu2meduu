@@ -10,6 +10,8 @@ const {updateProfile } = require('../controller/Usercontroller');
 const {sendPasswordLink } = require('../controller/Usercontroller');
 const {forgotpassword} = require('../controller/Usercontroller');
 const {resetPassword} = require('../controller/Usercontroller');
+const {searchEducation} = require('../controller/Usercontroller');
+const {searchHealthcare} = require('../controller/Usercontroller');
 UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
 UserRouter.get('/getallcategories',getAllCategories)
@@ -21,5 +23,9 @@ UserRouter.post('/reset-password',sendPasswordLink)
 
 UserRouter.get('/forgotpassword/:id/:token',forgotpassword)
 UserRouter.post('/updatepassword/:id/:token',resetPassword)
+
+
+UserRouter.get('/searchEducation',searchEducation)
+UserRouter.get('/searchHealthcare',searchHealthcare)
 
 module.exports = UserRouter;

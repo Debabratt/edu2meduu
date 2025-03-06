@@ -2,34 +2,29 @@ const bcrypt = require("bcrypt");
 const User = require("../model/User");
 const Category = require("../model/Category");
 const Contact = require("../model/Contact");
-const fs = require('fs');
-const multer = require('multer');
-const path=require("path");
+const fs = require("fs");
+const multer = require("multer");
+const path = require("path");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 
-
-
 // Define the transporter directly in the controller
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.EMAIL, // Your Gmail email address
-        pass: process.env.PASSWORD, // Your Gmail password or app-specific password
-    },
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL, // Your Gmail email address
+    pass: process.env.PASSWORD, // Your Gmail password or app-specific password
+  },
 });
-
-
-
 
 //Verify email connection
 transporter.verify((error, success) => {
-    if (error) {
-        console.error("🚨 Nodemailer connection error:", error);
-    } else {
-        console.log("✅ Nodemailer is ready to send emails");
-    }
+  if (error) {
+    console.error("🚨 Nodemailer connection error:", error);
+  } else {
+    console.log("✅ Nodemailer is ready to send emails");
+  }
 });
 // Register User Controller
 exports.registerUser = async (req, res) => {
@@ -101,6 +96,7 @@ exports.registerUser = async (req, res) => {
 };
 
 // Login User Controller
+
 exports.loginUser = async (req, res) => {
   try {
     const { emailOrPhone, password, userType } = req.body; // Identifier can be email or phone
@@ -125,27 +121,40 @@ exports.loginUser = async (req, res) => {
         .json({ success: false, message: "Invalid email/phone or password" });
     }
 
-    // Store user session
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        id: user.userId,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        userType: user.userType,
+      },
+      process.env.SECRET_KEY, // Use JWT secret from environment variables
+      { expiresIn: '1d' } // Token expires in 1 hour
+    );
+
+    // Store user session (optional, if you still want to use sessions)
     req.session.user = {
-      id: user._id,
+      id: user.userId,
       name: user.name,
       email: user.email,
       phone: user.phone,
       userType: user.userType,
     };
 
-    res.json({ 
-      success: true, 
-      message: "Login successful", 
-      user: req.session.user // Return session data
+    // Return success response with token and user data
+    res.json({
+      success: true,
+      message: "Login successful",
+      token, // Include the JWT token in the response
+      user: req.session.user, // Return session data (optional)
     });
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
 
 exports.getEducationUsers = async (req, res) => {
   try {
@@ -161,9 +170,9 @@ exports.getEducationUsers = async (req, res) => {
     const baseUrl = `${req.protocol}://${req.get("host")}/`;
 
     // ✅ Update image URLs for each user
-    const updatedUsers = educationUsers.map(user => ({
+    const updatedUsers = educationUsers.map((user) => ({
       ...user._doc,
-      image: user.image ? `${baseUrl}${user.image}` : "/default-image.png"
+      image: user.image ? `${baseUrl}${user.image}` : "/default-image.png",
     }));
 
     res.status(200).json({ success: true, users: updatedUsers });
@@ -172,7 +181,6 @@ exports.getEducationUsers = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
 
 exports.getHealthcareUsers = async (req, res) => {
   try {
@@ -227,7 +235,6 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-
 // Handle new contact form submission
 exports.requestCall = async (req, res) => {
   try {
@@ -240,69 +247,83 @@ exports.requestCall = async (req, res) => {
     const newContact = new Contact({ name, phone });
     await newContact.save();
 
-    res
-      .status(201)
-      .json({
-        message:
-          "Thank you for reaching out! Our team will get back to you soon.",
-      });
+    res.status(201).json({
+      message:
+        "Thank you for reaching out! Our team will get back to you soon.",
+    });
   } catch (error) {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
-
-
-
 //update profile
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    // Create uploads directory if it doesn't exist
 
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        // Create uploads directory if it doesn't exist
-        
-        cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    },
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
-      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp","image/avif"];
-      if (allowedTypes.includes(file.mimetype)) {
-          cb(null, true);
-      } else {
-          cb(new Error("Invalid file type. Only JPEG, PNG, GIF,AVIF, and WebP are allowed."), false);
-      }
-  }
+    const allowedTypes = [
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "image/avif",
+    ];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(
+        new Error(
+          "Invalid file type. Only JPEG, PNG, GIF,AVIF, and WebP are allowed."
+        ),
+        false
+      );
+    }
+  },
 });
-
-
-
-
 
 
 exports.updateProfile = async (req, res) => {
   upload.single("image")(req, res, async (err) => {
     if (err) {
       console.error("File upload error:", err);
-      return res.status(500).json({ success: false, message: "File upload failed" });
+      return res
+        .status(500)
+        .json({ success: false, message: "File upload failed" });
     }
 
     try {
-     
+      // Retrieve userId from session instead of request body
+      const userId = req.session.user ? req.session.user.id : null;
 
-      const userId = req.body.userId; // Get user ID from request body
+      console.log("Received userId from session:", userId); // Debugging log
 
-      if (!userId) {
-        return res.status(400).json({ success: false, message: "User ID is required" });
+      // Validate userId
+      if (!userId || typeof userId !== "string") {
+        return res
+          .status(400)
+          .json({ success: false, message: "User ID is required" });
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Invalid User ID format" });
       }
 
       const updateFields = { ...req.body };
 
+      // If a new image is uploaded, update the image field
       if (req.file) {
         updateFields.image = `/uploads/${req.file.filename}`;
       }
@@ -316,111 +337,116 @@ exports.updateProfile = async (req, res) => {
 
       console.log("Fields to update:", updateFields);
 
-      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { 
-        new: true, 
-        runValidators: true 
+      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
+        new: true,
+        runValidators: true,
       });
 
       if (!updatedUser) {
-        return res.status(404).json({ success: false, message: "User not found" });
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
       }
 
-      res.json({ success: true, message: "Profile updated successfully", user: updatedUser });
+      // Update session with new user data
+      req.session.user = {
+        id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        phone: updatedUser.phone,
+        userType: updatedUser.userType,
+      };
+
+      res.json({
+        success: true,
+        message: "Profile updated successfully",
+        user: updatedUser,
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+      res
+        .status(500)
+        .json({ success: false, message: "Internal server error" });
     }
   });
 };
 
-
-
-
-
-
-
-
-
-
-
 //FORGOT PASSWORDS
- // Adjust the path as needed
- // Adjust the path as needed
- // For generating a random token
 
 
+exports.sendPasswordLink = async (req, res) => {
+  const { email } = req.body;
 
- 
- 
- exports.sendPasswordLink = async (req, res) => {
-   const { email } = req.body;
- 
-   if (!email) {
-     return res.status(400).json({ success: false, message: "Please enter your email" });
-   }
- 
-   try {
-     const user = await User.findOne({ email });
-     if (!user) {
-       return res.status(404).json({ success: false, message: "User not found" });
-     }
- 
-     // Generate a new token
-     const token = jwt.sign(
-       { _id: user._id, random: Math.random().toString() }, // Adding randomness
-       process.env.SECRET_KEY,
-       { expiresIn: "1h" } // Token valid for 1 hour
-     );
- 
-     // Save the new token and expiry time to the database
-     const updatedUser = await User.findByIdAndUpdate(
-       user._id,  // ✅ Correct user._id
-       { 
-         verifytoken: token, 
-         verifytokenExpires: Date.now() + 3600000 // 1-hour expiry
-       },
-       { new: true }
-     );
- 
-     console.log("✅ Token updated in DB:", updatedUser.verifytoken);
- 
-     // Send the reset link
-     const resetLink = `http://localhost:5173/forgotpassword/${user._id}/${token}`;
-     console.log("📧 Reset link:", resetLink);
- 
-     const transporter = nodemailer.createTransport({
-       service: "gmail",
-       auth: {
-         user: process.env.EMAIL,
-         pass: process.env.PASSWORD,
-       },
-     });
- 
-     const mailOptions = {
-       from: process.env.EMAIL,
-       to: email,
-       subject: "Password Reset Request",
-       text: `Click the link below to reset your password:
+  if (!email) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Please enter your email" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    // Generate a new token
+    const token = jwt.sign(
+      { _id: user._id, random: Math.random().toString() }, // Adding randomness
+      process.env.SECRET_KEY,
+      { expiresIn: "1h" } // Token valid for 1 hour
+    );
+
+    // Save the new token and expiry time to the database
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id, // ✅ Correct user._id
+      {
+        verifytoken: token,
+        verifytokenExpires: Date.now() + 3600000, // 1-hour expiry
+      },
+      { new: true }
+    );
+
+    console.log("✅ Token updated in DB:", updatedUser.verifytoken);
+
+    // Send the reset link
+    const resetLink = `http://localhost:5173/forgotpassword/${user._id}/${token}`;
+    console.log("📧 Reset link:", resetLink);
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: "Password Reset Request",
+      text: `Click the link below to reset your password:
  
  ${resetLink}
  
  This link is valid for 1 hour.`,
-     };
- 
-     await transporter.sendMail(mailOptions);
-     console.log("✅ Email sent successfully to:", email);
- 
-     res.status(200).json({ success: true, message: "Password reset link sent successfully" });
-   } catch (error) {
-     console.error("🚨 Error sending password reset email:", error);
-     res.status(500).json({ success: false, message: "Internal server error" });
-   }
- };
+    };
 
+    await transporter.sendMail(mailOptions);
+    console.log("✅ Email sent successfully to:", email);
 
+    res.status(200).json({
+      success: true,
+      message: "Password reset link sent successfully",
+    });
+  } catch (error) {
+    console.error("🚨 Error sending password reset email:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
 
-
- exports.forgotpassword = async (req, res) => {
+exports.forgotpassword = async (req, res) => {
   const { id, token } = req.params;
 
   try {
@@ -437,7 +463,9 @@ exports.updateProfile = async (req, res) => {
     console.log("🛠 User found in DB:", validUser);
 
     if (!validUser) {
-      return res.status(404).json({ success: false, message: "User not found or token expired" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found or token expired" });
     }
 
     // Verify JWT token
@@ -463,17 +491,14 @@ exports.updateProfile = async (req, res) => {
       });
     }
 
-    res.status(200).json({ success: true, message: "Token verified successfully" });
+    res
+      .status(200)
+      .json({ success: true, message: "Token verified successfully" });
   } catch (error) {
     console.error("🚨 Error verifying token:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
-
-
-
-
 
 exports.resetPassword = async (req, res) => {
   const { id, token } = req.params;
@@ -482,12 +507,14 @@ exports.resetPassword = async (req, res) => {
   // Debugging Logs
   console.log("🆔 User ID:", id);
   console.log("🔑 Token:", token);
-  console.log("📩 Received Request Body:", req.body);  // ✅ Check if newPassword is received
-  console.log("📝 New Password:", newPassword);  // ✅ Ensure it's not undefined
+  console.log("📩 Received Request Body:", req.body); // ✅ Check if newPassword is received
+  console.log("📝 New Password:", newPassword); // ✅ Ensure it's not undefined
 
   try {
     if (!newPassword) {
-      return res.status(400).json({ success: false, message: "New password is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "New password is required" });
     }
 
     const user = await User.findOne({
@@ -497,7 +524,9 @@ exports.resetPassword = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "Invalid or expired token" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Invalid or expired token" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -507,11 +536,72 @@ exports.resetPassword = async (req, res) => {
     await user.save();
 
     console.log("✅ Password reset successful!");
-    res.status(200).json({ success: true, message: "Password reset successful!" });
-
+    res
+      .status(200)
+      .json({ success: true, message: "Password reset successful!" });
   } catch (error) {
     console.error("🚨 Error resetting password:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
+// Search function for education
+
+
+exports.searchEducation = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    // Search for education-related users
+    const results = await User.find({
+      userType: "education", // Filter by userType
+      $or: [
+        { name: { $regex: query, $options: 'i' } }, // Case-insensitive name search
+        { category: { $regex: query, $options: 'i' } }, // Case-insensitive category search
+        { address: { $regex: query, $options: 'i' } }, // Case-insensitive address search
+      ],
+    });
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No education results found' });
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+exports.searchHealthcare = async (req, res) => {
+  const { query } = req.query;
+
+  try {
+    // Search for healthcare-related users
+    const results = await User.find({
+      userType: "healthcare", // Filter by userType
+      $or: [
+        { name: { $regex: query, $options: 'i' } }, // Case-insensitive name search
+        { category: { $regex: query, $options: 'i' } }, // Case-insensitive category search
+        { address: { $regex: query, $options: 'i' } }, // Case-insensitive address search
+      ],
+    });
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No healthcare results found' });
+    }
+
+    res.status(200).json(results);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
