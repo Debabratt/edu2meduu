@@ -16,7 +16,7 @@ const Category = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8001/user/getallcategories");
+        const response = await axios.get(`${import.meta.env.VITE_BASEURI}/user/getallcategories`);
         const filteredCategories = response.data.filter(category => category.userType === "education");
 
         setCategories(filteredCategories);
@@ -84,7 +84,7 @@ const Category = () => {
           whileTap={{ scale: 0.95 }}
         >
           <img
-            src={category.image ? `http://localhost:8001/${category.image}` : "/default-image.jpg"}
+            src={category.image ? `${import.meta.env.VITE_BASEURI}/${category.image}` : "/default-image.jpg"}
             alt={category.name}
             className="w-full h-32 object-cover rounded-t-md"
           />

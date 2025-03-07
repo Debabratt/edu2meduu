@@ -24,7 +24,7 @@ function DaySchoolCarousel() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:8001/user/getAllUsers')
+      .get(`${import.meta.env.VITE_BASEURI}/user/getAllUsers`)
       .then((response) => {
         if (response.data.success && Array.isArray(response.data.users)) {
           const categorizedUsers = {};

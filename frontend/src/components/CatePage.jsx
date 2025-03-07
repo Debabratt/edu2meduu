@@ -11,7 +11,7 @@ const CatePage = () => {
   useEffect(() => {
     setError(null);
     axios
-      .get("http://localhost:8001/user/getAllUsers")
+      .get(`${import.meta.env.VITE_BASEURI}/user/getAllUsers`)
       .then((response) => {
         if (response.data && Array.isArray(response.data.users)) {
           const filteredusers = response.data.users.filter(
