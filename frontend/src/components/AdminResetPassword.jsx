@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,13 +23,19 @@ const AdminResetPassword = () => {
         }
 
         try {
-            const res = await fetch(`${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                withCredentials: true,
-                body: JSON.stringify({ email }),
-            });
-
+            const response = await axios.post(
+              `${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`,
+              { email }, // Data to send in the request body
+              {
+                headers: { "Content-Type": "application/json" }, // Headers
+                withCredentials: true, // Include credentials (cookies)
+              }
+            );
+          
+            console.log("Response:", response.data);
+          } catch (error) {
+            console.error("Error:", error.response?.data || error.message);
+          }
             const data = await res.json();
 
             if (res.ok) {
