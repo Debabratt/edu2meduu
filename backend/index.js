@@ -18,7 +18,7 @@ mongoose
 // Load allowed origins from .env and split into an array
 
 
- const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || ["*"];
+const allowedOrigins = ["https://edu2medu.vercel.app"];
 
  app.use(cors({
    origin: function (origin, callback) {
