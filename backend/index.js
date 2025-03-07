@@ -16,11 +16,11 @@ mongoose
   .then(() => console.log('MongoDB connected successfully'))
 
 // Load allowed origins from .env and split into an array
-// const allowedOrigins = process.env.ALLOWED_ORIGINS.split(', ');
+ const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
 app.use(
   cors({
-    origin:"http://localhost:5173", // Use the allowed origins from .env
+    origin:allowedOrigins, // Use the allowed origins from .env
     credentials: true,
   })
 );

@@ -45,7 +45,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get("http://localhost:8001/admin/getContacts");
+        const response = await axios.get(`${import.meta.env.VITE_BASEURI}/admin/getContacts`);
         setContacts(response.data);
       } catch (err) {
         setError("Failed to fetch contacts.");
@@ -109,7 +109,7 @@ const handleNewsSubmit = async (e) => {
 
     try {
         const response = await axios.post(
-            "http://localhost:8001/admin/addNews",
+            `${import.meta.env.VITE_BASEURI}/admin/addNews`,
             formDataToSends,
             {
                 headers: {
@@ -196,7 +196,7 @@ const handleNewsSubmit = async (e) => {
     formDataToSend.append("userType", trimmedUserType);
     try {
       const response = await axios.post(
-        "http://localhost:8001/admin/addCategory",
+        `${import.meta.env.VITE_BASEURI}/admin/addCategory`,
         formDataToSend,
         {
           headers: {
@@ -261,7 +261,7 @@ const handleNewsSubmit = async (e) => {
   const fetchEduUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8001/admin/getEducationUsers"
+        `${import.meta.env.VITE_BASEURI}/admin/getEducationUsers`
       );
       setUsers(response.data.users);
     } catch (error) {
@@ -272,7 +272,7 @@ const handleNewsSubmit = async (e) => {
   const fetchMedUsers = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8001/admin/getHealthcareUsers"
+        `${import.meta.env.VITE_BASEURI}/admin/getHealthcareUsers`
       );
       setUsers(response.data.users);
     } catch (error) {
@@ -286,11 +286,11 @@ const handleNewsSubmit = async (e) => {
       const endpoint =
         selectedSection === "Education"
           ? isBlocked
-            ? "http://localhost:8001/admin/unblockEducationUser"
-            : "http://localhost:8001/admin/blockEducationUser"
+            ? `${import.meta.env.VITE_BASEURI}/admin/unblockEducationUser`
+            : `${import.meta.env.VITE_BASEURI}/admin/blockEducationUser`
           : isBlocked
-          ? "http://localhost:8001/admin/unblockHealthcareUser"
-          : "http://localhost:8001/admin/blockHealthcareUser";
+          ? `${import.meta.env.VITE_BASEURI}/admin/unblockHealthcareUser`
+          : `${import.meta.env.VITE_BASEURI}/admin/blockHealthcareUser`;
 
       await axios.post(endpoint, { userId });
       selectedSection === "Education" ? fetchEduUsers() : fetchMedUsers();

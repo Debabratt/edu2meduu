@@ -35,8 +35,8 @@ const Login = () => {
     try {
       const endpoint =
         userType === "admin"
-          ? "http://localhost:8001/admin/adminlogin"
-          : "http://localhost:8001/user/login";
+          ? `${import.meta.env.VITE_BASEURI}/admin/adminlogin`
+          : `${import.meta.env.VITE_BASEURI}/user/login`;
   
       const { data } = await axios.post(
         endpoint,
