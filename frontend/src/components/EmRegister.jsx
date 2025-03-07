@@ -91,7 +91,7 @@ const EmRegister = () => {
             <input
               type="text"
               value={name}
-              placeholder="Enter your name"
+              placeholder="Enter Name"
               onChange={(e) => setName(e.target.value)}
               className="w-full px-2 py-1 border rounded text-xs focus:ring-1 focus:ring-[#E76F51]"
               required
