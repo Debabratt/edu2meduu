@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -26,53 +27,80 @@ export default function UserDashboard() {
   const [user, setUser] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const navigate = useNavigate();
-  const sidebarRef = useRef(null); // Reference for sidebar
-  const menuButtonRef = useRef(null); // Reference for the hamburger menu button
+  const sidebarRef = useRef(null);
+  const menuButtonRef = useRef(null);
   const [formData, setFormData] = useState({
+    id: user?._id || "",
     name: user?.name || "",
     address: user?.address || "",
     phone: user?.phone || "",
     email: user?.email || "",
     description: user?.description || "",
+    contactInfo: user?.contactInfo || "",
+    amenity: user?.amenity || "",
     additionalInfo: user?.additionalInfo || "",
+    teachers: user?.teachers || [],
   });
 
   const [profilePicture, setProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle file selection
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);
   };
 
-  // Handle form submission
+  const addTeacher = () => {
+    setFormData({
+      ...formData,
+      teachers: [...formData.teachers, { name: "", qualification: "" }],
+    });
+  };
+
+  const removeTeacher = (index) => {
+    const updatedTeachers = formData.teachers.filter((_, i) => i !== index);
+    setFormData({ ...formData, teachers: updatedTeachers });
+  };
+
+  const handleTeacherChange = (index, field, value) => {
+    const updatedTeachers = formData.teachers.map((teacher, i) =>
+      i === index ? { ...teacher, [field]: value } : teacher
+    );
+    setFormData({ ...formData, teachers: updatedTeachers });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage("");
   
-    // Check if user and user._id are defined
-    if (!user || !user._id) {
-      setMessage("User ID is missing. Please log in again.");
+    if (!user || !user.email) {
+      setMessage("Email is missing.");
       setLoading(false);
       return;
     }
   
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("userId", user._id); // Use the logged-in user's ID
+      formDataToSend.append("email", user.email);
+  
       Object.keys(formData).forEach((key) => {
-        if (formData[key]) formDataToSend.append(key, formData[key]);
+        if (key !== "teachers" && formData[key]) {
+          formDataToSend.append(key, formData[key]);
+        }
       });
   
       if (profilePicture) {
         formDataToSend.append("image", profilePicture);
+      }
+  
+      // Ensure teachers is a valid JSON string before appending
+      if (Array.isArray(formData.teachers)) {
+        formDataToSend.append("teachers", JSON.stringify(formData.teachers));
       }
   
       const response = await axios.patch(
@@ -91,40 +119,22 @@ export default function UserDashboard() {
       setLoading(false);
     }
   };
-
-
-
-
-
-
-
-
-
-
   
-
 
   useEffect(() => {
     const userData = JSON.parse(sessionStorage.getItem("user"));
     if (userData) {
       setUser(userData);
     } else {
-      navigate("/"); // Navigate to login if user data doesn't exist
+      navigate("/");
     }
   }, [navigate]);
 
-
-
-
-
-
-
   useEffect(() => {
-    // Handle outside click to close sidebar
     const handleClickOutside = (event) => {
       if (
-        sidebarRef.current && 
-        !sidebarRef.current.contains(event.target) && 
+        sidebarRef.current &&
+        !sidebarRef.current.contains(event.target) &&
         !menuButtonRef.current.contains(event.target)
       ) {
         setIsSidebarOpen(false);
@@ -270,7 +280,28 @@ export default function UserDashboard() {
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
               ></textarea>
             </div>
-        
+         {/* Contact Info Textarea */}
+         <div className="flex items-center space-x-3">
+              <Edit3 className="w-6 h-6 text-red-500" />
+              <textarea
+                name="contactInfo"
+                value={formData.contactInfo}
+                onChange={handleChange}
+                placeholder="Conatct information"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
+              ></textarea>
+            </div>
+            {/* Amenity Textarea */}
+         <div className="flex items-center space-x-3">
+              <Edit3 className="w-6 h-6 text-red-500" />
+              <textarea
+                name="amenity"
+                value={formData.amenity}
+                onChange={handleChange}
+                placeholder="Add amenity"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
+              ></textarea>
+            </div>
             {/* Additional Info */}
             <div className="flex items-center space-x-3 sm:col-span-2">
               <Edit3 className="w-6 h-6 text-indigo-500" />
@@ -284,35 +315,55 @@ export default function UserDashboard() {
             </div>
         
             {/* Our Specialist Section */}
-            <div className="sm:col-span-2 mt-8 p-6 bg-gray-100 rounded-lg shadow-inner">
-              <h3 className="text-xl font-semibold text-gray-800 mb-4">Our Specialist</h3>
-              
-              {/* Teacher Name Input */}
-              <div className="flex items-center space-x-3 mb-4">
-                <User className="w-6 h-6 text-teal-500" />
-                <input
-                  type="text"
-                  name="teacherName"
-                  value={formData.teacherName}
-                  onChange={handleChange}
-                  placeholder="Enter Teacher Name"
-                  className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-teal-500"
-                />
+            
+
+              <div className="sm:col-span-2 mt-8 p-6 bg-gray-100 rounded-lg shadow-inner">
+                <h3 className="text-xl font-semibold text-gray-800 mb-4">Our Specialist</h3>
+
+                {formData.teachers.map((teacher, index) => (
+                  <div key={index} className="mb-4">
+                    <div className="flex items-center space-x-3 mb-4">
+                      <User className="w-6 h-6 text-teal-500" />
+                      <input
+                        type="text"
+                        name="specialist"
+                        value={teacher.name}
+                        onChange={(e) => handleTeacherChange(index, "name", e.target.value)}
+                        placeholder="Enter Name"
+                        className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-teal-500"
+                      />
+                    </div>
+
+                    <div className="flex items-center space-x-3">
+                      <BookOpen className="w-6 h-6 text-orange-500" />
+                      <input
+                        type="text"
+                        name="qualification"
+                        value={teacher.qualification}
+                        onChange={(e) => handleTeacherChange(index, "qualification", e.target.value)}
+                        placeholder="Enter Specialization or Qualification"
+                        className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => removeTeacher(index)}
+                      className="mt-2 px-4 py-2 bg-red-500 text-white rounded-md shadow hover:bg-red-600"
+                    >
+                      Remove 
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={addTeacher}
+                  className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600"
+                >
+                  Add 
+                </button>
               </div>
-        
-              {/* Qualification Input */}
-              <div className="flex items-center space-x-3">
-                <BookOpen className="w-6 h-6 text-orange-500" />
-                <input
-                  type="text"
-                  name="qualification"
-                  value={formData.qualification}
-                  onChange={handleChange}
-                  placeholder="Enter Qualification"
-                  className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
-                />
-              </div>
-            </div>
         
             {/* Submit Button */}
             <div className="mt-6 text-center sm:col-span-2">
@@ -336,85 +387,87 @@ export default function UserDashboard() {
         
 
         );
-      case "status":
-        return (
-          <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
-  <h2 className="text-xl font-semibold mb-4">{user.userType} Status</h2>
-
-  {user.status === "block" ? (
-    <div>
-      <div className="flex items-center space-x-3 text-red-500">
-        <XCircle className="w-8 h-8" />
-        <p className="text-lg font-semibold">Your account is currently blocked.</p>
-      </div>
-      <p className="mt-2 text-red-600">If you believe this is a mistake, please contact our support team or request an unblock by sending a message to the admin.</p>
-      
-      {/* Instructional Content */}
-      <div className="mt-6 bg-yellow-100 p-4 rounded-md">
-        <h3 className="text-lg font-semibold text-yellow-600">How to Request Unblock:</h3>
-        <ul className="list-inside list-disc text-gray-600">
-          <li>Describe the issue you're facing clearly and provide any relevant details.</li>
-          <li>Ensure to mention your username or account email for quick identification.</li>
-          <li>If this is a system-generated block, the admin will review and resolve it accordingly.</li>
-        </ul>
-      </div>
-
-      {/* Unblock Request Form */}
-      <textarea
-        className="w-full p-2 border border-gray-300 rounded-md mt-4"
-        placeholder="Write your message to the admin..."
-      ></textarea>
-      <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
-        Send Request
-      </button>
-
-      <div className="mt-6 bg-gray-100 p-4 rounded-md">
-        <h3 className="text-lg font-semibold">Need Immediate Assistance?</h3>
-        <p className="text-gray-600">
-          You can also get in touch with our support team by calling or emailing us:
-        </p>
-        <ul className="text-blue-500">
-          <li><strong>Phone:</strong> +1 800 123 4567</li>
-          <li><strong>Email:</strong> support@example.com</li>
-        </ul>
-      </div>
-    </div>
-  ) : (
-    <div>
-      <div className="flex items-center space-x-3 text-green-500">
-        <CheckCircle className="w-8 h-8" />
-        <p className="text-lg font-semibold">Your account is active and fully functional.</p>
-      </div>
-      
-      {/* Encouragement Content */}
-      <div className="mt-6 bg-green-100 p-4 rounded-md">
-        <h3 className="text-lg font-semibold text-green-600">Stay Active and Explore More:</h3>
-        <p className="text-gray-600">
-          Enjoy your time on the platform! Make sure to regularly update your profile to enhance your experience. Here are some things you can do:
-        </p>
-        <ul className="list-inside list-disc text-gray-600">
-          <li>Complete your profile with the latest information.</li>
-          <li>Check out new features that are available to you.</li>
-          <li>Review your privacy settings to make sure your data is secure.</li>
-        </ul>
-      </div>
-
-      {/* Additional Links */}
-      <div className="mt-6 bg-gray-100 p-4 rounded-md">
-        <h3 className="text-lg font-semibold">Need Help or Have Questions?</h3>
-        <p className="text-gray-600">
-          If you need assistance or have any questions about your account or how to make the most of our platform, feel free to contact our support team.
-        </p>
-        <ul className="text-blue-500">
-          <li><strong>Help Center:</strong> <a href="#" className="hover:underline">Visit our Help Center</a></li>
-          <li><strong>Contact Us:</strong> <a href="#" className="hover:underline">Submit a Support Request</a></li>
-        </ul>
-      </div>
-    </div>
-  )}
-</div>
-
-        );
+        case "status":
+          return (
+            <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
+              <h2 className="text-xl font-semibold mb-4">{user.userType} Status</h2>
+        
+              {user.status === "block" ? (
+                <div>
+                  {/* Blocked Status Content */}
+                  <div className="flex items-center space-x-3 text-red-500">
+                    <XCircle className="w-8 h-8" />
+                    <p className="text-lg font-semibold">Your account is currently blocked.</p>
+                  </div>
+                  <p className="mt-2 text-red-600">If you believe this is a mistake, please contact our support team or request an unblock by sending a message to the admin.</p>
+        
+                  {/* Instructional Content */}
+                  <div className="mt-6 bg-yellow-100 p-4 rounded-md">
+                    <h3 className="text-lg font-semibold text-yellow-600">How to Request Unblock:</h3>
+                    <ul className="list-inside list-disc text-gray-600">
+                      <li>Describe the issue you're facing clearly and provide any relevant details.</li>
+                      <li>Ensure to mention your username or account email for quick identification.</li>
+                      <li>If this is a system-generated block, the admin will review and resolve it accordingly.</li>
+                    </ul>
+                  </div>
+        
+                  {/* Unblock Request Form */}
+                  <textarea
+                    className="w-full p-2 border border-gray-300 rounded-md mt-4"
+                    placeholder="Write your message to the admin..."
+                  ></textarea>
+                  <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
+                    Send Request
+                  </button>
+        
+                  {/* Support Contact Info */}
+                  <div className="mt-6 bg-gray-100 p-4 rounded-md">
+                    <h3 className="text-lg font-semibold">Need Immediate Assistance?</h3>
+                    <p className="text-gray-600">
+                      You can also get in touch with our support team by calling or emailing us:
+                    </p>
+                    <ul className="text-blue-500">
+                      <li><strong>Phone:</strong> +1 800 123 4567</li>
+                      <li><strong>Email:</strong> support@example.com</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {/* Active Status Content */}
+                  <div className="flex items-center space-x-3 text-green-500">
+                    <CheckCircle className="w-8 h-8" />
+                    <p className="text-lg font-semibold">Your account is active and fully functional.</p>
+                  </div>
+        
+                  {/* Encouragement Content */}
+                  <div className="mt-6 bg-green-100 p-4 rounded-md">
+                    <h3 className="text-lg font-semibold text-green-600">Stay Active and Explore More:</h3>
+                    <p className="text-gray-600">
+                      Enjoy your time on the platform! Make sure to regularly update your profile to enhance your experience. Here are some things you can do:
+                    </p>
+                    <ul className="list-inside list-disc text-gray-600">
+                      <li>Complete your profile with the latest information.</li>
+                      <li>Check out new features that are available to you.</li>
+                      <li>Review your privacy settings to make sure your data is secure.</li>
+                    </ul>
+                  </div>
+        
+                  {/* Additional Links */}
+                  <div className="mt-6 bg-gray-100 p-4 rounded-md">
+                    <h3 className="text-lg font-semibold">Need Help or Have Questions?</h3>
+                    <p className="text-gray-600">
+                      If you need assistance or have any questions about your account or how to make the most of our platform, feel free to contact our support team.
+                    </p>
+                    <ul className="text-blue-500">
+                      <li><strong>Help Center:</strong> <a href="#" className="hover:underline">Visit our Help Center</a></li>
+                      <li><strong>Contact Us:</strong> <a href="#" className="hover:underline">Submit a Support Request</a></li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
       case "support":
         return (
           <div className="mt-8 bg-white p-6 rounded-xl shadow-md">

@@ -27,6 +27,16 @@ const MeduDetail = () => {
     sessionStorage.removeItem("selectedUser"); // Remove session data
     navigate("/healthcare"); // Navigate back to list page
   };
+  // Function to format text with line breaks
+  const formatTextWithLineBreaks = (text, prependAsterisk = false) => {
+    if (!text) return "No information available.";
+    return text.split("\n").map((line, index) => (
+      <p key={index} className="text-gray-700 leading-relaxed">
+        {prependAsterisk && line.trim() !== "" ? "* " : ""}
+        {line}
+      </p>
+    ));
+  };
 
   if (!user) {
     return (
@@ -63,8 +73,8 @@ const MeduDetail = () => {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
-          className="hidden lg:flex fixed top-4 left-4 z-50 items-center gap-2 px-4 py-2 bg-[#17A2B8] text-gray-200 rounded-full shadow-md hover:shadow-lg transition duration-300"
-          onClick={handleBack} // Call function to remove session data
+          className="hidden lg:flex fixed top-4 mt-33 left-4 z-50 items-center gap-2 px-4 py-2 bg-[#17A2B8] text-gray-200 rounded-full shadow-md hover:shadow-lg transition duration-300"
+          onClick={handleBack}
         >
           <FaArrowLeft />
           <span>Back to List</span>
@@ -105,6 +115,7 @@ const MeduDetail = () => {
             </div>
 
             <div className="p-6 pt-20 sm:p-10">
+              {/* About Section */}
               <motion.div
                 variants={{
                   hidden: { opacity: 0, x: -20 },
@@ -117,15 +128,113 @@ const MeduDetail = () => {
                 <FaQuoteLeft className="absolute top-4 left-4 text-teal-200 text-xl" />
                 <div className="ml-6 mr-6">
                   <h3 className="text-xl font-semibold text-teal-700 mb-2">About</h3>
+                  {formatTextWithLineBreaks(user.additionalInfo)}
                   <p className="text-gray-700 leading-relaxed">{user.additionalInfo || "No additional information available."}</p>
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-teal-200 text-xl" />
               </motion.div>
 
+              {/* Amenity Section */}
               <motion.div
                 variants={{
                   hidden: { opacity: 0, x: -20 },
                   visible: { opacity: 1, x: 0, transition: { delay: 0.4, duration: 0.5 } },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                className="mb-8 bg-gradient-to-r from-cyan-50 to-sky-50 p-6 rounded-2xl relative"
+              >
+                <FaQuoteLeft className="absolute top-4 left-4 text-cyan-200 text-xl" />
+                <div className="ml-6 mr-6">
+                  <h3 className="text-xl font-semibold text-cyan-700 mb-2">Amenity</h3>
+                  {user.amenity ? (
+                    <ul className="list-disc pl-5">
+                      {user.amenity
+                        .split("\n")
+                        .filter((line) => line.trim() !== "")
+                        .map((line, index) => (
+                          <li key={index} className="text-gray-700 leading-relaxed">
+                            * {line.trim()}
+                          </li>
+                        ))}
+                    </ul>
+                  ) : (
+                    <p className="text-gray-700 leading-relaxed">No amenities listed.</p>
+                  )}
+                </div>
+                <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
+              </motion.div>
+
+              {/* Specialization Section */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: { opacity: 1, x: 0, transition: { delay: 0.4, duration: 0.5 } },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                className="mb-8 bg-gradient-to-r from-cyan-50 to-sky-50 p-6 rounded-2xl relative"
+              >
+                <FaQuoteLeft className="absolute top-4 left-4 text-cyan-200 text-xl" />
+                <div className="p-6">
+                  <h1 className="text-2xl font-semibold mb-4">Specialist Information</h1>
+                  <div className="bg-gray-100 p-4 rounded-lg">
+                    {user.teachers && user.teachers.length > 0 ? (
+                      <ul className="list-disc pl-5">
+                        {user.teachers.map((teacher, index) => {
+                          const teacherName =
+                            typeof teacher.name === "object" ? teacher.name.type : teacher.name || "Unknown";
+                          const teacherQualification =
+                            typeof teacher.qualification === "object"
+                              ? teacher.qualification.type
+                              : teacher.qualification || "Unknown";
+
+                          return (
+                            <li key={index} className="text-lg font-semibold">
+                              <span className="text-teal-700">{teacherName}</span> -{" "}
+                              {teacherQualification}
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-600">No specialist information available.</p>
+                    )}
+                  </div>
+                </div>
+                <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
+              </motion.div>
+
+             {/* Contact Information Section */}
+             <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { delay: 0.5, duration: 0.5 },
+                  },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
+              >
+                <FaQuoteLeft className="absolute top-4 left-4 text-sky-200 text-xl" />
+                <div className="ml-6 mr-6">
+                  <h3 className="text-xl font-semibold text-sky-700 mb-2">
+                    Contact Information
+                  </h3>
+                  {formatTextWithLineBreaks(user.contactInfo)}
+                </div>
+                <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
+              </motion.div>
+
+
+              {/* Location Section */}
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.5 } },
                 }}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}
@@ -142,10 +251,11 @@ const MeduDetail = () => {
                 </div>
               </motion.div>
 
+              {/* Call Button */}
               <motion.div
                 variants={{
                   hidden: { opacity: 0, y: 20 },
-                  visible: { opacity: 1, y: 0, transition: { delay: 0.5, duration: 0.5 } },
+                  visible: { opacity: 1, y: 0, transition: { delay: 0.7, duration: 0.5 } },
                 }}
                 initial="hidden"
                 animate={isLoaded ? "visible" : "hidden"}

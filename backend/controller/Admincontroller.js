@@ -47,7 +47,7 @@ exports.adminLogin = async (req, res) => {
     const { emailOrPhone, password, userType } = req.body;
 
     // Log the request body for debugging
-    console.log("Request Body:", req.body);
+    // console.log("Request Body:", req.body);
 
     // Find admin by email or phone and userType
     const admin = await Admin.findOne({

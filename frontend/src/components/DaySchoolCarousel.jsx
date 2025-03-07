@@ -42,11 +42,13 @@ function DaySchoolCarousel() {
   }, []);
 
   const renderCarousel = (title, users) => (
-    <div key={title} className="bg-gray-100 p-8">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 text-left pl-4 lg:pl-16">{title}</h1>
+    <div key={title} className="bg-[#fffbe7] p-6 md:p-8 lg:p-12">
+      <header className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 text-left">
+          {title}
+        </h1>
       </header>
-      <main className="px-4 md:px-8 lg:px-16 py-5">
+      <main className="px-2 md:px-4 lg:px-8">
         {users.length === 0 ? (
           <p className="text-center text-lg text-gray-500">Loading...</p>
         ) : (
@@ -56,29 +58,32 @@ function DaySchoolCarousel() {
             autoPlay={true}
             autoPlaySpeed={3000}
             showDots={false}
-            arrows={false}
+            arrows={true}
             containerClass="carousel-container"
             itemClass="carousel-item"
           >
             {users.map((user) => (
               <div
                 key={user._id}
-                className="relative bg-white rounded-lg shadow-lg mx-2 md:mx-4 h-60 cursor-pointer"
+                className="relative bg-white rounded-xl shadow-lg mx-2 md:mx-4 h-64 md:h-80 cursor-pointer overflow-hidden transform transition-transform hover:scale-105"
                 onClick={() => navigate(`/category/${user.category}`)}
               >
                 <div className="relative h-full">
                   <img
-                    src={user.image }
+                    src={user.image}
                     alt={user.name}
-                    className="w-full h-full object-cover rounded-t-xl"
+                    className="w-full h-full object-cover"
                   />
-                  <div className="absolute bottom-0 left-0 w-full p-4 bg-gray-700 bg-opacity-100 rounded-b-xl">
-                    <h2 className="text-lg font-semibold text-gray-200">
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                  {/* Text Overlay */}
+                  <div className="absolute bottom-0 left-0 w-full p-4">
+                    <h2 className="text-lg md:text-xl font-bold text-white">
                       {user.name || 'No Name Found'}
                     </h2>
-                    <h2 className="text-lg font-semibold text-gray-200">
-                      {user.address || 'No Name Found'}
-                    </h2>
+                    <p className="text-sm md:text-base text-gray-200">
+                      {user.address || 'No Address Found'}
+                    </p>
                   </div>
                 </div>
               </div>

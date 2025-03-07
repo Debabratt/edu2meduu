@@ -53,6 +53,18 @@ const UserSchema = new mongoose.Schema({
   description: {
     type: String,
   },
+  amenity: {
+    type: String,
+  },
+  teachers:[
+    {
+      name: { type: String,  },
+      qualification: { type: String,  }
+    }
+  ],
+  contactInfo:{
+type:String
+  },
   status: {
     type: String,
     enum: ["block", "active", "unblock"],

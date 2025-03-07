@@ -131,7 +131,7 @@ exports.loginUser = async (req, res) => {
         userType: user.userType,
       },
       process.env.SECRET_KEY, // Use JWT secret from environment variables
-      { expiresIn: '1d' } // Token expires in 1 hour
+      { expiresIn: "1d" } // Token expires in 1 hour
     );
 
     // Store user session (optional, if you still want to use sessions)
@@ -291,39 +291,22 @@ const upload = multer({
     }
   },
 });
-
-
 exports.updateProfile = async (req, res) => {
   upload.single("image")(req, res, async (err) => {
     if (err) {
       console.error("File upload error:", err);
-      return res
-        .status(500)
-        .json({ success: false, message: "File upload failed" });
+      return res.status(500).json({ success: false, message: "File upload failed" });
     }
 
     try {
-      // Retrieve userId from session instead of request body
-      const userId = req.session.user ? req.session.user.id : null;
-
-      console.log("Received userId from session:", userId); // Debugging log
-
-      // Validate userId
-      if (!userId || typeof userId !== "string") {
-        return res
-          .status(400)
-          .json({ success: false, message: "User ID is required" });
+      const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ success: false, message: "Email is required" });
       }
 
-      if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid User ID format" });
-      }
+      let updateFields = { ...req.body };
 
-      const updateFields = { ...req.body };
-
-      // If a new image is uploaded, update the image field
+      // Handle file upload
       if (req.file) {
         updateFields.image = `/uploads/${req.file.filename}`;
       }
@@ -337,15 +320,24 @@ exports.updateProfile = async (req, res) => {
 
       console.log("Fields to update:", updateFields);
 
-      const updatedUser = await User.findByIdAndUpdate(userId, updateFields, {
-        new: true,
-        runValidators: true,
-      });
+      // Ensure `teachers` is correctly parsed if received as a string
+      if (updateFields.teachers && typeof updateFields.teachers === "string") {
+        try {
+          updateFields.teachers = JSON.parse(updateFields.teachers);
+        } catch (parseError) {
+          return res.status(400).json({ success: false, message: "Invalid teachers format" });
+        }
+      }
+
+      // Find and update the user by email
+      const updatedUser = await User.findOneAndUpdate(
+        { email }, 
+        { $set: updateFields }, 
+        { new: true, runValidators: true }
+      );
 
       if (!updatedUser) {
-        return res
-          .status(404)
-          .json({ success: false, message: "User not found" });
+        return res.status(404).json({ success: false, message: "User not found" });
       }
 
       // Update session with new user data
@@ -364,15 +356,12 @@ exports.updateProfile = async (req, res) => {
       });
     } catch (error) {
       console.error("Error updating profile:", error);
-      res
-        .status(500)
-        .json({ success: false, message: "Internal server error" });
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
   });
 };
 
 //FORGOT PASSWORDS
-
 
 exports.sendPasswordLink = async (req, res) => {
   const { email } = req.body;
@@ -547,7 +536,6 @@ exports.resetPassword = async (req, res) => {
 
 // Search function for education
 
-
 exports.searchEducation = async (req, res) => {
   const { query } = req.query;
 
@@ -556,31 +544,21 @@ exports.searchEducation = async (req, res) => {
     const results = await User.find({
       userType: "education", // Filter by userType
       $or: [
-        { name: { $regex: query, $options: 'i' } }, // Case-insensitive name search
-        { category: { $regex: query, $options: 'i' } }, // Case-insensitive category search
-        { address: { $regex: query, $options: 'i' } }, // Case-insensitive address search
+        { name: { $regex: query, $options: "i" } }, // Case-insensitive name search
+        { category: { $regex: query, $options: "i" } }, // Case-insensitive category search
+        { address: { $regex: query, $options: "i" } }, // Case-insensitive address search
       ],
     });
 
     if (results.length === 0) {
-      return res.status(404).json({ message: 'No education results found' });
+      return res.status(404).json({ message: "No education results found" });
     }
 
     res.status(200).json(results);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };
-
-
-
-
-
-
-
-
-
-
 
 exports.searchHealthcare = async (req, res) => {
   const { query } = req.query;
@@ -590,18 +568,18 @@ exports.searchHealthcare = async (req, res) => {
     const results = await User.find({
       userType: "healthcare", // Filter by userType
       $or: [
-        { name: { $regex: query, $options: 'i' } }, // Case-insensitive name search
-        { category: { $regex: query, $options: 'i' } }, // Case-insensitive category search
-        { address: { $regex: query, $options: 'i' } }, // Case-insensitive address search
+        { name: { $regex: query, $options: "i" } }, // Case-insensitive name search
+        { category: { $regex: query, $options: "i" } }, // Case-insensitive category search
+        { address: { $regex: query, $options: "i" } }, // Case-insensitive address search
       ],
     });
 
     if (results.length === 0) {
-      return res.status(404).json({ message: 'No healthcare results found' });
+      return res.status(404).json({ message: "No healthcare results found" });
     }
 
     res.status(200).json(results);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: "Server error", error });
   }
 };

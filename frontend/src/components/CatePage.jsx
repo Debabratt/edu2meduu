@@ -62,7 +62,7 @@ const CatePage = () => {
                 {user.name || "No Name Available"}
               </h2>
               <p className="text-gray-600 text-sm mt-1">
-                {user.ctitle || "No Description Available"}
+                {user.description || "No Description Available"}
               </p>
             </div>
           ))

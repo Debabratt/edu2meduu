@@ -40,7 +40,7 @@ function MedicalCl() {
   }, []);
 
   const renderCarousel = (title, users) => (
-    <div className="lg:mt-30 md:mt-22">
+    <div className="">
     <div key={title} className="bg-gray-50  py-12">
       <header className="mb-6 px-6 md:px-16">
         <h1 className="text-3xl font-extrabold text-gray-900 border-l-4 border-blue-500 pl-4">{title}</h1>
