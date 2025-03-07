@@ -16,14 +16,23 @@ mongoose
   .then(() => console.log('MongoDB connected successfully'))
 
 // Load allowed origins from .env and split into an array
- const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
-app.use(
-  cors({
-    origin:allowedOrigins, // Use the allowed origins from .env
-    credentials: true,
-  })
-);
+
+ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || ["*"];
+
+ app.use(cors({
+   origin: function (origin, callback) {
+     if (!origin || allowedOrigins.includes(origin)) {
+       callback(null, true);
+     } else {
+       callback(new Error("Not allowed by CORS"));
+     }
+   },
+   methods: "GET,POST,PUT,DELETE",
+   allowedHeaders: "Content-Type,Authorization"
+ }));
+ 
+ app.options("*", cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
