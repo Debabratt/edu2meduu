@@ -25,6 +25,7 @@ const AdminResetPassword = () => {
             const res = await fetch(`${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                withCredentials: true,
                 body: JSON.stringify({ email }),
             });
 
