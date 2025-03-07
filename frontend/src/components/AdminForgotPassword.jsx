@@ -22,7 +22,7 @@ const AdminForgotPassword = () => {
   // Validate the token and user ID
   const validateToken = async () => {
     try {
-      const res = await fetch(`http://localhost:8001/admin/admin-forgotpassword/${id}/${token}`, {
+      const res = await fetch(`${import.meta.env.VITE_BASEURI}/admin/admin-forgotpassword/${id}/${token}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +60,7 @@ const AdminForgotPassword = () => {
     }
   
     try {
-      const res = await fetch(`http://localhost:8001/admin/admin-updatepassword/${id}/${token}`, {
+      const res = await fetch(`${import.meta.env.VITE_BASEURI}/admin/admin-updatepassword/${id}/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newPassword: password }),  // ✅ Ensure correct JSON format

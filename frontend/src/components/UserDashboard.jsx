@@ -104,7 +104,7 @@ export default function UserDashboard() {
       }
   
       const response = await axios.patch(
-        "http://localhost:8001/user/updateProfile",
+        `${import.meta.env.VITE_BASEURI}/user/updateProfile`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },

@@ -22,7 +22,7 @@ const ResetPassword = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:8001/user/reset-password", {
+            const res = await fetch(`${import.meta.env.VITE_BASEURI}/user/reset-password`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),

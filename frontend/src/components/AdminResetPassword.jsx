@@ -22,7 +22,7 @@ const AdminResetPassword = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:8001/admin/admin-resetpassword", {
+            const res = await fetch(`${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),

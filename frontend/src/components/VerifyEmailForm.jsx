@@ -11,7 +11,7 @@ function VerifyEmailForm() {
         event.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8001/auth/verify', { email, otp_code: otp });
+            const response = await axios.post(`${import.meta.env.VITE_BASEURI}/auth/verify`, { email, otp_code: otp });
             console.log(response);
             if (response.data.result[0].message === 'Email is verified') {
                 window.alert('Email verification successful');

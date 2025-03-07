@@ -10,7 +10,7 @@ const News = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get("http://localhost:8001/admin/getallNews");
+        const response = await axios.get(`${import.meta.env.VITE_BASEURI}/admin/getallNews`);
         setNewsList(response.data.news);
         setLoading(false);
       } catch (err) {

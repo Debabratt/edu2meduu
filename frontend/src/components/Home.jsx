@@ -39,8 +39,8 @@ const Home = () => {
     try {
       const endpoint =
         selectedCategory === "Education"
-          ? "http://localhost:8001/user/searchEducation"
-          : "http://localhost:8001/user/searchHealthcare";
+          ? `${import.meta.env.VITE_BASEURI}/user/searchEducation`
+          : `${import.meta.env.VITE_BASEURI}/user/searchHealthcare`;
 
       const response = await axios.get(endpoint, {
         params: { query: searchQuery },

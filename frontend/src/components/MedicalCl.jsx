@@ -22,7 +22,7 @@ function MedicalCl() {
 
   useEffect(() => {
     axios
-      .get('http://localhost:8001/user/getHealthcareUsers')
+      .get(`${import.meta.env.VITE_BASEURI}/user/getHealthcareUsers`)
       .then((response) => {
         if (response.data.success && Array.isArray(response.data.users)) {
           const categorizedUsers = {};

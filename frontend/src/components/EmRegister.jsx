@@ -33,7 +33,7 @@ const EmRegister = () => {
 
     try {
       const response = await axios.post(
-        'http://localhost:8001/user/register',
+        `${import.meta.env.VITE_BASEURI}/user/register`,
         { name, email, password, phone, category, userType },
         { headers: { 'Content-Type': 'application/json' } }
       );

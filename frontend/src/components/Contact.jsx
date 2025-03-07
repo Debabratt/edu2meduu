@@ -39,7 +39,7 @@ const Contact = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8001/user/requestcall", formData);
+      const response = await axios.post(`${import.meta.env.VITE_BASEURI}/user/requestcall`, formData);
       setSuccess("Our team will call you shortly!"); 
       setFormData({ name: "", phone: "" });
 

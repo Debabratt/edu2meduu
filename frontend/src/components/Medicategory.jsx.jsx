@@ -13,7 +13,7 @@ const Medicategory = () => {
     setError(null);
 
     axios
-      .get("http://localhost:8001/user/getHealthcareUsers")
+      .get(`${import.meta.env.VITE_BASEURI}/user/getHealthcareUsers`)
       .then((response) => {
         if (response.data && Array.isArray(response.data.users)) {
           const filteredUsers = response.data.users.filter(
