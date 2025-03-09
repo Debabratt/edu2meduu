@@ -24,37 +24,31 @@ const AdminResetPassword = () => {
 
         try {
             const response = await axios.post(
-              `${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`,
-              { email }, // Data to send in the request body
-              {
-                headers: { "Content-Type": "application/json" }, // Headers
-                withCredentials: true, // Include credentials (cookies)
-              }
+                `${import.meta.env.VITE_BASEURI}/admin/admin-resetpassword`,
+                { email }, // Data to send in the request body
+                {
+                    headers: { "Content-Type": "application/json" }, // Headers
+                    withCredentials: true, // Include credentials (cookies)
+                }
             );
-          
-            console.log("Response:", response.data);
-          } catch (error) {
-            console.error("Error:", error.response?.data || error.message);
-          }
-            const data = await res.json();
 
-            if (res.ok) {
-                const newToken = data.token;  // Assuming the API returns a reset token
-            
-                sessionStorage.removeItem("resetToken"); 
-                sessionStorage.setItem("resetToken", newToken);  
-                window.location.reload();  // Force refresh
-            
+            console.log("Response:", response.data);
+
+            if (response.status === 200) {
+                const newToken = response.data.token;  // Assuming the API returns a reset token
+
+                sessionStorage.removeItem("resetToken");
+                sessionStorage.setItem("resetToken", newToken);
+
                 setEmail("");
                 setMessage("Password reset link sent successfully to your email.");
                 toast.success("Password reset link sent!", { position: "top-center" });
-            }
-             else {
-                toast.error(data.message || "Invalid User", { position: "top-center" });
+            } else {
+                toast.error(response.data.message || "Invalid User", { position: "top-center" });
             }
         } catch (error) {
             toast.error("Server error, please try again later!", { position: "top-center" });
-            console.error("Fetch error:", error);
+            console.error("Error:", error.response?.data || error.message);
         }
     };
 
