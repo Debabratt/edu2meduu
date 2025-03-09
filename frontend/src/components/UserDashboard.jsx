@@ -294,7 +294,7 @@ export default function UserDashboard() {
             </div>
             {/* Amenity Textarea */}
          <div className="flex items-center space-x-3">
-              <Edit3 className="w-6 h-6 text-red-500" />
+              <Edit3 className="w-6 h-6 text-yellow-400" />
               <textarea
                 name="amenity"
                 value={formData.amenity}
@@ -305,12 +305,12 @@ export default function UserDashboard() {
             </div>
              {/* Establishment */}
          <div className="flex items-center space-x-3">
-              <Edit3 className="w-6 h-6 text-red-500" />
+              <Edit3 className="w-6 h-6 text-green-500" />
               <textarea
                 name="establishment"
                 value={formData.establishment}
                 onChange={handleChange}
-                placeholder="Add amenity"
+                placeholder="Add Establishment"
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
               ></textarea>
             </div>
