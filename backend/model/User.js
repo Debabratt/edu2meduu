@@ -56,6 +56,9 @@ const UserSchema = new mongoose.Schema({
   amenity: {
     type: String,
   },
+  establishment:{
+type:String
+  },
   teachers:[
     {
       name: { type: String,  },

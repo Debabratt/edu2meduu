@@ -38,6 +38,7 @@ export default function UserDashboard() {
     description: user?.description || "",
     contactInfo: user?.contactInfo || "",
     amenity: user?.amenity || "",
+    establishment: user?.establishment || "",
     additionalInfo: user?.additionalInfo || "",
     teachers: user?.teachers || [],
   });
@@ -297,6 +298,17 @@ export default function UserDashboard() {
               <textarea
                 name="amenity"
                 value={formData.amenity}
+                onChange={handleChange}
+                placeholder="Add amenity"
+                className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
+              ></textarea>
+            </div>
+             {/* Establishment */}
+         <div className="flex items-center space-x-3">
+              <Edit3 className="w-6 h-6 text-red-500" />
+              <textarea
+                name="establishment"
+                value={formData.establishment}
                 onChange={handleChange}
                 placeholder="Add amenity"
                 className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
