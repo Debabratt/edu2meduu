@@ -137,7 +137,31 @@ const SchoolDetail = () => {
             </div>
 
             <div className="p-6 pt-20 sm:p-10">
+               {/* Contact Information Section */}
+               <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { delay: 0.5, duration: 0.5 },
+                  },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
+              >
+                <FaQuoteLeft className="absolute top-4 left-4 text-sky-200 text-xl" />
+                <div className="ml-6 mr-6">
+                  <h3 className="text-xl font-semibold text-sky-700 mb-2">
+                    Contact Information
+                  </h3>
+                  {formatTextWithLineBreaks(user.contactInfo)}
+                </div>
+                <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
+              </motion.div>
               {/* About Section */}
+
               <motion.div
                 variants={{
                   hidden: { opacity: 0, x: -20 },
@@ -237,29 +261,7 @@ const SchoolDetail = () => {
                 <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
               </motion.div>
 
-              {/* Contact Information Section */}
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, x: -20 },
-                  visible: {
-                    opacity: 1,
-                    x: 0,
-                    transition: { delay: 0.5, duration: 0.5 },
-                  },
-                }}
-                initial="hidden"
-                animate={isLoaded ? "visible" : "hidden"}
-                className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
-              >
-                <FaQuoteLeft className="absolute top-4 left-4 text-sky-200 text-xl" />
-                <div className="ml-6 mr-6">
-                  <h3 className="text-xl font-semibold text-sky-700 mb-2">
-                    Contact Information
-                  </h3>
-                  {formatTextWithLineBreaks(user.contactInfo)}
-                </div>
-                <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
-              </motion.div>
+             
 
               {/* Location Section */}
               <motion.div
