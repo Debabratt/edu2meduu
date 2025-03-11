@@ -241,7 +241,7 @@ const MeduDetail = () => {
               </motion.div>
 
              {/* Contact Information Section */}
-             <motion.div
+             {/* <motion.div
                 variants={{
                   hidden: { opacity: 0, x: -20 },
                   visible: {
@@ -262,7 +262,7 @@ const MeduDetail = () => {
                   {formatTextWithLineBreaks(user.contactInfo)}
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
-              </motion.div>
+              </motion.div> */}
 
 
               {/* Location Section */}
