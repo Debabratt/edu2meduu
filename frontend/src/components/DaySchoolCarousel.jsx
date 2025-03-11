@@ -58,7 +58,7 @@ function DaySchoolCarousel() {
             autoPlay={true}
             autoPlaySpeed={3000}
             showDots={false}
-            arrows={true}
+            arrows={false}
             containerClass="carousel-container"
             itemClass="carousel-item"
           >

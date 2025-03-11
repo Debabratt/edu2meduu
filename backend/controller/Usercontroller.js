@@ -660,12 +660,14 @@ exports.getAllJobs = async (req, res) => {
   }
 };
 
+
+
 // Get a single job by ID
 exports.getJobById = async (req, res) => {
   try {
-    const job = await Job.findById(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
-    res.status(200).json(job);
+    const jobs = await Job.findById(req.params.id);
+    if (!jobs) return res.status(404).json({ message: "Job not found" });
+    res.status(200).json(jobs);
   } catch (error) {
     res.status(500).json({ message: "Error fetching job", error });
   }
