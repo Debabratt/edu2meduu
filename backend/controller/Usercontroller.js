@@ -639,34 +639,14 @@ exports.createJob = async (req, res) => {
   }
 
   try {
-    const job = new Job({
-      jobTitle,
-      companyName,
-      location,
-      jobType,
-      salary,
-      jobDescription,
-      jobRequirements,
-      applicationDeadline,
-      howToApply,
-    });
-
-    const savedJob = await job.save();
-    console.log("✅ Job created successfully:", savedJob);
-
-    res.status(201).json({
-      success: true,
-      message: "Job created successfully",
-      job: savedJob,
-    });
+    const job = new Job(req.body);
+    await job.save();
+    res.status(201).json({ message: "Job created successfully", job });
   } catch (error) {
-    console.error("❌ Error creating job:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-      error: error.message, // Include the error message in the response
-    });
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error", error });
   }
+  
 };
 
 // Get all jobs
