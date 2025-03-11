@@ -518,7 +518,7 @@ export default function UserDashboard() {
           </select>
         </div>
 
-       {/* Salary */}
+    {/* Salary */}
 <div className="flex items-center space-x-3">
   <span className="text-orange-500 text-lg">₹</span>
   <input
@@ -526,10 +526,13 @@ export default function UserDashboard() {
     name="salary"
     value={jobFormData.salary}
     onChange={handleJobFormChange}
-    placeholder="Salary (INR)"
+    placeholder="Enter Salary (INR)"
     className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
+    onWheel={(e) => e.target.blur()} // Prevents scrolling changing the value
+    style={{ appearance: "textfield" }} // Removes arrows in some browsers
   />
 </div>
+
 
         {/* Job Description */}
         <div className="sm:col-span-2">

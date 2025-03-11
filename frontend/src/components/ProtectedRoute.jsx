@@ -20,11 +20,11 @@ const ProtectedRoute = ({ children, userType }) => {
         console.error("Error parsing sessionStorage data:", error);
       }
 
-      console.log("🔍 ProtectedRoute Debug:");
-      console.log("✅ isAuthenticated:", isAuthenticated);
-      console.log("✅ storedUserType:", storedUserType);
-      console.log("✅ user:", user);
-      console.log("✅ admin:", admin);
+      // console.log("🔍 ProtectedRoute Debug:");
+      // console.log("✅ isAuthenticated:", isAuthenticated);
+      // console.log("✅ storedUserType:", storedUserType);
+      // console.log("✅ user:", user);
+      // console.log("✅ admin:", admin);
 
       if (
         !isAuthenticated ||
