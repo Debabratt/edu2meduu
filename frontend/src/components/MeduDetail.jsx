@@ -263,7 +263,7 @@ const MeduDetail = () => {
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
               </motion.div> */}
-
+ 
 
               {/* Location Section */}
               <motion.div

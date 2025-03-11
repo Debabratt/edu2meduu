@@ -24,7 +24,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (e.g., mobile apps, curl requests)
+      console.log('Origin:', origin); // Log the origin for debugging
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
@@ -33,11 +33,12 @@ app.use(
     },
     methods: 'GET,POST,PUT,DELETE,PATCH',
     allowedHeaders: 'Content-Type,Authorization',
-    credentials: true, // Add this to allow credentials
+    credentials: true, // Allow credentials (cookies, authorization headers)
   })
 );
 
-app.options('*', cors()); // Handle preflight requests
+// Handle preflight requests
+app.options('*', cors());// Handle preflight requests
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

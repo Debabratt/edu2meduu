@@ -72,14 +72,12 @@ export default function UserDashboard() {
       const response = await axios.post(
         `${import.meta.env.VITE_BASEURI}/user/createjob`,
         jobFormData,
-   
-      
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { "Content-Type": "application/json" },
            withCredentials: true,
         }
       );
-      console.log(   jobFormData);
+  
       setMessage(response.data.message);
       setJobFormData({
         jobTitle: "",
@@ -93,6 +91,7 @@ export default function UserDashboard() {
         howToApply: "",
       });
     } catch (error) {
+      console.error("Error:", error);
       setMessage(error.response?.data?.message || "Failed to post job");
     } finally {
       setLoading(false);

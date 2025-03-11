@@ -605,7 +605,10 @@ exports.searchHealthcare = async (req, res) => {
 
 // Adjust the path to your Job model
 
-exports.createJob = (req, res) => {
+exports.createJob = async (req, res) => {
+  console.log("🔍 Incoming request headers:", req.headers); // Log headers
+  console.log("🔍 Incoming request body:", req.body); // Log data received
+
   const {
     jobTitle,
     companyName,
@@ -618,7 +621,6 @@ exports.createJob = (req, res) => {
     howToApply,
   } = req.body;
 
-  // ✅ Validate required fields
   if (
     !jobTitle ||
     !companyName ||
@@ -629,6 +631,7 @@ exports.createJob = (req, res) => {
     !applicationDeadline ||
     !howToApply
   ) {
+    console.log("❌ Missing fields in request");
     return res.status(400).json({
       success: false,
       message: "All fields are required",
@@ -648,30 +651,23 @@ exports.createJob = (req, res) => {
       howToApply,
     });
 
-    job.save((err, savedJob) => {
-      if (err) {
-        console.error("Database error:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Failed to save job",
-        });
-      }
+    const savedJob = await job.save();
+    console.log("✅ Job created successfully:", savedJob);
 
-      res.status(201).json({
-        success: true,
-        message: "Job created successfully",
-        job: savedJob,
-      });
+    res.status(201).json({
+      success: true,
+      message: "Job created successfully",
+      job: savedJob,
     });
   } catch (error) {
-    console.error("Error creating job:", error);
+    console.error("❌ Error creating job:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
+      error: error.message, // Include the error message in the response
     });
   }
 };
-
 
 // Get all jobs
 exports.getAllJobs = async (req, res) => {
