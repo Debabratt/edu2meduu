@@ -626,10 +626,11 @@ exports.createJob = async (req, res) => {
     !companyName ||
     !location ||
     !jobType ||
+    !salary||
     !jobDescription ||
     !jobRequirements ||
-    !applicationDeadline ||
-    !howToApply
+    !applicationDeadline||
+    ! howToApply
   ) {
     console.log("❌ Missing fields in request");
     return res.status(400).json({

@@ -20,7 +20,7 @@ import {
   Menu,
   X,
   BookOpen,
-  DollarSign,
+
   Calendar,
 } from "lucide-react";
 
@@ -518,18 +518,18 @@ export default function UserDashboard() {
           </select>
         </div>
 
-        {/* Salary */}
-        <div className="flex items-center space-x-3">
-          <DollarSign className="w-6 h-6 text-orange-500" />
-          <input
-            type="number"
-            name="salary"
-            value={jobFormData.salary}
-            onChange={handleJobFormChange}
-            placeholder="Salary"
-            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
-          />
-        </div>
+       {/* Salary */}
+<div className="flex items-center space-x-3">
+  <span className="text-orange-500 text-lg">₹</span>
+  <input
+    type="number"
+    name="salary"
+    value={jobFormData.salary}
+    onChange={handleJobFormChange}
+    placeholder="Salary (INR)"
+    className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
+  />
+</div>
 
         {/* Job Description */}
         <div className="sm:col-span-2">
