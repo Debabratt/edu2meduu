@@ -20,6 +20,8 @@ import {
   Menu,
   X,
   BookOpen,
+  DollarSign,
+  Calendar,
 } from "lucide-react";
 
 export default function UserDashboard() {
@@ -42,11 +44,60 @@ export default function UserDashboard() {
     additionalInfo: user?.additionalInfo || "",
     teachers: user?.teachers || [],
   });
-
+  const [jobFormData, setJobFormData] = useState({
+    jobTitle: "",
+    companyName: "",
+    location: "",
+    jobType: "",
+    salary: "",
+    jobDescription: "",
+    jobRequirements: "",
+    applicationDeadline: "",
+    howToApply: "",
+  });
   const [profilePicture, setProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
+  const handleJobFormChange = (e) => {
+    setJobFormData({ ...jobFormData, [e.target.name]: e.target.value });
+  };
+  
+  const handleJobSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+  
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASEURI}/user/createjob`,
+        jobFormData,
+   
+      
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+           withCredentials: true,
+        }
+      );
+      console.log(   jobFormData);
+      setMessage(response.data.message);
+      setJobFormData({
+        jobTitle: "",
+        companyName: "",
+        location: "",
+        jobType: "",
+        salary: "",
+        jobDescription: "",
+        jobRequirements: "",
+        applicationDeadline: "",
+        howToApply: "",
+      });
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Failed to post job");
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -399,6 +450,160 @@ export default function UserDashboard() {
         
 
         );
+        case "postJob":
+  return (
+    <div className="mt-8 bg-white p-8 rounded-xl shadow-md">
+      <h2 className="text-2xl font-semibold mb-6 text-gray-800">Post a Job</h2>
+      <p className="text-gray-600 mb-6">
+        Fill out the form below to post a new job opportunity.
+      </p>
+
+      <form onSubmit={handleJobSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Job Title */}
+        <div className="flex items-center space-x-3">
+          <Edit3 className="w-6 h-6 text-blue-500" />
+          <input
+            type="text"
+            name="jobTitle"
+            value={jobFormData.jobTitle}
+            onChange={handleJobFormChange}
+            placeholder="Job Title"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+
+        {/* Company Name */}
+        <div className="flex items-center space-x-3">
+          <User className="w-6 h-6 text-green-500" />
+          <input
+            type="text"
+            name="companyName"
+            value={jobFormData.companyName}
+            onChange={handleJobFormChange}
+            placeholder="Company Name"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-green-500"
+            required
+          />
+        </div>
+
+        {/* Location */}
+        <div className="flex items-center space-x-3">
+          <Home className="w-6 h-6 text-yellow-500" />
+          <input
+            type="text"
+            name="location"
+            value={jobFormData.location}
+            onChange={handleJobFormChange}
+            placeholder="Location"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-yellow-500"
+            required
+          />
+        </div>
+
+        {/* Job Type */}
+        <div className="flex items-center space-x-3">
+          <Activity className="w-6 h-6 text-purple-500" />
+          <select
+            name="jobType"
+            value={jobFormData.jobType}
+            onChange={handleJobFormChange}
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-purple-500"
+            required
+          >
+            <option value="">Select Job Type</option>
+            <option value="Full-Time">Full-Time</option>
+            <option value="Part-Time">Part-Time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+          </select>
+        </div>
+
+        {/* Salary */}
+        <div className="flex items-center space-x-3">
+          <DollarSign className="w-6 h-6 text-orange-500" />
+          <input
+            type="number"
+            name="salary"
+            value={jobFormData.salary}
+            onChange={handleJobFormChange}
+            placeholder="Salary"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-orange-500"
+          />
+        </div>
+
+        {/* Job Description */}
+        <div className="sm:col-span-2">
+          <textarea
+            name="jobDescription"
+            value={jobFormData.jobDescription}
+            onChange={handleJobFormChange}
+            placeholder="Job Description"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-blue-500"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        {/* Job Requirements */}
+        <div className="sm:col-span-2">
+          <textarea
+            name="jobRequirements"
+            value={jobFormData.jobRequirements}
+            onChange={handleJobFormChange}
+            placeholder="Job Requirements"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-green-500"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        {/* Application Deadline */}
+        <div className="flex items-center space-x-3">
+          <Calendar className="w-6 h-6 text-red-500" />
+          <input
+            type="date"
+            name="applicationDeadline"
+            value={jobFormData.applicationDeadline}
+            onChange={handleJobFormChange}
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-red-500"
+            required
+          />
+        </div>
+
+        {/* How to Apply */}
+        <div className="sm:col-span-2">
+          <textarea
+            name="howToApply"
+            value={jobFormData.howToApply}
+            onChange={handleJobFormChange}
+            placeholder="How to Apply"
+            className="p-3 border border-gray-300 rounded-md w-full focus:ring-2 focus:ring-purple-500"
+            rows="4"
+            required
+          ></textarea>
+        </div>
+
+        {/* Submit Button */}
+        <div className="mt-6 text-center sm:col-span-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-md shadow-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-500"
+          >
+            {loading ? "Posting..." : "Post Job"}
+          </button>
+        </div>
+      </form>
+
+      {/* Status Message */}
+      {message && (
+        <div className="mt-4 text-center text-gray-700 bg-gray-100 p-3 rounded-md">
+          {message}
+        </div>
+      )}
+    </div>
+  );
         case "status":
           return (
             <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
@@ -554,6 +759,12 @@ export default function UserDashboard() {
             >
               <User className="w-5 h-5 mr-3" /> Update Profile
             </li>
+            <li
+  className={`flex items-center p-3 rounded-lg text-white hover:text-gray-900 cursor-pointer transition duration-300 hover:bg-gray-300 ${activeTab === "postJob" ? "bg-gray-300" : ""}`}
+  onClick={() => { setActiveTab("postJob"); setIsSidebarOpen(false); }}
+>
+  <Edit3 className="w-5 h-5 mr-3" /> Post a Job
+</li>
             <li
               className={`flex items-center p-3 rounded-lg  text-white hover:text-gray-900  cursor-pointer transition duration-300 hover:bg-gray-300 ${activeTab === "status" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("status"); setIsSidebarOpen(false); }}

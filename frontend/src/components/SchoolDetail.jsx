@@ -138,40 +138,40 @@ const SchoolDetail = () => {
 
             <div className="p-6 pt-20 sm:p-10">
               {/* Contact Information Section */}
-<motion.div
-  variants={{
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: { delay: 0.5, duration: 0.5 },
-    },
-  }}
-  initial="hidden"
-  animate={isLoaded ? "visible" : "hidden"}
-  className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
->
-  <FaQuoteLeft className="absolute top-4 left-4 flex text-sky-200 text-xl" />
-  <div className="flex  justify-between">
-    <div className="w-1/2 pr-4 px-10">
-      <h3 className="text-xl font-bold text-sky-700 mb-2">
-        Contact Information
-      </h3>
-      <h1 className="font-bold">
-      {formatTextWithLineBreaks(user.contactInfo)}
-      </h1>
-    </div>
-    <div className="w-1/2 px-25">
-      <h3 className="text-xl font-semibold text-sky-700 mb-2">
-        Establishment
-      </h3>
-      <h1 className="font-serif">
-      {formatTextWithLineBreaks(user.establishment)}
-      </h1>
-    </div>
-  </div>
-  <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
-</motion.div>
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, x: -20 },
+                  visible: {
+                    opacity: 1,
+                    x: 0,
+                    transition: { delay: 0.5, duration: 0.5 },
+                  },
+                }}
+                initial="hidden"
+                animate={isLoaded ? "visible" : "hidden"}
+                className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
+              >
+                <FaQuoteLeft className="absolute top-4 left-4 flex text-sky-200 text-xl" />
+                <div className="flex  justify-between">
+                  <div className="w-1/2 pr-4 px-10">
+                    <h3 className="text-xl font-bold text-sky-700 mb-2">
+                      Contact Information
+                    </h3>
+                    <h1 className="font-bold">
+                      {formatTextWithLineBreaks(user.contactInfo)}
+                    </h1>
+                  </div>
+                  <div className="w-1/2 px-25">
+                    <h3 className="text-xl font-semibold text-sky-700 mb-2">
+                      Establishment
+                    </h3>
+                    <h1 className="font-serif">
+                      {formatTextWithLineBreaks(user.establishment)}
+                    </h1>
+                  </div>
+                </div>
+                <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
+              </motion.div>
               {/* About Section */}
 
               <motion.div
@@ -216,7 +216,7 @@ const SchoolDetail = () => {
                   <h3 className="text-xl font-semibold text-cyan-700 mb-2">
                     Amenity
                   </h3>
-                  {formatTextWithLineBreaks(user.amenity,true)}
+                  {formatTextWithLineBreaks(user.amenity, true)}
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
               </motion.div>
@@ -272,8 +272,6 @@ const SchoolDetail = () => {
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
               </motion.div>
-
-             
 
               {/* Location Section */}
               <motion.div

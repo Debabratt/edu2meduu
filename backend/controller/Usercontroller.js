@@ -1,4 +1,6 @@
 const bcrypt = require("bcrypt");
+const Job = require("../model/Jobs");
+
 const User = require("../model/User");
 const Category = require("../model/Category");
 const Contact = require("../model/Contact");
@@ -583,5 +585,133 @@ exports.searchHealthcare = async (req, res) => {
     res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+//JOBOPENINGS
+
+
+// Adjust the path to your Job model
+
+exports.createJob = (req, res) => {
+  const {
+    jobTitle,
+    companyName,
+    location,
+    jobType,
+    salary,
+    jobDescription,
+    jobRequirements,
+    applicationDeadline,
+    howToApply,
+  } = req.body;
+
+  // ✅ Validate required fields
+  if (
+    !jobTitle ||
+    !companyName ||
+    !location ||
+    !jobType ||
+    !jobDescription ||
+    !jobRequirements ||
+    !applicationDeadline ||
+    !howToApply
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
+  try {
+    const job = new Job({
+      jobTitle,
+      companyName,
+      location,
+      jobType,
+      salary,
+      jobDescription,
+      jobRequirements,
+      applicationDeadline,
+      howToApply,
+    });
+
+    job.save((err, savedJob) => {
+      if (err) {
+        console.error("Database error:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to save job",
+        });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "Job created successfully",
+        job: savedJob,
+      });
+    });
+  } catch (error) {
+    console.error("Error creating job:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+
+// Get all jobs
+exports.getAllJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.status(200).json(jobs);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching jobs", error });
+  }
+};
+
+// Get a single job by ID
+exports.getJobById = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+    res.status(200).json(job);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching job", error });
+  }
+};
+
+// Update a job
+exports.updateJob = async (req, res) => {
+  try {
+    const job = await Job.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!job) return res.status(404).json({ message: "Job not found" });
+    res.status(200).json({ message: "Job updated successfully", job });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating job", error });
+  }
+};
+
+// Delete a job
+exports.deleteJob = async (req, res) => {
+  try {
+    const job = await Job.findByIdAndDelete(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+    res.status(200).json({ message: "Job deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Error deleting job", error });
   }
 };

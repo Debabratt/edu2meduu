@@ -12,6 +12,9 @@ const {forgotpassword} = require('../controller/Usercontroller');
 const {resetPassword} = require('../controller/Usercontroller');
 const {searchEducation} = require('../controller/Usercontroller');
 const {searchHealthcare} = require('../controller/Usercontroller');
+const {createJob} = require('../controller/Usercontroller');
+
+
 UserRouter.post('/register', registerUser);
 UserRouter.post('/login',loginUser);
 UserRouter.get('/getallcategories',getAllCategories)
@@ -27,5 +30,6 @@ UserRouter.post('/updatepassword/:id/:token',resetPassword)
 
 UserRouter.get('/searchEducation',searchEducation)
 UserRouter.get('/searchHealthcare',searchHealthcare)
+UserRouter.post('/createjob',createJob)
 
 module.exports = UserRouter;
