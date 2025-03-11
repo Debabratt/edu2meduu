@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { FaArrowLeft, FaMapMarkerAlt, FaPhoneAlt, FaQuoteLeft, FaQuoteRight } from "react-icons/fa";
+import { FaArrowLeft, FaMapMarkerAlt,  FaQuoteLeft, FaQuoteRight } from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const MeduDetail = () => {
@@ -115,6 +115,41 @@ const MeduDetail = () => {
             </div>
 
             <div className="p-6 pt-20 sm:p-10">
+                     {/* Contact Information Section */}
+                            <motion.div
+                              variants={{
+                                hidden: { opacity: 0, x: -20 },
+                                visible: {
+                                  opacity: 1,
+                                  x: 0,
+                                  transition: { delay: 0.5, duration: 0.5 },
+                                },
+                              }}
+                              initial="hidden"
+                              animate={isLoaded ? "visible" : "hidden"}
+                              className="mb-8 bg-gradient-to-r from-sky-50 to-blue-50 p-6 rounded-2xl relative"
+                            >
+                              <FaQuoteLeft className="absolute top-4 left-4 flex text-sky-200 text-xl" />
+                              <div className="flex  justify-between">
+                                <div className="w-1/2 pr-4 px-10">
+                                  <h3 className="text-xl font-bold text-sky-700 mb-2">
+                                    Contact Information
+                                  </h3>
+                                  <h1 className="font-bold">
+                                    {formatTextWithLineBreaks(user.contactInfo)}
+                                  </h1>
+                                </div>
+                                <div className="w-1/2 px-25">
+                                  <h3 className="text-xl font-semibold text-sky-700 mb-2">
+                                    Establishment
+                                  </h3>
+                                  <h1 className="font-serif">
+                                    {formatTextWithLineBreaks(user.establishment)}
+                                  </h1>
+                                </div>
+                              </div>
+                              <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
+                            </motion.div>
               {/* About Section */}
               <motion.div
                 variants={{
