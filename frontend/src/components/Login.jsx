@@ -81,11 +81,18 @@ const Login = () => {
       setPassword("");
     }
   };
+  // 🎨 Dynamic Background Image
+  const backgroundImage =
+    userType === "education"
+      ? "url(/logine.jpg)"
+      : userType === "healthcare"
+      ? "url(/logine.jpg)"
+      : "url(/logine.jpg)"; // Default image
 
   return (
     <div
       className="relative min-h-screen bg-cover bg-center"
-      style={{ backgroundImage: "url(/login.jpg)" }}
+      style={{ backgroundImage }}
     >
       <motion.div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-opacity-50 p-8 sm:p-10 rounded-lg shadow-2xl z-10 w-full max-w-md sm:max-w-lg md:max-w-xl"

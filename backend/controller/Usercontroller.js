@@ -661,7 +661,6 @@ exports.getAllJobs = async (req, res) => {
 };
 
 
-
 // Get a single job by ID
 exports.getJobById = async (req, res) => {
   try {

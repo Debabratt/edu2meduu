@@ -172,6 +172,39 @@ const SchoolDetail = () => {
                 </div>
                 <FaQuoteRight className="absolute bottom-4 right-4 text-sky-200 text-xl" />
               </motion.div>
+         {/* Location and Call Now Button Section */}
+<motion.div
+  variants={{
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { delay: 0.6, duration: 0.5 },
+    },
+  }}
+  initial="hidden"
+  animate={isLoaded ? "visible" : "hidden"}
+  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 rounded-xl bg-gray-50"
+>
+  {/* Location Section */}
+  <div className="flex items-start gap-4">
+    <div className="bg-teal-400 p-3 rounded-full shadow-md">
+      <FaMapMarkerAlt className="text-white text-xl" />
+    </div>
+    <div>
+      <h3 className="font-semibold text-gray-900 text-lg">Location</h3>
+      <p className="text-gray-700">{user.address || "Not provided"}</p>
+    </div>
+  </div>
+
+  {/* Call Now Button */}
+  <button
+    className="w-full sm:w-auto py-2 px-4 bg-teal-500 text-white font-medium rounded-lg shadow-md hover:bg-teal-600 transition duration-300 transform hover:-translate-y-1 hover:shadow-lg text-sm sm:text-base"
+    onClick={() => user.phone && window.open(`tel:${user.phone}`, "_self")}
+  >
+    {user.phone ? `Call Now` : "No Contact Available"}
+  </button>
+</motion.div>
               {/* About Section */}
 
               <motion.div
@@ -273,60 +306,7 @@ const SchoolDetail = () => {
                 <FaQuoteRight className="absolute bottom-4 right-4 text-cyan-200 text-xl" />
               </motion.div>
 
-              {/* Location Section */}
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { delay: 0.6, duration: 0.5 },
-                  },
-                }}
-                initial="hidden"
-                animate={isLoaded ? "visible" : "hidden"}
-                className="space-y-4"
-              >
-                <div className="flex items-start gap-4 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300">
-                  <div className="bg-teal-400 p-3 rounded-full shadow-md">
-                    <FaMapMarkerAlt className="text-white text-xl" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900 text-lg">
-                      Location
-                    </h3>
-                    <p className="text-gray-700">
-                      {user.address || "Not provided"}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-
-              {/* Call Button */}
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { delay: 0.7, duration: 0.5 },
-                  },
-                }}
-                initial="hidden"
-                animate={isLoaded ? "visible" : "hidden"}
-                className="mt-8"
-              >
-                <button
-                  className="w-full py-4 bg-teal-500 text-white font-medium rounded-xl shadow-lg hover:bg-teal-600 transition duration-300 transform hover:-translate-y-1 hover:shadow-xl"
-                  onClick={() =>
-                    user.phone && window.open(`tel:${user.phone}`, "_self")
-                  }
-                >
-                  {user.phone
-                    ? `Call ${user.name.split(" ")[0]}`
-                    : "No Contact Available"}
-                </button>
-              </motion.div>
+              
             </div>
           </motion.div>
         </div>
