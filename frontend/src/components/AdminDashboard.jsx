@@ -25,21 +25,18 @@ const AdminDashboard = () => {
   const [image, setImage] = useState(null);
   const [fileName, setFileName] = useState("");
 
-  
-
-
   const [formData, setFormData] = useState({
     name: "",
     ctitle: "",
     categoryType: "",
-    userType:""
+    userType: "",
   });
 
   const [newsFormData, setNewsFormData] = useState({
     title: "",
     content: "",
     newsImage: "",
-    moreContent:""
+    moreContent: "",
   });
   const [contacts, setContacts] = useState([]);
   const [error, setError] = useState("");
@@ -47,7 +44,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_BASEURI}/admin/getContacts`);
+        const response = await axios.get(
+          `${import.meta.env.VITE_BASEURI}/admin/getContacts`
+        );
         setContacts(response.data);
       } catch (err) {
         setError("Failed to fetch contacts.");
@@ -61,20 +60,20 @@ const AdminDashboard = () => {
   };
   const handleNewsFileChange = (event) => {
     if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
+      const file = event.target.files[0];
 
-        setImage(file); // ✅ Store file correctly
-        setFileName(file.name);
+      setImage(file); // ✅ Store file correctly
+      setFileName(file.name);
 
-        // ✅ Ensure state consistency
-        setNewsFormData((prevData) => ({
-            ...prevData,
-            newsImage: file, // This will not be sent as JSON, only used for reference
-        }));
+      // ✅ Ensure state consistency
+      setNewsFormData((prevData) => ({
+        ...prevData,
+        newsImage: file, // This will not be sent as JSON, only used for reference
+      }));
     }
-};
+  };
 
-const handleNewsSubmit = async (e) => {
+  const handleNewsSubmit = async (e) => {
     e.preventDefault();
 
     const trimedTitle = newsFormData.title?.trim();
@@ -82,24 +81,29 @@ const handleNewsSubmit = async (e) => {
     const trimedMoreContent = newsFormData.moreContent?.trim();
 
     if (!trimedContent || !trimedTitle || !trimedMoreContent || !image) {
-        alert("All fields including image are required");
-        return;
+      alert("All fields including image are required");
+      return;
     }
 
-    console.log("Submitting with:", { trimedTitle, trimedContent, trimedMoreContent, image });
+    console.log("Submitting with:", {
+      trimedTitle,
+      trimedContent,
+      trimedMoreContent,
+      image,
+    });
 
     // ✅ Validate file type
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
     if (!allowedTypes.includes(image.type)) {
-        alert("Please select a valid image file (JPEG, PNG, WebP, or GIF)");
-        return;
+      alert("Please select a valid image file (JPEG, PNG, WebP, or GIF)");
+      return;
     }
 
     // ✅ Validate file size (max 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB in bytes
     if (image.size > maxSize) {
-        alert("File size should be less than 5MB");
-        return;
+      alert("File size should be less than 5MB");
+      return;
     }
 
     // ✅ Use FormData to send the file
@@ -110,46 +114,43 @@ const handleNewsSubmit = async (e) => {
     formDataToSends.append("image", image); // ✅ Correctly attach file
 
     try {
-        const response = await axios.post(
-            `${import.meta.env.VITE_BASEURI}/admin/addNews`,
-            formDataToSends,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            }
-        );
-
-        if (response.data.success) {
-            alert(response.data.message);
-            // ✅ Reset form
-            setNewsFormData({
-                title: "",
-                content: "",
-                moreContent: "",
-            });
-            setFileName("");
-            setImage(null);
-
-            // ✅ Reset file input manually
-            const fileInput = document.querySelector('input[type="file"]');
-            if (fileInput) {
-                fileInput.value = "";
-            }
-        } else {
-            throw new Error(response.data.message || "Failed to add News");
+      const response = await axios.post(
+        `${import.meta.env.VITE_BASEURI}/admin/addNews`,
+        formDataToSends,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
+      );
+
+      if (response.data.success) {
+        alert(response.data.message);
+        // ✅ Reset form
+        setNewsFormData({
+          title: "",
+          content: "",
+          moreContent: "",
+        });
+        setFileName("");
+        setImage(null);
+
+        // ✅ Reset file input manually
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+          fileInput.value = "";
+        }
+      } else {
+        throw new Error(response.data.message || "Failed to add News");
+      }
     } catch (error) {
-        console.error("Error details:", error.response?.data || error.message);
-        alert("Error adding news. " + (error.response?.data?.message || "Please try again."));
+      console.error("Error details:", error.response?.data || error.message);
+      alert(
+        "Error adding news. " +
+          (error.response?.data?.message || "Please try again.")
+      );
     }
-};
-
-
-
-
-
-
+  };
 
   //Addcategory
   const handleChange = (e) => {
@@ -171,7 +172,13 @@ const handleNewsSubmit = async (e) => {
     const trimmedTitle = formData.ctitle?.trim();
     const trimmedType = formData.categoryType?.trim();
     const trimmedUserType = formData.userType?.trim();
-    if (!trimmedName || !trimmedTitle || !trimmedType ||!trimmedUserType || !image) {
+    if (
+      !trimmedName ||
+      !trimmedTitle ||
+      !trimmedType ||
+      !trimmedUserType ||
+      !image
+    ) {
       alert("All fields including image are required");
       return;
     }
@@ -218,7 +225,7 @@ const handleNewsSubmit = async (e) => {
           name: "",
           ctitle: "",
           categoryType: "",
-          userType:""
+          userType: "",
         });
         setFileName("");
         setImage(null);
@@ -325,6 +332,20 @@ const handleNewsSubmit = async (e) => {
       }
     });
   };
+  const calculateRemainingDays = (paymentDate) => {
+    if (!paymentDate) return "N/A";
+
+    const oneDay = 24 * 60 * 60 * 1000;
+    const currentDate = new Date();
+    const paymentDateObj = new Date(paymentDate);
+
+    const diffDays = Math.round(
+      Math.abs((currentDate - paymentDateObj) / oneDay)
+    );
+    const remainingDays = 365 - diffDays;
+
+    return remainingDays >= 0 ? remainingDays : 0;
+  };
 
   useEffect(() => {
     if (selectedSection === "Education") {
@@ -343,7 +364,6 @@ const handleNewsSubmit = async (e) => {
       { name: "User Details", icon: <User /> },
       { name: "Payment History", icon: <FaMoneyBill /> },
       { name: "User Inquiries", icon: <PhoneCall /> },
-
     ],
     Healthcare: [
       { name: "Dashboard", icon: <Home /> },
@@ -375,6 +395,7 @@ const handleNewsSubmit = async (e) => {
             <th className="py-3 px-4 border text-left">Type</th>
             <th className="py-3 px-4 border text-left">Category</th>
             <th className="py-3 px-4 border text-left">Subscription</th>
+            <th className="py-3 px-4 border text-left">Remaining Days</th>
             <th className="py-3 px-4 border text-center">Action</th>
           </tr>
         </thead>
@@ -392,11 +413,25 @@ const handleNewsSubmit = async (e) => {
               <td className="py-3 px-4 border">{school.name}</td>
               <td className="py-3 px-4 border">{school.userType}</td>
               <td className="py-3 px-4 border">{school.category}</td>
-              <td className={`py-3 px-4 border font-bold ${
-  school.paymentDetails.paymentStatus === 'paid' ? 'text-green-500' : 'text-red-500'
-}`}>
-  {school.paymentDetails.paymentStatus}
-</td>
+              <td
+                className={`py-3 px-4 border font-bold ${
+                  school.paymentDetails.paymentStatus === "paid"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {school.paymentDetails.paymentStatus}
+              </td>
+              <td
+                className={`py-3 px-4 border ${
+                  calculateRemainingDays(school.paymentDetails.paymentDate) <=
+                  30
+                    ? "text-red-500"
+                    : "text-green-500"
+                }`}
+              >
+                {calculateRemainingDays(school.paymentDetails.paymentDate)}
+              </td>
               <td className="py-3 px-4 border text-center">
                 <button
                   className={`px-4 py-2 rounded-lg ${
@@ -426,10 +461,12 @@ const handleNewsSubmit = async (e) => {
       <table className="w-full bg-white border border-gray-300 shadow-md rounded-lg">
         <thead>
           <tr className="bg-gray-200 text-gray-700">
-            <th className="py-3 px-4 border text-left">Select</th>
+          <th className="py-3 px-4 border text-left">Select</th>
             <th className="py-3 px-4 border text-left">Name</th>
             <th className="py-3 px-4 border text-left">Type</th>
-            <th className="py-3 px-4 border text-left">Location</th>
+            <th className="py-3 px-4 border text-left">Category</th>
+            <th className="py-3 px-4 border text-left">Subscription</th>
+            <th className="py-3 px-4 border text-left">Remaining Days</th>
             <th className="py-3 px-4 border text-center">Action</th>
           </tr>
         </thead>
@@ -446,7 +483,26 @@ const handleNewsSubmit = async (e) => {
               </td>
               <td className="py-3 px-4 border">{user.name}</td>
               <td className="py-2 px-4 border">{user.userType}</td>
-              <td className="py-3 px-4 border">{user.location}</td>
+              <td className="py-2 px-4 border">{user.category}</td>
+              <td
+                className={`py-3 px-4 border font-bold ${
+                  user.paymentDetails.paymentStatus === "paid"
+                    ? "text-green-500"
+                    : "text-red-500"
+                }`}
+              >
+                {user.paymentDetails.paymentStatus}
+              </td>
+              <td
+                className={`py-3 px-4 border ${
+                  calculateRemainingDays(user.paymentDetails.paymentDate) <=
+                  30
+                    ? "text-red-500"
+                    : "text-green-500"
+                }`}
+              >
+                {calculateRemainingDays(user.paymentDetails.paymentDate)}
+              </td>
               <td className="py-3 px-4 border text-center">
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
@@ -551,12 +607,10 @@ const handleNewsSubmit = async (e) => {
                   {selectedSection === "Education" ? (
                     <>
                       <option value="education">Education</option>
-                     
                     </>
                   ) : (
                     <>
                       <option value="healthcare">HealthCare</option>
-                  
                     </>
                   )}
                 </select>
@@ -738,96 +792,181 @@ const handleNewsSubmit = async (e) => {
         );
       case "User Details":
         return (
-          <div>
-            <h3 className="text-lg flex font-semibold mb-4">
-              {selectedSection} User List
-            </h3>
-            <div className="flex justify-end mb-2">
-              <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-right">
-                Total Active Users: {users.length}
-              </span>
-            </div>
-            {users.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border border-gray-300 shadow-md rounded-lg">
+          <div className="p-4 sm:p-6 md:p-8 bg-gray-100 rounded-xl shadow-xl border border-gray-300 w-full overflow-hidden">
+          <h3 className="text-2xl sm:text-3xl font-extrabold mb-4 sm:mb-6 text-gray-900 text-center">
+            {selectedSection} User List
+          </h3>
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 space-y-4 sm:space-y-0">
+            <span className="bg-gradient-to-r from-[#17A2B8] to-[#5db4c1] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-base sm:text-lg font-semibold shadow-lg text-center">
+              Total Active Users: {users.length}
+            </span>
+          </div>
+        
+          {users.length > 0 ? (
+            <>
+              {/* Table for Desktop and Tablet */}
+              <div className="hidden sm:block overflow-x-auto rounded-lg shadow-md">
+                <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden text-sm sm:text-md">
                   <thead>
-                    <tr className="bg-gray-200 text-gray-700">
-                      <th className="py-2 px-4 border">Name</th>
-                      <th className="py-2 px-4 border">Email</th>
-                      <th className="py-2 px-4 border">Phone Number</th>
-                      <th className="py-2 px-4 border">Type</th>
+                    <tr className="bg-gradient-to-r from-[#17A2B8] to-[#17A2B8] text-white uppercase text-xs sm:text-sm font-bold tracking-wide text-center">
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Name</th>
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Email</th>
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Phone</th>
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Subscription</th>
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Remaining Days</th>
+                      <th className="py-3 px-4 sm:py-4 sm:px-6">Type</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {users.map((user) => (
-                      <tr key={user._id} className="border-b hover:bg-gray-100">
-                        <td className="py-2 px-4 border">{user.name}</td>
-                        <td className="py-2 px-4 border">{user.email}</td>
-                        <td className="py-2 px-4 border">{user.phone}</td>
-                        <td className="py-2 px-4 border">{user.userType}</td>
+                  <tbody className="text-gray-800 font-medium divide-y divide-gray-300">
+                    {users.map((user, index) => (
+                      <tr
+                        key={user._id}
+                        className={`transition duration-300 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-blue-50 hover:scale-[1.02]`}
+                      >
+                        <td className="py-3 px-4 sm:py-4 sm:px-6 text-center">{user.name}</td>
+                        <td className="py-3 px-4 sm:py-4 sm:px-6 text-center break-all">{user.email}</td>
+                        <td className="py-3 px-4 sm:py-4 sm:px-6 text-center">
+                          <a href={`tel:${user.phone}`} className="flex items-center justify-center space-x-2 text-blue-600 hover:text-blue-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M2 3a1 1 0 011-1h3a1 1 0 011 .883l.7 4.2a1 1 0 01-.316.906l-1.6 1.4a13.06 13.06 0 006.316 6.316l1.4-1.6a1 1 0 01.906-.316l4.2.7A1 1 0 0118 15v3a1 1 0 01-1 1h-2c-8.837 0-16-7.163-16-16V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            <span className="text-xs sm:text-sm">{user.phone}</span>
+                          </a>
+                        </td>
+                        <td className={`py-3 px-4 sm:py-4 sm:px-6 text-center font-semibold rounded-md ${
+                            user.paymentDetails.paymentStatus === "paid"
+                              ? "text-green-700 bg-green-200"
+                              : "text-red-700 bg-red-200"
+                          }`}
+                        >
+                          {user.paymentDetails.paymentStatus}
+                        </td>
+                        <td className={`py-3 px-4 sm:py-4 sm:px-6 text-center font-semibold rounded-md ${
+                            calculateRemainingDays(user.paymentDetails.paymentDate) <= 30
+                              ? "text-red-700 bg-red-200"
+                              : "text-green-700 bg-green-200"
+                          }`}
+                        >
+                          {calculateRemainingDays(user.paymentDetails.paymentDate)}
+                        </td>
+                        <td className="py-3 px-4 sm:py-4 sm:px-6 text-center">{user.userType}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            ) : (
-              <p>No users found for {selectedSection}.</p>
-            )}
-          </div>
+        
+              {/* Card Layout for Mobile */}
+              <div className="sm:hidden space-y-4">
+                {users.map((user, index) => (
+                  <div key={user._id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+                    <div className="space-y-2">
+                      <p className="text-gray-900 font-semibold">Name: <span className="font-normal">{user.name}</span></p>
+                      <p className="text-gray-900 font-semibold">Email: <span className="font-normal break-all">{user.email}</span></p>
+                      <p className="text-gray-900 font-semibold">
+                        Phone:{" "}
+                        <a href={`tel:${user.phone}`} className="font-normal text-blue-600 hover:text-blue-800 flex items-center space-x-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M2 3a1 1 0 011-1h3a1 1 0 011 .883l.7 4.2a1 1 0 01-.316.906l-1.6 1.4a13.06 13.06 0 006.316 6.316l1.4-1.6a1 1 0 01.906-.316l4.2.7A1 1 0 0118 15v3a1 1 0 01-1 1h-2c-8.837 0-16-7.163-16-16V4a1 1 0 011-1z" clipRule="evenodd" />
+                          </svg>
+                          <span>{user.phone}</span>
+                        </a>
+                      </p>
+                      <p className="text-gray-900 font-semibold">
+                        Subscription:{" "}
+                        <span className={`font-semibold rounded-md px-2 py-1 ${
+                            user.paymentDetails.paymentStatus === "paid"
+                              ? "text-green-700 bg-green-200"
+                              : "text-red-700 bg-red-200"
+                          }`}
+                        >
+                          {user.paymentDetails.paymentStatus}
+                        </span>
+                      </p>
+                      <p className="text-gray-900 font-semibold">
+                        Remaining Days:{" "}
+                        <span className={`font-semibold rounded-md px-2 py-1 ${
+                            calculateRemainingDays(user.paymentDetails.paymentDate) <= 30
+                              ? "text-red-700 bg-red-200"
+                              : "text-green-700 bg-green-200"
+                          }`}
+                        >
+                          {calculateRemainingDays(user.paymentDetails.paymentDate)}
+                        </span>
+                      </p>
+                      <p className="text-gray-900 font-semibold">Type: <span className="font-normal">{user.userType}</span></p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-700 text-center mt-4 sm:mt-6 text-base sm:text-lg">No users found for {selectedSection}.</p>
+          )}
+        </div>
         );
-        case "User Inquiries":
+      case "User Inquiries":
         return (
           <div>
-  {/* Inquiry Count */}
-  <div className="w-full max-w-4xl flex justify-end mb-4">
-    <span className="bg-[#E76F51] text-white px-6 py-2 rounded-full shadow-md">
-      Total Inquiries: {contacts.length}
-    </span>
-  </div>
+            {/* Inquiry Count */}
+            <div className="w-full max-w-4xl flex justify-end mb-4">
+              <span className="bg-[#E76F51] text-white px-6 py-2 rounded-full shadow-md">
+                Total Inquiries: {contacts.length}
+              </span>
+            </div>
 
-  {contacts.length > 0 ? (
-    <div className="w-full  max-w-full overflow-hidden rounded-lg shadow-lg bg-white">
-      <div className="overflow-x-auto sm:px-2 md:px-0">
-        <table className="w-full border-collapse text-left text-sm md:text-base">
-          <thead className="bg-[#E76F51] text-white">
-            <tr>
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Phone</th>
-              <th className="py-3 px-4">Date</th>
-              <th className="py-3 px-4 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {contacts.map((contact, index) => (
-              <tr
-                key={contact._id}
-                className={`border-b transition hover:bg-gray-100 ${
-                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                }`}
-              >
-                <td className="py-3 px-4 text-xs md:text-base">{contact.name}</td>
-                <td className="py-3 px-4 text-xs md:text-base">{contact.phone}</td>
-                <td className="py-3 px-4 text-xs md:text-base">
-                  {new Date(contact.createdAt).toLocaleDateString()}
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <a
-                    href={`tel:${contact.phone}`}
-                    className="text-green-600 hover:text-green-500"
-                  >
-                    <PhoneCall size={20} className="mx-auto cursor-pointer" />
-                  </a>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  ) : (
-    <p className="text-center text-gray-600 mt-6">No user inquiries found.</p>
-  )}
-</div>
+            {contacts.length > 0 ? (
+              <div className="w-full  max-w-full overflow-hidden rounded-lg shadow-lg bg-white">
+                <div className="overflow-x-auto sm:px-2 md:px-0">
+                  <table className="w-full border-collapse text-left text-sm md:text-base">
+                    <thead className="bg-[#E76F51] text-white">
+                      <tr>
+                        <th className="py-3 px-4">Name</th>
+                        <th className="py-3 px-4">Phone</th>
+                        <th className="py-3 px-4">Date</th>
+                        <th className="py-3 px-4 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {contacts.map((contact, index) => (
+                        <tr
+                          key={contact._id}
+                          className={`border-b transition hover:bg-gray-100 ${
+                            index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                          }`}
+                        >
+                          <td className="py-3 px-4 text-xs md:text-base">
+                            {contact.name}
+                          </td>
+                          <td className="py-3 px-4 text-xs md:text-base">
+                            {contact.phone}
+                          </td>
+                          <td className="py-3 px-4 text-xs md:text-base">
+                            {new Date(contact.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="py-3 px-4 text-center">
+                            <a
+                              href={`tel:${contact.phone}`}
+                              className="text-green-600 hover:text-green-500"
+                            >
+                              <PhoneCall
+                                size={20}
+                                className="mx-auto cursor-pointer"
+                              />
+                            </a>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <p className="text-center text-gray-600 mt-6">
+                No user inquiries found.
+              </p>
+            )}
+          </div>
         );
       default:
         return <p>Select an option from the sidebar.</p>;
@@ -900,12 +1039,10 @@ const handleNewsSubmit = async (e) => {
                 {activeItem}
               </h2>
             </div>
-            <p className="text-gray-600 text-center items-center justify-center mb-6">
+            {/* <p className="text-gray-600 text-center items-center justify-center mb-6">
               Welcome to {selectedSection} - {activeItem}
-            </p>
-            <div className="bg-gray-50 ">
-              {renderMainContent()}
-            </div>
+            </p> */}
+            <div className="bg-gray-50 ">{renderMainContent()}</div>
           </div>
         </div>
       ) : (
