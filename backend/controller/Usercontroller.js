@@ -737,3 +737,70 @@ exports.storePayment = async (req, res) => {
     res.status(500).json({ message: 'Failed to store payment details' });
   }
 };
+
+
+
+
+//getpayment 
+exports.getPaymentByEmail = async (req, res) => {
+  try {
+    const { email } = req.params; // Assuming you pass the email as a parameter
+
+    // Find the user by email and select only the required fields
+    const user = await User.findOne({ email }).select('name email paymentDetails');
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    // Check if paymentDetails exists
+    if (!user.paymentDetails) {
+      return res.status(404).json({ success: false, message: 'Payment details not found for this user' });
+    }
+
+    // Return the user's name, email, and paymentDetails
+    res.status(200).json({
+      success: true,
+      data: {
+        name: user.name,
+        email: user.email,
+        paymentDetails: user.paymentDetails,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching payment details:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
+};
+
+
+
+//getpayment pagination
+
+// exports.getAllPayments = async (req, res) => {
+//   try {
+//     const { page = 1, limit = 10 } = req.query; // Default page 1 and limit 10
+
+//     // Find users with pagination and select only the required fields
+//     const users = await User.find()
+//       .select('name email paymentDetails')
+//       .limit(limit * 1) // Convert limit to a number
+//       .skip((page - 1) * limit); // Calculate the number of documents to skip
+
+//     if (users.length === 0) {
+//       return res.status(404).json({ success: false, message: 'No users found' });
+//     }
+
+//     // Extract name, email, and paymentDetails from each user
+//     const paymentDetails = users.map(user => ({
+//       name: user.name,
+//       email: user.email,
+//       paymentDetails: user.paymentDetails,
+//     }));
+
+//     res.status(200).json({ success: true, data: paymentDetails });
+//   } catch (error) {
+//     console.error('Error fetching all payment details:', error);
+//     res.status(500).json({ success: false, message: 'Server error', error: error.message });
+//   }
+// };
