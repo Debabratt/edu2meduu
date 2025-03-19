@@ -152,11 +152,11 @@ exports.adminLogin = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      if (users.status === 'block') {
+      if (users.status === 'blocked') {
         return res.status(400).json({ message: 'User is already block' });
       }
   
-      users.status = 'block';
+      users.status = 'blocked';
       await users.save();
   
       return res.status(200).json({ message: 'User block successfully!' });
@@ -178,11 +178,11 @@ exports.adminLogin = async (req, res) => {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      if (users.status === 'block') {
+      if (users.status === 'blocked') {
         return res.status(400).json({ message: 'User is already block' });
       }
   
-      users.status = 'block';
+      users.status = 'blocked';
       await users.save();
   
       return res.status(200).json({ message: 'User block successfully!' });
