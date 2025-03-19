@@ -70,8 +70,8 @@ type:String
   },
   status: {
     type: String,
-    enum: ["block", "active", "unblock","deactive"],
-    default: "deactive",
+    enum: ["block", "active", "unblock"],
+    default: "block",
     required: true,
   },
   address: {

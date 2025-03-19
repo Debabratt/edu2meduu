@@ -13,7 +13,7 @@ const EmRegister = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false); // Track registration success
-  const [, set] = useState(0); // Payment amount
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [utrNumber, setUtrNumber] = useState(''); // UTR number
 
   const educationCategories = [
@@ -59,23 +59,24 @@ const EmRegister = () => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-
+  
     // Validate all fields
     if (!email || !utrNumber) {
       setMessage('All fields are required.');
       setLoading(false);
       return; // Stop further execution
     }
-
+  
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BASEURI}/user/addpayment`,
         { email, utrNumber },
         { headers: { 'Content-Type': 'application/json' } }
       );
-
+  
       if (response.status === 200) {
         setMessage('Payment details stored successfully!');
+        setPaymentSuccess(true); // Set payment success to true
       } else {
         setMessage(response.data.message || 'Failed to store payment details');
       }
@@ -91,7 +92,7 @@ const EmRegister = () => {
   const isPaymentFormValid = email && utrNumber;
 
   return (
-    <div className="relative lg:mt-23 mt-25 min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/login.jpg)' }}>
+    <div className="relative lg:mt-23 mt-25 min-h-screen bg-cover bg-center" style={{ backgroundImage: 'url(/logine.jpg)' }}>
       <motion.div
         className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-opacity-50 p-8 rounded-lg shadow-xl z-10 w-full max-w-md"
         initial={{ opacity: 0, y: -50 }}
@@ -212,66 +213,84 @@ const EmRegister = () => {
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold text-center mb-6">Payment Details</h1>
-
-            {/* QR Code Image */}
-            <div className="flex flex-col items-center justify-center mb-6">
-              <img 
-                src="/Qrcode.jpg" 
-                alt="QR Code" 
-                className="w-48 h-48 rounded-lg shadow-md"
-              />
-              <h5 className="mt-3 text-lg font-semibold text-gray-700 text-center">
-                9811247700
-              </h5>
-              <h5 className="mt-1 text-lg font-semibold text-gray-700 text-center">
-                UPI ID: krdpankaj44-1@okaxis
-              </h5>
-            </div> 
-
-            {/* Payment Amount Display */}
-            <div className="bg-gray-200 text-gray-800 text-center font-bold py-3 px-4 mb-4 rounded-lg">
-              Payment Amount: ₹99
+          {paymentSuccess ? (
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-green-600 mb-4">Payment Successful!</h2>
+              <p className="text-gray-700 mb-4">
+                Your payment has been successfully submitted. After approval from our team, you will be able to login.
+              </p>
+              <Link
+                to="/login"
+                className="inline-block bg-[#17A2B8] text-white py-2 px-4 rounded-lg hover:bg-[#73ccda] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              >
+                Go to Login
+              </Link>
             </div>
-
-            {/* Input Field for Email */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Enter Your Registered Email</label>
-              <input 
-                type="email" 
-                value={email}
-                placeholder="john.doe@example.com" 
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            {/* Input Field for UTR Number */}
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">UTR Number</label>
-              <input 
-                type="text" 
-                value={utrNumber}
-                placeholder="Enter UTR Number" 
-                onChange={(e) => setUtrNumber(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            {/* Submit Button */}
-            <button 
-              onClick={handlePaymentSubmit}
-              disabled={!isPaymentFormValid || loading} // Disable if fields are not filled or loading
-              className={`w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
-                !isPaymentFormValid ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
-            >
-              {loading ? 'Submitting...' : 'Submit Payment'}
-            </button>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold text-center mb-6">Payment Details</h1>
+          
+              {/* QR Code Image */}
+              <div className="flex flex-col items-center justify-center mb-6">
+                <img 
+                  src="/Qrcode.jpg" 
+                  alt="QR Code" 
+                  className="w-48 h-48 rounded-lg shadow-md"
+                />
+                <h5 className="mt-3 text-lg font-semibold text-gray-700 text-center">
+                  9811247700
+                </h5>
+                <h5 className="mt-1 text-lg font-semibold text-gray-700 text-center">
+                  UPI ID: krdpankaj44-1@okaxis
+                </h5>
+              </div> 
+          
+              {/* Payment Amount Display */}
+              <div className="bg-gray-200 text-gray-800 text-center font-bold py-3 px-4 mb-4 rounded-lg">
+                Payment Amount: ₹99
+              </div>
+          
+              {/* Input Field for Email */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Enter Your Registered Email</label>
+                <input 
+                  type="email" 
+                  value={email}
+                  placeholder="john.doe@example.com" 
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+          
+              {/* Input Field for UTR Number */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">UTR Number</label>
+                <input 
+                  type="text" 
+                  value={utrNumber}
+                  placeholder="Enter UTR Number" 
+                  onChange={(e) => setUtrNumber(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+          
+              {/* Submit Button */}
+              <button 
+                onClick={handlePaymentSubmit}
+                disabled={!isPaymentFormValid || loading} // Disable if fields are not filled or loading
+                className={`w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 ${
+                  !isPaymentFormValid ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {loading ? 'Submitting...' : 'Submit Payment'}
+              </button>
+            </>
+          )}
           </>
         )}
+        
       </motion.div>
     </div>
   );
