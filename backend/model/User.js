@@ -95,9 +95,13 @@ type:String
     type: Date,
   },
   paymentDetails: {
-    utrNumber: { type: String, default: '' },
-
-    paymentDate: { type: Date, default: null },
+    utrNumber: { type: String, default: '' }, // UTR number for payment reference
+    paymentDate: { type: Date, default: null }, // Date of payment
+    paymentStatus: { 
+      type: String, 
+      enum: ['paid', 'unpaid'], // Allowed values
+      default: 'unpaid', // Default status
+    },
   },
   
 });

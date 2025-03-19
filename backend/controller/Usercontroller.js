@@ -725,6 +725,7 @@ exports.storePayment = async (req, res) => {
 
     user.paymentDetails = {
       utrNumber,
+      paymentStatus: 'paid',
       paymentDate: new Date(),
     };
 

@@ -606,87 +606,87 @@ export default function UserDashboard() {
       )}
     </div>
   );
-        case "status":
-          return (
-            <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
-              <h2 className="text-xl font-semibold mb-4">{user.userType} Status</h2>
+        // case "status":
+        //   return (
+        //     <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
+        //       <h2 className="text-xl font-semibold mb-4">{user.userType} Status</h2>
         
-              {user.status === "block" ? (
-                <div>
-                  {/* Blocked Status Content */}
-                  <div className="flex items-center space-x-3 text-red-500">
-                    <XCircle className="w-8 h-8" />
-                    <p className="text-lg font-semibold">Your account is currently blocked.</p>
-                  </div>
-                  <p className="mt-2 text-red-600">If you believe this is a mistake, please contact our support team or request an unblock by sending a message to the admin.</p>
+        //       {user.status === "block" ? (
+        //         <div>
+        //           {/* Blocked Status Content */}
+        //           <div className="flex items-center space-x-3 text-red-500">
+        //             <XCircle className="w-8 h-8" />
+        //             <p className="text-lg font-semibold">Your account is currently blocked.</p>
+        //           </div>
+        //           <p className="mt-2 text-red-600">If you believe this is a mistake, please contact our support team or request an unblock by sending a message to the admin.</p>
         
-                  {/* Instructional Content */}
-                  <div className="mt-6 bg-yellow-100 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold text-yellow-600">How to Request Unblock:</h3>
-                    <ul className="list-inside list-disc text-gray-600">
-                      <li>Describe the issue you're facing clearly and provide any relevant details.</li>
-                      <li>Ensure to mention your username or account email for quick identification.</li>
-                      <li>If this is a system-generated block, the admin will review and resolve it accordingly.</li>
-                    </ul>
-                  </div>
+        //           {/* Instructional Content */}
+        //           <div className="mt-6 bg-yellow-100 p-4 rounded-md">
+        //             <h3 className="text-lg font-semibold text-yellow-600">How to Request Unblock:</h3>
+        //             <ul className="list-inside list-disc text-gray-600">
+        //               <li>Describe the issue you're facing clearly and provide any relevant details.</li>
+        //               <li>Ensure to mention your username or account email for quick identification.</li>
+        //               <li>If this is a system-generated block, the admin will review and resolve it accordingly.</li>
+        //             </ul>
+        //           </div>
         
-                  {/* Unblock Request Form */}
-                  <textarea
-                    className="w-full p-2 border border-gray-300 rounded-md mt-4"
-                    placeholder="Write your message to the admin..."
-                  ></textarea>
-                  <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
-                    Send Request
-                  </button>
+        //           {/* Unblock Request Form */}
+        //           <textarea
+        //             className="w-full p-2 border border-gray-300 rounded-md mt-4"
+        //             placeholder="Write your message to the admin..."
+        //           ></textarea>
+        //           <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600">
+        //             Send Request
+        //           </button>
         
-                  {/* Support Contact Info */}
-                  <div className="mt-6 bg-gray-100 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold">Need Immediate Assistance?</h3>
-                    <p className="text-gray-600">
-                      You can also get in touch with our support team by calling or emailing us:
-                    </p>
-                    <ul className="text-blue-500">
-                      <li><strong>Phone:</strong> +1 800 123 4567</li>
-                      <li><strong>Email:</strong> support@example.com</li>
-                    </ul>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  {/* Active Status Content */}
-                  <div className="flex items-center space-x-3 text-green-500">
-                    <CheckCircle className="w-8 h-8" />
-                    <p className="text-lg font-semibold">Your account is active and fully functional.</p>
-                  </div>
+        //           {/* Support Contact Info */}
+        //           <div className="mt-6 bg-gray-100 p-4 rounded-md">
+        //             <h3 className="text-lg font-semibold">Need Immediate Assistance?</h3>
+        //             <p className="text-gray-600">
+        //               You can also get in touch with our support team by calling or emailing us:
+        //             </p>
+        //             <ul className="text-blue-500">
+        //               <li><strong>Phone:</strong> +1 800 123 4567</li>
+        //               <li><strong>Email:</strong> support@example.com</li>
+        //             </ul>
+        //           </div>
+        //         </div>
+        //       ) : (
+        //         <div>
+        //           {/* Active Status Content */}
+        //           <div className="flex items-center space-x-3 text-green-500">
+        //             <CheckCircle className="w-8 h-8" />
+        //             <p className="text-lg font-semibold">Your account is active and fully functional.</p>
+        //           </div>
         
-                  {/* Encouragement Content */}
-                  <div className="mt-6 bg-green-100 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold text-green-600">Stay Active and Explore More:</h3>
-                    <p className="text-gray-600">
-                      Enjoy your time on the platform! Make sure to regularly update your profile to enhance your experience. Here are some things you can do:
-                    </p>
-                    <ul className="list-inside list-disc text-gray-600">
-                      <li>Complete your profile with the latest information.</li>
-                      <li>Check out new features that are available to you.</li>
-                      <li>Review your privacy settings to make sure your data is secure.</li>
-                    </ul>
-                  </div>
+        //           {/* Encouragement Content */}
+        //           <div className="mt-6 bg-green-100 p-4 rounded-md">
+        //             <h3 className="text-lg font-semibold text-green-600">Stay Active and Explore More:</h3>
+        //             <p className="text-gray-600">
+        //               Enjoy your time on the platform! Make sure to regularly update your profile to enhance your experience. Here are some things you can do:
+        //             </p>
+        //             <ul className="list-inside list-disc text-gray-600">
+        //               <li>Complete your profile with the latest information.</li>
+        //               <li>Check out new features that are available to you.</li>
+        //               <li>Review your privacy settings to make sure your data is secure.</li>
+        //             </ul>
+        //           </div>
         
-                  {/* Additional Links */}
-                  <div className="mt-6 bg-gray-100 p-4 rounded-md">
-                    <h3 className="text-lg font-semibold">Need Help or Have Questions?</h3>
-                    <p className="text-gray-600">
-                      If you need assistance or have any questions about your account or how to make the most of our platform, feel free to contact our support team.
-                    </p>
-                    <ul className="text-blue-500">
-                      <li><strong>Help Center:</strong> <a href="#" className="hover:underline">Visit our Help Center</a></li>
-                      <li><strong>Contact Us:</strong> <a href="#" className="hover:underline">Submit a Support Request</a></li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
+        //           {/* Additional Links */}
+        //           <div className="mt-6 bg-gray-100 p-4 rounded-md">
+        //             <h3 className="text-lg font-semibold">Need Help or Have Questions?</h3>
+        //             <p className="text-gray-600">
+        //               If you need assistance or have any questions about your account or how to make the most of our platform, feel free to contact our support team.
+        //             </p>
+        //             <ul className="text-blue-500">
+        //               <li><strong>Help Center:</strong> <a href="#" className="hover:underline">Visit our Help Center</a></li>
+        //               <li><strong>Contact Us:</strong> <a href="#" className="hover:underline">Submit a Support Request</a></li>
+        //             </ul>
+        //           </div>
+        //         </div>
+        //       )}
+        //     </div>
+        //   );
       case "support":
         return (
           <div className="mt-8 bg-white p-6 rounded-xl shadow-md">
@@ -701,7 +701,7 @@ export default function UserDashboard() {
               <Phone className="w-6 h-6 text-blue-500" />
               <div>
                 <p className="text-lg font-semibold">Call Us</p>
-                <p className="text-gray-600">+1 800 123 4567</p>
+                <p className="text-gray-600">+91 9811247700</p>
               </div>
             </div>
         
@@ -767,12 +767,12 @@ export default function UserDashboard() {
 >
   <Edit3 className="w-5 h-5 mr-3" /> Post a Job
 </li>
-            <li
+            {/* <li
               className={`flex items-center p-3 rounded-lg  text-white hover:text-gray-900  cursor-pointer transition duration-300 hover:bg-gray-300 ${activeTab === "status" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("status"); setIsSidebarOpen(false); }}
             >
               <Activity className="w-5 h-5 mr-3" /> Status
-            </li>
+            </li> */}
             <li
               className={`flex items-center p-3 rounded-lg hover:text-gray-900  cursor-pointer text-white transition duration-300 hover:bg-gray-300 ${activeTab === "support" ? "bg-gray-300" : ""}`}
               onClick={() => { setActiveTab("support"); setIsSidebarOpen(false); }}
