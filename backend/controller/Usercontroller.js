@@ -693,3 +693,40 @@ exports.deleteJob = async (req, res) => {
     res.status(500).json({ message: "Error deleting job", error });
   }
 };
+
+
+
+
+
+
+
+
+//payement
+
+
+// paymentController.js
+
+
+exports.storePayment = async (req, res) => {
+  const { email, utrNumber } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.paymentDetails = {
+      utrNumber,
+      paymentDate: new Date(),
+    };
+
+    await user.save();
+
+    res.status(200).json({ message: 'Payment details stored successfully', user });
+  } catch (error) {
+    console.error('Error storing payment details:', error);
+    res.status(500).json({ message: 'Failed to store payment details' });
+  }
+};

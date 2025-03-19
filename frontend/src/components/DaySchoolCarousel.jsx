@@ -20,6 +20,7 @@ const categories = [
 
 function DaySchoolCarousel() {
   const [usersByCategory, setUsersByCategory] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,7 +31,7 @@ function DaySchoolCarousel() {
           const categorizedUsers = {};
           categories.forEach((category) => {
             categorizedUsers[category] = response.data.users.filter(
-              (user) => user.category === category
+              (user) => user.category === category && user.status === 'active'
             );
           });
           setUsersByCategory(categorizedUsers);
@@ -38,8 +39,47 @@ function DaySchoolCarousel() {
           console.error('Invalid API response format:', response.data);
         }
       })
-      .catch((error) => console.error('Error fetching categories:', error));
+      .catch((error) => console.error('Error fetching categories:', error))
+      .finally(() => setLoading(false));
   }, []);
+
+  const renderSkeleton = () => (
+    <div className="bg-[#fffbe7] p-6 md:p-8 lg:p-12">
+      <header className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-800 text-left">
+          Loading...
+        </h1>
+      </header>
+      <main className="px-2 md:px-4 lg:px-8">
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={3000}
+          showDots={false}
+          arrows={false}
+          containerClass="carousel-container"
+          itemClass="carousel-item"
+        >
+          {[...Array(3)].map((_, index) => (
+            <div
+              key={index}
+              className="relative bg-gray-200 rounded-xl shadow-lg mx-2 md:mx-4 h-64 md:h-80 animate-pulse"
+            >
+              <div className="relative h-full">
+                <div className="w-full h-full bg-gray-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                <div className="absolute bottom-0 left-0 w-full p-4">
+                  <div className="h-6 bg-gray-400 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-400 rounded w-1/2"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </main>
+    </div>
+  );
 
   const renderCarousel = (title, users) => (
     <div key={title} className="bg-[#fffbe7] p-6 md:p-8 lg:p-12">
@@ -50,7 +90,7 @@ function DaySchoolCarousel() {
       </header>
       <main className="px-2 md:px-4 lg:px-8">
         {users.length === 0 ? (
-          <p className="text-center text-lg text-gray-500">Loading...</p>
+          <p className="text-center text-lg text-gray-500">No users found</p>
         ) : (
           <Carousel
             responsive={responsive}
@@ -73,10 +113,9 @@ function DaySchoolCarousel() {
                     src={user.image}
                     alt={user.name}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
-                  {/* Gradient Overlay */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
-                  {/* Text Overlay */}
                   <div className="absolute bottom-0 left-0 w-full p-4">
                     <h2 className="text-lg md:text-xl font-bold text-white">
                       {user.name || 'No Name Found'}
@@ -94,7 +133,13 @@ function DaySchoolCarousel() {
     </div>
   );
 
-  return <>{categories.map((category) => renderCarousel(category, usersByCategory[category] || []))}</>;
+  return (
+    <>
+      {loading
+        ? categories.map((category) => renderSkeleton(category))
+        : categories.map((category) => renderCarousel(category, usersByCategory[category] || []))}
+    </>
+  );
 }
 
 export default DaySchoolCarousel;

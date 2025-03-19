@@ -34,6 +34,7 @@ import AdminResetPassword from "./components/AdminResetPassword.jsx";
 import AdminForgotPassword from "./components/AdminForgotPassword.jsx";
 
 import SearchResult from "./components/SearchResult.jsx";
+// import PaymentPage from "./components/PaymentPage.jsx";
 
 // Layout component that includes Header and Footer
 const MainLayout = ({ children }) => (
@@ -87,6 +88,7 @@ function App() {
             </MainLayout>
           }
         />
+         {/* <Route path="/payment" element={<MainLayout><PaymentPage /></MainLayout>} /> */}
 
         {/* Login Route */}
         <Route

@@ -70,8 +70,8 @@ type:String
   },
   status: {
     type: String,
-    enum: ["block", "active", "unblock"],
-    default: "active",
+    enum: ["block", "active", "unblock","deactive"],
+    default: "deactive",
     required: true,
   },
   address: {
@@ -94,6 +94,12 @@ type:String
   verifytokenExpires: {
     type: Date,
   },
+  paymentDetails: {
+    utrNumber: { type: String, default: '' },
+
+    paymentDate: { type: Date, default: null },
+  },
+  
 });
 
 const User = mongoose.model("User", UserSchema);
@@ -101,7 +107,7 @@ module.exports = User;
 
 
 
-
+//paymentAmount: { type: Number, default: 0 },
 
 
 

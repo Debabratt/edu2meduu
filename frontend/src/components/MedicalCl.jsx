@@ -18,6 +18,7 @@ const categories = [
 
 function MedicalCl() {
   const [usersByCategory, setUsersByCategory] = useState({});
+  const [loading, setLoading] = useState(true); // Loading state for skeleton
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ function MedicalCl() {
           const categorizedUsers = {};
           categories.forEach((category) => {
             categorizedUsers[category] = response.data.users.filter(
-              (user) => user.category === category
+              (user) => user.category === category && user.status === 'active'
             );
           });
           setUsersByCategory(categorizedUsers);
@@ -36,18 +37,53 @@ function MedicalCl() {
           console.error('Invalid API response format:', response.data);
         }
       })
-      .catch((error) => console.error('Error fetching categories:', error));
+      .catch((error) => console.error('Error fetching categories:', error))
+      .finally(() => setLoading(false)); // Set loading to false after fetching
   }, []);
 
+  // Skeleton Loading Component
+  const renderSkeleton = () => (
+    <div className="bg-gray-50 py-12">
+      <header className="mb-6 px-6 md:px-16">
+        <h1 className="text-3xl font-extrabold text-gray-900 border-l-4 border-blue-500 pl-4 animate-pulse">
+          Loading...
+        </h1>
+      </header>
+      <main className="px-6 md:px-16">
+        <Carousel
+          responsive={responsive}
+          infinite={true}
+          autoPlay={true}
+          autoPlaySpeed={3000}
+          showDots={false}
+          arrows={false}
+          containerClass="carousel-container"
+          itemClass="carousel-item px-4"
+        >
+          {[...Array(3)].map((_, index) => (
+            <div
+              key={index}
+              className="relative bg-white rounded-xl shadow-lg transform transition duration-300 hover:scale-105 cursor-pointer overflow-hidden animate-pulse"
+            >
+              <div className="w-full h-64 bg-gray-300 rounded-t-xl"></div>
+              <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-gray-900 via-gray-800 to-transparent">
+                <div className="h-6 bg-gray-400 rounded w-3/4"></div>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      </main>
+    </div>
+  );
+
   const renderCarousel = (title, users) => (
-    <div className="">
-    <div key={title} className="bg-gray-50  py-12">
+    <div key={title} className="bg-gray-50 py-12">
       <header className="mb-6 px-6 md:px-16">
         <h1 className="text-3xl font-extrabold text-gray-900 border-l-4 border-blue-500 pl-4">{title}</h1>
       </header>
       <main className="px-6 md:px-16">
         {users.length === 0 ? (
-          <p className="text-center text-lg text-gray-500">Loading...</p>
+          <p className="text-center text-lg text-gray-500">No users found</p>
         ) : (
           <Carousel
             responsive={responsive}
@@ -66,9 +102,10 @@ function MedicalCl() {
                 onClick={() => navigate(`/medicalcategory/${user.category}`)}
               >
                 <img
-                  src={user.image }
+                  src={user.image}
                   alt={user.name}
                   className="w-full h-64 object-cover rounded-t-xl"
+                  loading="lazy" // Lazy loading for images
                 />
                 <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-gray-900 via-gray-800 to-transparent">
                   <h2 className="text-lg font-semibold text-white">{user.name || 'No Name Found'}</h2>
@@ -79,10 +116,15 @@ function MedicalCl() {
         )}
       </main>
     </div>
-    </div>
   );
 
-  return <>{categories.map((category) => renderCarousel(category, usersByCategory[category] || []))}</>;
+  return (
+    <>
+      {loading
+        ? categories.map((category) => renderSkeleton(category))
+        : categories.map((category) => renderCarousel(category, usersByCategory[category] || []))}
+    </>
+  );
 }
 
 export default MedicalCl;

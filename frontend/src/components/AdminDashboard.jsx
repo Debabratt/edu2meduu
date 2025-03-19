@@ -12,6 +12,7 @@ import {
   PhoneCall,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { FaMoneyBill } from "react-icons/fa";
 
 const AdminDashboard = () => {
   const [selectedSection, setSelectedSection] = useState(null);
@@ -325,7 +326,9 @@ const handleNewsSubmit = async (e) => {
       { name: "Block School & College", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
+      { name: "Payment History", icon: <FaMoneyBill /> },
       { name: "User Inquiries", icon: <PhoneCall /> },
+
     ],
     Healthcare: [
       { name: "Dashboard", icon: <Home /> },
@@ -730,6 +733,7 @@ const handleNewsSubmit = async (e) => {
                     <tr className="bg-gray-200 text-gray-700">
                       <th className="py-2 px-4 border">Name</th>
                       <th className="py-2 px-4 border">Email</th>
+                      <th className="py-2 px-4 border">Phone Number</th>
                       <th className="py-2 px-4 border">Type</th>
                     </tr>
                   </thead>
@@ -738,6 +742,7 @@ const handleNewsSubmit = async (e) => {
                       <tr key={user._id} className="border-b hover:bg-gray-100">
                         <td className="py-2 px-4 border">{user.name}</td>
                         <td className="py-2 px-4 border">{user.email}</td>
+                        <td className="py-2 px-4 border">{user.phone}</td>
                         <td className="py-2 px-4 border">{user.userType}</td>
                       </tr>
                     ))}
