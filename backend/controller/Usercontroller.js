@@ -114,6 +114,12 @@ exports.loginUser = async (req, res) => {
         .status(400)
         .json({ success: false, message: "Invalid email/phone or password" });
     }
+    if (user.status === "blocked") {
+      return res
+        .status(403) // 403 Forbidden status code
+        .json({ success: false, message: "Your account is blocked. Please contact support." });
+    }
+
 
     // Compare passwords using bcrypt
     const isMatch = await bcrypt.compare(password, user.password);
