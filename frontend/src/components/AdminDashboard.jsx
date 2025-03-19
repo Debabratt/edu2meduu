@@ -347,6 +347,23 @@ const AdminDashboard = () => {
     return remainingDays >= 0 ? remainingDays : 0;
   };
 
+
+  const formatIndianDateTime = (dateString) => {
+    if (!dateString) return "N/A";
+    const date = new Date(dateString);
+    return date.toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+  };
+  
+
   useEffect(() => {
     if (selectedSection === "Education") {
       fetchEduUsers();
@@ -371,6 +388,7 @@ const AdminDashboard = () => {
       { name: "Block Medical & Clinics", icon: <Ban /> },
       { name: "Add News", icon: <Newspaper /> },
       { name: "User Details", icon: <User /> },
+      { name: "Payment History", icon: <FaMoneyBill /> },
       { name: "User Inquiries", icon: <PhoneCall /> },
     ],
   };
@@ -504,11 +522,16 @@ const AdminDashboard = () => {
                 {calculateRemainingDays(user.paymentDetails.paymentDate)}
               </td>
               <td className="py-3 px-4 border text-center">
+              
                 <button
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                  onClick={() => onBlockUser(user._id)}
+                  className={`px-4 py-2 rounded-lg ${
+                    user.status === "blocked"
+                      ? "bg-green-500 hover:bg-green-600 text-white"
+                      : "bg-red-500 hover:bg-red-600 text-white"
+                  }`}
+                  onClick={() => onBlockUser(user._id, user.status)}
                 >
-                  Block
+                  {user.status === "blocked" ? "Unblock" : "Block"}
                 </button>
               </td>
             </tr>
@@ -905,6 +928,64 @@ const AdminDashboard = () => {
           )}
         </div>
         );
+        case "Payment History":
+  return (
+    <div className="p-4 sm:p-6 md:p-8 bg-gray-100 rounded-xl shadow-xl border border-gray-300 w-full overflow-hidden">
+    <h3 className="text-2xl sm:text-3xl font-extrabold mb-4 sm:mb-6 text-gray-900 text-center">
+      {selectedSection} User List
+    </h3>
+    <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 space-y-4 sm:space-y-0">
+      <span className="bg-gradient-to-r from-[#17A2B8] to-[#5db4c1] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-full text-base sm:text-lg font-semibold shadow-lg text-center">
+        Total Paid Users: {users.filter(user => user.paymentDetails.paymentStatus === "paid").length}
+      </span>
+    </div>
+
+    {users.filter(user => user.paymentDetails.paymentStatus === "paid").length > 0 ? (
+      <>
+        {/* Table for Desktop and Tablet */}
+        <div className="hidden sm:block overflow-x-auto rounded-lg shadow-md">
+          <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-lg overflow-hidden text-sm sm:text-md">
+            <thead>
+              <tr className="bg-gradient-to-r from-[#17A2B8] to-[#17A2B8] text-white uppercase text-xs sm:text-sm font-bold tracking-wide text-center">
+                <th className="py-3 px-4 sm:py-4 sm:px-6">Name</th>
+                <th className="py-3 px-4 sm:py-4 sm:px-6">Email</th>
+                <th className="py-3 px-4 sm:py-4 sm:px-6">UTR Number</th>
+                <th className="py-3 px-4 sm:py-4 sm:px-6">Payment Date & Time (IST)</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-800 font-medium divide-y divide-gray-300">
+              {users.filter(user => user.paymentDetails.paymentStatus === "paid").map((user, index) => (
+                <tr key={user._id} className={`transition duration-300 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"} hover:bg-blue-50 hover:scale-[1.02]`}>
+                  <td className="py-3 px-4 sm:py-4 sm:px-6 text-center">{user.name}</td>
+                  <td className="py-3 px-4 sm:py-4 sm:px-6 text-center">{user.email}</td>
+                  <td className="py-3 px-4 sm:py-4 sm:px-6 text-center font-semibold">{user.paymentDetails.utrNumber || "N/A"}</td>
+                  <td className="py-3 px-4 sm:py-4 sm:px-6 text-center font-semibold">{formatIndianDateTime(user.paymentDetails.paymentDate)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Card Layout for Mobile */}
+        <div className="sm:hidden space-y-4">
+          {users.filter(user => user.paymentDetails.paymentStatus === "paid").map(user => (
+            <div key={user._id} className="bg-white p-4 rounded-lg shadow-md border border-gray-200">
+              <p className="text-gray-900 font-semibold">Name: <span className="font-normal">{user.name}</span></p>
+              <p className="text-gray-900 font-semibold">Email: <span className="font-normal">{user.email}</span></p>
+              <p className="text-gray-900 font-semibold">UTR Number: <span className="font-normal">{user.paymentDetails.utrNumber || "N/A"}</span></p>
+              <p className="text-gray-900 font-semibold">Payment Date & Time: <span className="font-normal">{formatIndianDateTime(user.paymentDetails.paymentDate)}</span></p>
+            </div>
+          ))}
+        </div>
+      </>
+    ) : (
+      <p className="text-gray-700 text-center mt-4 sm:mt-6 text-base sm:text-lg">
+        No paid users found for {selectedSection}.
+      </p>
+    )}
+  </div>
+  );
+
       case "User Inquiries":
         return (
           <div>
