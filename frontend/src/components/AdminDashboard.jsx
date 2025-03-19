@@ -17,6 +17,7 @@ import { FaMoneyBill } from "react-icons/fa";
 const AdminDashboard = () => {
   const [selectedSection, setSelectedSection] = useState(null);
   const [greeting, setGreeting] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
   const [activeItem, setActiveItem] = useState("Dashboard");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [users, setUsers] = useState([]);
@@ -246,17 +247,31 @@ const handleNewsSubmit = async (e) => {
     }
   };
 
+  // Update time and greeting
   useEffect(() => {
-    const indiaTime = new Date().toLocaleTimeString("en-US", {
-      timeZone: "Asia/Kolkata",
-      hour: "2-digit",
-      hour12: true,
-    });
+    const updateTimeAndGreeting = () => {
+      const now = new Date();
+      const indianTime = new Date(
+        now.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+      );
+      const formattedTime = indianTime.toLocaleTimeString("en-IN", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      });
+      setCurrentTime(formattedTime);
 
-    const hour = parseInt(indiaTime.split(" ")[0]);
-    setGreeting(
-      hour < 12 ? "Good Morning" : hour < 18 ? "Good Afternoon" : "Good Evening"
-    );
+      const hours = indianTime.getHours();
+      if (hours >= 5 && hours < 12) setGreeting("Good Morning");
+      else if (hours >= 12 && hours < 17) setGreeting("Good Afternoon");
+      else if (hours >= 17 && hours < 21) setGreeting("Good Evening");
+      else setGreeting("Good Night");
+    };
+
+    const interval = setInterval(updateTimeAndGreeting, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchEduUsers = async () => {
@@ -359,6 +374,7 @@ const handleNewsSubmit = async (e) => {
             <th className="py-3 px-4 border text-left">Name</th>
             <th className="py-3 px-4 border text-left">Type</th>
             <th className="py-3 px-4 border text-left">Category</th>
+            <th className="py-3 px-4 border text-left">Subscription</th>
             <th className="py-3 px-4 border text-center">Action</th>
           </tr>
         </thead>
@@ -376,16 +392,21 @@ const handleNewsSubmit = async (e) => {
               <td className="py-3 px-4 border">{school.name}</td>
               <td className="py-3 px-4 border">{school.userType}</td>
               <td className="py-3 px-4 border">{school.category}</td>
+              <td className={`py-3 px-4 border font-bold ${
+  school.paymentDetails.paymentStatus === 'paid' ? 'text-green-500' : 'text-red-500'
+}`}>
+  {school.paymentDetails.paymentStatus}
+</td>
               <td className="py-3 px-4 border text-center">
                 <button
                   className={`px-4 py-2 rounded-lg ${
-                    school.status === "block"
+                    school.status === "blocked"
                       ? "bg-green-500 hover:bg-green-600 text-white"
                       : "bg-red-500 hover:bg-red-600 text-white"
                   }`}
                   onClick={() => onBlockUser(school._id, school.status)}
                 >
-                  {school.status === "block" ? "Unblock" : "Block"}
+                  {school.status === "blocked" ? "Unblock" : "Block"}
                 </button>
               </td>
             </tr>
@@ -899,6 +920,7 @@ const handleNewsSubmit = async (e) => {
             <p className="text-xl md:text-2xl mt-5 text-gray-600">
               {greeting}, Admin!
             </p>
+            <p className="text-center text-sm mt-1">Time: {currentTime}</p>
             <div className="mt-10 lg:px-30 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
               <button
                 className="px-6 py-3 bg-[#E76F51] text-white rounded-lg"
