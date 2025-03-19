@@ -305,7 +305,7 @@ const AdminDashboard = () => {
 
   const onBlockUser = async (userId, currentStatus) => {
     try {
-      const isBlocked = currentStatus === "block";
+      const isBlocked = currentStatus === "blocked";
       const endpoint =
         selectedSection === "Education"
           ? isBlocked
