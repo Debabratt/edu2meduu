@@ -238,7 +238,7 @@ const EmRegister = () => {
                   className="w-48 h-48 rounded-lg shadow-md"
                 />
                 <h5 className="mt-3 text-lg font-semibold text-gray-700 text-center">
-                  9811247700
+                9472539868
                 </h5>
                 <h5 className="mt-1 text-lg font-semibold text-gray-700 text-center">
                   UPI ID: krdpankaj44-1@okaxis
@@ -247,7 +247,8 @@ const EmRegister = () => {
           
               {/* Payment Amount Display */}
               <div className="bg-gray-200 text-gray-800 text-center font-bold py-3 px-4 mb-4 rounded-lg">
-                Payment Amount: ₹99
+                Payment Amount: ₹500 <br />
+                <h1 className='bg-gray-100 rounded-full mt-4 w-auto text-gray-500'>For 365 Days</h1>
               </div>
           
               {/* Input Field for Email */}
