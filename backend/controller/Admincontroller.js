@@ -1,21 +1,18 @@
 
 const Admin=require('../model/Admin');
 const User = require('../model/User');
-const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
+const multer = require('multer');
 const News = require("../model/News");
 const fs = require('fs');
 const Category=require('../model/Category')
 const Contact=require('../model/Contact')
-const dotenv = require("dotenv");
-const path = require("path");
+const path=require("path")
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 
 const bcrypt = require("bcrypt");
-dotenv.config();
+
 
 
 
@@ -252,48 +249,33 @@ exports.adminLogin = async (req, res) => {
 
 
 
-
-
-
-
-
-// Configure AWS SDK
-const s3 = new S3Client({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,  // Store in .env file
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,  // Store in .env file
-    region: process.env.AWS_REGION,  // Example: "ap-south-1" (Mumbai)
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Create uploads directory if it doesn't exist
+        
+        cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
 });
 
-// Configure Multer to Upload to S3
-const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: process.env.AWS_S3_BUCKET_NAME,  // Bucket name from .env
-        acl: "public-read",  // Allows public access to images
-        metadata: (req, file, cb) => {
-            cb(null, { fieldName: file.fieldname });
-        },
-        key: (req, file, cb) => {
-            const fileName = `categories/${Date.now()}${path.extname(file.originalname)}`;
-            cb(null, fileName);
-        }
-    }),
-    fileFilter: (req, file, cb) => {
-        const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-        if (allowedTypes.includes(file.mimetype)) {
-            cb(null, true);
-        } else {
-            cb(new Error("Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed."), false);
-        }
-    }
+const upload = multer({ 
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+      const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+      if (allowedTypes.includes(file.mimetype)) {
+          cb(null, true);
+      } else {
+          cb(new Error("Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed."), false);
+      }
+  }
 });
 
-// Controller to Add Category
+
+
+
 exports.addCategory = (req, res) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
     upload.single("image")(req, res, async (err) => {
         if (err) {
             console.error("File upload error:", err);
@@ -303,10 +285,10 @@ exports.addCategory = (req, res) => {
             });
         }
 
-        const { name, ctitle, categoryType, userType } = req.body;
-        const image = req.file ? req.file.location : null;  // S3 returns a file location (URL)
+        const { name, ctitle, categoryType,userType } = req.body;
+        const image = req.file ? `uploads/${req.file.filename}` : null;  
 
-        if (!name || !ctitle || !categoryType || !image || !userType) {
+        if (!name || !ctitle || !categoryType || !image ||!userType) {
             return res.status(400).json({ 
                 success: false, 
                 message: "All fields are required" 
@@ -318,7 +300,7 @@ exports.addCategory = (req, res) => {
                 name,
                 ctitle,
                 categoryType,
-                image,  // Store the S3 URL in MongoDB
+                image,
                 userType
             });
 
@@ -337,7 +319,6 @@ exports.addCategory = (req, res) => {
         }
     });
 };
-
 
 
   
@@ -612,7 +593,6 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
-
 
 
 
